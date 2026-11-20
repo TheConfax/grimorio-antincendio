@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f261c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Grimorio">
+<link rel="apple-touch-icon" href="icons/grimorio-180.png">
+<link rel="icon" type="image/png" href="icons/grimorio-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<title>Il Grimorio del Fuoco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Caveat:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: una strega dei boschi complice e un po' dispettosa che ti insegna a domare il fuoco
+   IDEA: un grimorio-erbario: pergamena, etichette di esemplari appuntate, ritagli incollati col nastro
+   PICTURE: il sigillo alchemico del fuoco (un triangolo) che si spezza quando ne tocchi un lato
+   COLOUR and TYPE: muschio, fungo, ambra candela, rosa antico, lilla su pergamena; IM Fell + Caveat + Nunito
+   LAYOUT: una colonna da libro larga al massimo 780px, un capitolo per pagina, indice in copertina */
+:root{color-scheme:light dark;
+--bg:light-dark(#efe5cf,#171c15);--page:light-dark(#f7efdc,#1f261c);--card:light-dark(#fffaf0,#262f21);--ink:light-dark(#2e251a,#ece2cc);--soft:light-dark(#6b5a44,#b8ab92);
+--moss:light-dark(#4d6a35,#93b56e);--fungo:light-dark(#7b4f30,#d39b6c);--amber:light-dark(#b8741a,#f2b54f);--rose:light-dark(#b0676e,#e4a4aa);--lilac:light-dark(#7e6fa8,#b8a9e0);--sky:light-dark(#40789a,#8cc3e2);
+--line:light-dark(#d8c9a8,#3b4532);--wash:light-dark(#efe2c2,#2a3323);--fire:#e2572b}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 Nunito,system-ui,sans-serif;overflow-x:clip;
+background-image:radial-gradient(circle at 12% 8%,light-dark(#e6d6b0,#222b1d) 0 18%,transparent 40%),radial-gradient(circle at 90% 60%,light-dark(#e9dcc0,#1b2318) 0 15%,transparent 35%)}
+h1,h2,h3{font-family:"IM Fell English",Georgia,serif;font-weight:400;line-height:1.08;margin:0;text-wrap:balance}
+.hand{font-family:Caveat,cursive;font-weight:700}
+a{color:var(--fungo)}
+img{max-width:100%;height:auto}
+.book{max-width:780px;margin:0 auto;padding:0 14px 64px;display:grid;gap:28px}
+/* copertina */
+.cover{max-width:780px;margin:0 auto;padding:clamp(28px,6vw,64px) 18px 18px;text-align:center}
+.cover .hand{color:var(--moss);font-size:28px;margin:0}
+.cover h1{font-size:clamp(46px,10vw,78px);margin:6px 0 8px}
+.cover .sub{font-family:"IM Fell English",serif;font-style:italic;color:var(--soft);font-size:20px;max-width:34ch;margin:0 auto}
+.cover svg.art{width:min(100%,520px);height:auto;margin:18px auto 0;display:block}
+.howto{max-width:620px;margin:16px auto 0;font-size:16px;color:var(--soft)}
+.index{max-width:780px;margin:0 auto 10px;padding:0 14px}
+.index ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.index a{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:center;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 12px;min-height:52px;line-height:1.25}
+.index a:hover{border-color:var(--moss)}
+.index .n{width:34px;height:34px;border-radius:50%;background:var(--moss);color:var(--page);display:grid;place-items:center;font:700 16px Nunito}
+.index small{display:block;color:var(--soft);font-size:13px}
+/* barra capitoli: compare solo quando si leggono i capitoli, uguale su telefono e computer */
+.toc{position:fixed;top:0;left:0;right:0;z-index:5;background:color-mix(in srgb,var(--bg) 95%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);transform:translateY(-110%);transition:transform .25s ease;box-shadow:0 8px 20px -16px #0008}
+.toc.show{transform:none}
+.toc .in{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:7px 12px}
+.toc button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:99px;min-height:42px;cursor:pointer}
+.toc .pv,.toc .nx{flex:none;width:42px;font-size:24px;line-height:1;padding:0 0 3px}
+.toc .pv:disabled,.toc .nx:disabled{opacity:.35;cursor:default}
+.toc .cur{flex:1;display:flex;align-items:baseline;gap:7px;padding:9px 14px 8px;text-align:left;overflow:hidden;white-space:nowrap;line-height:1.3}
+.toc .cur .hand{color:var(--moss);font-size:20px;line-height:1.1}
+.toc .cur b{color:var(--fungo)}
+.toc .cur .of{color:var(--soft);font-size:14px}
+.toc .cur .tt{overflow:hidden;text-overflow:ellipsis;flex:1;font-weight:700}
+.toc .cur .ar{color:var(--soft);font-size:12px;transition:transform .2s;align-self:center}
+.toc .cur[aria-expanded=true] .ar{transform:rotate(180deg)}
+.toc .menu{max-width:780px;margin:0 auto;padding:2px 12px 12px;max-height:min(70vh,560px);overflow:auto}
+.toc .menu[hidden]{display:none}
+.toc .menu ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.toc .menu a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);min-height:44px;line-height:1.25;font-size:15px}
+.toc .menu a.on{border-color:var(--moss);background:var(--wash)}
+.toc .menu .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--moss);color:var(--page);display:grid;place-items:center;font:800 13px Nunito}
+@media(max-width:600px){.toc .menu ol{grid-template-columns:1fr}.toc .cur .of{display:none}}
+/* pagina capitolo */
+.page{background:var(--page);border:1px solid var(--line);border-radius:4px 4px 10px 10px;padding:clamp(22px,4.5vw,52px);box-shadow:0 1px 0 var(--line),0 18px 40px -24px light-dark(#7b5c33,#000)}
+.kicker{color:var(--moss);font-size:26px;margin:0}
+.ct{font-size:clamp(36px,7vw,52px);margin:4px 0 6px}
+.sub{color:var(--soft);font-style:italic;font-family:"IM Fell English",serif;font-size:19px;margin:0}
+.vine{display:block;width:100%;height:28px;margin:16px 0 6px;color:var(--moss)}
+h3.sh{font-size:clamp(26px,4.6vw,33px);margin:36px 0 6px}
+h3.sh small{display:block;font-family:Caveat,cursive;font-weight:700;color:var(--lilac);font-size:23px;margin-bottom:2px}
+p{margin:10px 0}
+ul.dots{margin:10px 0;padding-left:22px}ul.dots li{margin:4px 0}ul.dots li::marker{color:var(--moss)}
+.scroll{position:relative;margin:30px 0;padding:22px 24px;background:var(--wash);border-radius:6px;border:1px dashed var(--fungo)}
+.scroll>.hand{position:absolute;top:-17px;left:18px;background:var(--page);padding:0 8px;color:var(--fungo);font-size:24px}
+.scroll p{margin:0;font-size:19px;font-weight:600}
+/* esemplari */
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px;margin-top:18px}
+.spec{position:relative;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:28px 14px 14px;transform:rotate(var(--r,0deg))}
+.spec::before{content:"";position:absolute;top:-8px;left:50%;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff8 0 20%,var(--pin,var(--rose)) 25%);box-shadow:0 2px 2px #0004}
+.spec svg,.spec img.ic{display:block;width:72px;height:72px;object-fit:contain;margin:0 auto 6px}
+.spec img.ic{background:#fff;border-radius:6px;padding:3px}
+.spec h4{font-family:"IM Fell English SC",serif;font-weight:400;font-size:22px;text-align:center;margin:0;line-height:1.1}
+.spec .tag{display:block;text-align:center;font:700 13px Nunito;color:var(--soft);margin-top:2px}
+.spec p{font-size:15.5px;margin:6px 0 0;line-height:1.5}
+.spec .hand{display:block;text-align:center;color:var(--moss);font-size:20px;margin-top:8px;line-height:1.15}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:14px}
+.duo>div{border-left:4px solid var(--c,var(--moss));padding:4px 0 4px 14px}
+.duo h4{font-family:"IM Fell English",serif;font-weight:400;font-size:24px;color:var(--c,var(--moss));margin:0}
+.duo p{font-size:16px;margin:4px 0 0}
+/* ritagli */
+.clip{display:flex;gap:24px;align-items:center;margin:30px 0 10px}.clip>.polaroid{flex:none}.clip>p,.clip>div{flex:1 1 220px}
+.polaroid{position:relative;background:#fff;padding:10px 10px 26px;width:240px;max-width:100%;transform:rotate(var(--r,-3deg));box-shadow:0 8px 18px -8px #0007;margin:0}
+.polaroid.wide{width:320px}
+.polaroid img{display:block;width:100%;height:auto}
+.polaroid::before{content:"";position:absolute;top:-12px;left:50%;width:90px;height:26px;margin-left:-45px;background:light-dark(#d9c48f99,#a3916599);transform:rotate(3deg)}
+.clip .hand{font-size:24px;line-height:1.22;color:var(--fungo);margin:0}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:18px;margin:20px 0}
+.strip figure{margin:0}
+.strip figcaption{font:700 19px/1.2 Caveat,cursive;color:var(--fungo);margin-top:8px;text-align:center}
+/* pozioni */
+.potions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+.potion{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:10px 10px 4px 4px;padding:14px}
+.potion svg{width:52px;height:66px}
+.potion h4{font-family:"IM Fell English",serif;font-weight:400;font-size:23px;margin:0}
+.potion p{font-size:15.5px;margin:4px 0 0;line-height:1.5}
+.potion em{font-style:normal;font-family:Caveat,cursive;font-weight:700;font-size:19px;color:var(--moss);display:block;margin-top:4px;line-height:1.15}
+.note{color:var(--soft);font-style:italic}
+/* tabelle pergamena */
+.tw{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:15.5px;background:var(--card);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IM Fell English SC",serif;font-weight:400;font-size:17px;background:var(--wash)}
+td b{color:var(--fungo)}
+/* numeri magici */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:12px;margin:16px 0}
+.num{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.num>b{display:block;font:800 clamp(24px,5vw,32px)/1.1 Nunito,sans-serif;color:var(--fungo);white-space:nowrap}
+.num span b{color:var(--fungo)}
+.num span{display:block;font-size:14.5px;margin-top:6px;line-height:1.35}
+/* goblin */
+.goblin{display:grid;grid-template-columns:80px minmax(0,1fr);gap:16px;align-items:start;margin:32px 0;padding:18px 20px;background:light-dark(#e3ead2,#26331f);border-radius:14px;border:2px solid var(--moss);transform:rotate(-.5deg)}
+.goblin svg{width:80px;height:88px}
+.goblin h4{font-family:"IM Fell English",serif;font-weight:400;font-size:25px;color:var(--moss);margin:0}
+.goblin .lie{font-family:Caveat,cursive;font-weight:700;font-size:21px;line-height:1.25;margin:6px 0;color:var(--fungo)}
+.goblin p{font-size:16px;margin:6px 0 0}
+/* trucco */
+.trick{display:flex;gap:12px;align-items:flex-start;margin:18px 0;padding:12px 16px;border-radius:10px;background:light-dark(#efe6f6,#2b2838);border:1px solid var(--lilac)}
+.trick svg{flex:none;width:34px;height:34px;color:var(--lilac)}
+.trick p{margin:0;font-family:Caveat,cursive;font-weight:700;font-size:22px;line-height:1.25}
+/* prove */
+.trials{margin-top:14px;display:grid;gap:10px}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:0 16px}
+summary{cursor:pointer;list-style:none;padding:14px 0;font-weight:700;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary .n{width:30px;height:30px;border-radius:50%;background:var(--lilac);color:var(--page);display:grid;place-items:center;font:700 16px Nunito}
+details[open] summary .n{background:var(--moss)}
+details .ans{padding:0 0 14px 44px;font-size:16px}
+details .ans b{color:var(--moss)}
+.go{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:36px;padding-top:20px;border-top:1px dashed var(--line)}
+.go a{display:inline-block;background:var(--fungo);color:var(--page);text-decoration:none;font-weight:700;padding:12px 22px;border-radius:99px;min-height:44px}
+.go .hand{font-size:22px;color:var(--soft)}
+/* rune */
+.runes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px;margin:16px 0}
+.rune{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;font-size:14.5px;line-height:1.3}
+.rune img{display:block;width:84px;height:84px;object-fit:contain;margin:0 auto 6px;background:#fff;border-radius:6px;padding:4px}
+/* rituale */
+.ritual{counter-reset:r;display:grid;gap:14px;margin:16px 0;padding:0;list-style:none}
+.ritual li{counter-increment:r;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.ritual li::before{content:counter(r);width:40px;height:40px;border-radius:50%;background:var(--fungo);color:var(--page);display:grid;place-items:center;font:800 18px Nunito,sans-serif}
+.ritual img{display:block;width:100%;max-width:300px;border-radius:6px;margin-top:8px}
+/* sigillo */
+.seal{display:grid;justify-items:center;margin:8px 0 4px}
+.seal svg{width:min(100%,440px);height:auto;overflow:visible}
+.side{cursor:pointer;outline:none}
+.side .hit{stroke:transparent;stroke-width:46;fill:none}
+.side .stroke{stroke:var(--fungo);stroke-width:9;stroke-linecap:round;fill:none;transition:opacity .4s}
+.side:hover .stroke,.side:focus-visible .stroke{stroke:var(--amber)}
+.side.off .stroke{opacity:.25;stroke-dasharray:4 14}
+.side text{font-family:"IM Fell English SC",serif;font-size:21px;fill:var(--ink)}
+.side.off text{fill:var(--soft);text-decoration:line-through}
+#flame{transform-origin:220px 300px;transition:transform .7s cubic-bezier(.5,0,.3,1),opacity .7s}
+#flame.out{transform:scale(.05);opacity:0}
+#smoke{opacity:0;transition:opacity .8s .4s}#smoke.on{opacity:.7}
+@keyframes flick{0%,100%{transform:scale(1,1)}50%{transform:scale(.96,1.04)}}
+#flame .core{transform-origin:220px 300px;animation:flick 1.6s ease-in-out infinite}
+.say{min-height:3.4em;text-align:center;max-width:46ch;margin:4px auto 0}
+.say b{color:var(--fungo)}
+.again{display:none;margin:12px auto 0;font:700 15px Nunito;background:var(--moss);color:var(--page);border:0;border-radius:99px;padding:11px 22px;min-height:44px;cursor:pointer}
+.again.show{display:block}
+.again:focus-visible,summary:focus-visible,.toc button:focus-visible,.toc .menu a:focus-visible,.index a:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.end{text-align:center;color:var(--soft);padding:10px 0 30px}
+.end .hand{font-size:28px;color:var(--moss);display:block}
+@media(max-width:600px){.potions,.duo,.index ol{grid-template-columns:1fr}.spec{--r:0deg!important}.clip{flex-direction:column;text-align:center}.clip>p,.clip>div{flex:none}.goblin{grid-template-columns:56px minmax(0,1fr);transform:none;padding:14px}.goblin svg{width:56px;height:62px}table{font-size:14px}th,td{padding:7px 8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.toc{transition:none}#flame .core{animation:none}#flame,#smoke,.side .stroke{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="gob" viewBox="0 0 88 96"><path d="M8 34l20 6M80 34l-20 6" stroke="var(--moss)" stroke-width="10" stroke-linecap="round"/><ellipse cx="44" cy="44" rx="26" ry="24" fill="var(--moss)"/><path d="M20 30c4-14 44-14 48 0" fill="var(--fungo)"/><path d="M28 18c6-16 26-16 32 0" fill="var(--fungo)"/><circle cx="35" cy="42" r="5" fill="#fff6d8"/><circle cx="53" cy="42" r="5" fill="#fff6d8"/><circle cx="36" cy="43" r="2.4" fill="#2e251a"/><circle cx="54" cy="43" r="2.4" fill="#2e251a"/><path d="M34 56c6 5 14 5 20 0" stroke="#2e251a" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M40 57l2 4 2-4" fill="#fff6d8"/><path d="M26 70h36l6 24H20z" fill="var(--fungo)"/></symbol>
+<symbol id="bottle" viewBox="0 0 58 72"><path d="M22 6h14v16c10 4 16 14 16 24 0 14-10 22-23 22S6 60 6 46c0-10 6-20 16-24z" fill="var(--card)" stroke="currentColor" stroke-width="3"/><path d="M8 48c8-4 34 4 42-2 0 12-9 19-21 19S8 58 8 48z" fill="currentColor"/><rect x="19" y="2" width="20" height="7" rx="2" fill="var(--moss)"/></symbol>
+<symbol id="shroom" viewBox="0 0 50 46"><path d="M18 44c0-10 2-16 4-20h6c2 4 4 10 4 20z" fill="light-dark(#efe2c2,#d9c9a3)"/><path d="M4 26c0-14 12-22 21-22s21 8 21 22z" fill="currentColor"/><g fill="#fff3dc"><circle cx="16" cy="16" r="3"/><circle cx="30" cy="12" r="2.4"/><circle cx="36" cy="21" r="2.6"/></g></symbol>
+<symbol id="star" viewBox="0 0 34 34"><path d="M17 2l3.5 10.5L31 17l-10.5 3.5L17 31l-3.5-10.5L3 17l10.5-4.5z" fill="currentColor"/></symbol>
+<symbol id="vine" viewBox="0 0 700 28"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></symbol>
+</defs>
+</svg>
+<header class="cover">
+<p class="hand">per Ilaria, futura addetta antincendio</p>
+<h1>Il Grimorio del Fuoco</h1>
+<p class="sub">tutto quello che serve per l'esame di livello 3, raccontato da una strega del bosco</p>
+<svg class="art" viewBox="0 0 520 240" aria-hidden="true">
+<circle cx="430" cy="58" r="30" fill="var(--amber)" opacity=".85"/><circle cx="444" cy="50" r="27" fill="var(--bg)"/>
+<g color="var(--amber)"><use href="#star" x="80" y="30" width="16" height="16"/><use href="#star" x="360" y="110" width="12" height="12"/><use href="#star" x="150" y="90" width="10" height="10"/><use href="#star" x="470" y="140" width="14" height="14"/></g>
+<path d="M260 36L350 196H170z" fill="none" stroke="var(--fungo)" stroke-width="7" stroke-linejoin="round"/>
+<path d="M260 96c14 24 38 36 38 66 0 22-17 36-38 36s-38-14-38-36c0-18 11-26 16-42 5 11 11 16 16 16-4-18 0-29 6-40z" fill="var(--fire)" opacity=".9"/>
+<path d="M261 140c7 13 18 20 18 35 0 12-8 19-18 19s-18-7-18-19c0-10 6-14 8-21 2 6 5 8 8 8-2-8 0-14 2-22z" fill="#ffd76a"/>
+<path d="M20 214c80-14 160-10 240-2s170 6 240-6" stroke="var(--moss)" stroke-width="3" fill="none"/>
+<g color="#b5452c"><use href="#shroom" x="96" y="168" width="50" height="46"/></g><g color="var(--rose)"><use href="#shroom" x="140" y="186" width="30" height="28"/></g><g color="var(--fungo)"><use href="#shroom" x="378" y="176" width="40" height="37"/></g>
+<path d="M60 214c4-24 0-40-14-52M70 214c4-20 16-30 30-34M446 210c2-20 12-32 26-36M456 212c6-12 2-26-8-36" stroke="var(--moss)" stroke-width="3" fill="none" stroke-linecap="round"/>
+<g transform="translate(118 70) rotate(-14)"><path d="M0 0c-14-14-30-8-26 6 3 9 16 8 26-6zM0 0c14-14 30-8 26 6-3 9-16 8-26-6z" fill="var(--lilac)" opacity=".85"/><path d="M0-8v16" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></g>
+</svg>
+<p class="howto">Un capitolo si legge in 5 minuti. Alla fine di ognuno ci sono le prove della strega e il link al quiz sul blocco giusto. Ogni domanda dell'esame ha la sua risposta qui dentro.</p>
+</header>
+<nav class="index" aria-label="Indice"><ol><li><a href="#c1"><span class="n">1</span><span>Il sigillo del fuoco<small>come nasce una fiamma, e come si fa a ucciderla</small></span></a></li><li><a href="#c2"><span class="n">2</span><span>Le cinque creature del fuoco<small>le classi di fuoco, una per ogni bestia</small></span></a></li><li><a href="#c3"><span class="n">3</span><span>I numeri segreti della fiamma<small>temperature, limiti e campi: quando qualcosa prende fuoco</small></span></a></li><li><a href="#c4"><span class="n">4</span><span>Solidi, liquidi e gas<small>tre modi di essere cibo per il fuoco</small></span></a></li><li><a href="#c5"><span class="n">5</span><span>Il calore e le scintille<small>come viaggia il calore e cosa accende il fuoco</small></span></a></li><li><a href="#c6"><span class="n">6</span><span>Le pozioni che spengono<small>gli estinguenti e i loro poteri</small></span></a></li><li><a href="#c7"><span class="n">7</span><span>La vita di un incendio<small>il rischio, le fasi, cosa fa il fuoco alle persone</small></span></a></li><li><a href="#c8"><span class="n">8</span><span>Gli scudi del villaggio<small>prevenzione e protezione, attiva e passiva</small></span></a></li><li><a href="#c9"><span class="n">9</span><span>Le rune<small>la segnaletica di sicurezza</small></span></a></li><li><a href="#c10"><span class="n">10</span><span>I guardiani dei presidi<small>chi controlla, chi ripara, chi sorveglia</small></span></a></li><li><a href="#c11"><span class="n">11</span><span>Le terre maledette<small>aree a rischio specifico ed esplosioni</small></span></a></li><li><a href="#c12"><span class="n">12</span><span>Pelle e corazza<small>reazione al fuoco e resistenza al fuoco</small></span></a></li><li><a href="#c13"><span class="n">13</span><span>I muri incantati<small>compartimentazione e carico d'incendio</small></span></a></li><li><a href="#c14"><span class="n">14</span><span>Il sentiero fuori dal bosco<small>l'esodo: luoghi sicuri e modi di uscire</small></span></a></li><li><a href="#c15"><span class="n">15</span><span>Le misure del sentiero<small>lunghezze, larghezze, luci e porte</small></span></a></li><li><a href="#c16"><span class="n">16</span><span>Campane e camini<small>rivelazione, allarme e controllo di fumo e calore</small></span></a></li><li><a href="#c17"><span class="n">17</span><span>Il primo strumento: l'estintore<small>il presidio di base, da usare sul principio d'incendio</small></span></a></li><li><a href="#c18"><span class="n">18</span><span>Fontane e piogge magiche<small>idranti, naspi, sprinkler e impianti automatici</small></span></a></li><li><a href="#c19"><span class="n">19</span><span>Aprire la strada ai cavalieri<small>l'operatività antincendio per i Vigili del Fuoco</small></span></a></li><li><a href="#c20"><span class="n">20</span><span>Il patto del villaggio<small>gestione della sicurezza e piano di emergenza</small></span></a></li><li><a href="#c21"><span class="n">21</span><span>Le maschere<small>i DPI per le vie respiratorie</small></span></a></li><li><a href="#c22"><span class="n">22</span><span>Il rituale<small>la prova pratica, un gesto alla volta</small></span></a></li><li><a href="#c23"><span class="n">23</span><span>Il ripasso della strega<small>tutti i numeri magici in una pagina</small></span></a></li></ol></nav>
+<nav class="toc" aria-label="Capitoli"><div class="in"><button class="pv" type="button" aria-label="Capitolo precedente">&lsaquo;</button><button class="cur" type="button" aria-expanded="false" aria-controls="tocmenu"><span class="hand">capitolo</span><b id="tn">1</b><span class="of">di 23</span><span class="tt" id="tt"></span><span class="ar" aria-hidden="true">&#9662;</span></button><button class="nx" type="button" aria-label="Capitolo successivo">&rsaquo;</button></div><div class="menu" id="tocmenu" hidden><ol><li><a href="#c1" data-i="1" data-t="Il sigillo del fuoco"><span class="n">1</span><span>Il sigillo del fuoco</span></a></li><li><a href="#c2" data-i="2" data-t="Le cinque creature del fuoco"><span class="n">2</span><span>Le cinque creature del fuoco</span></a></li><li><a href="#c3" data-i="3" data-t="I numeri segreti della fiamma"><span class="n">3</span><span>I numeri segreti della fiamma</span></a></li><li><a href="#c4" data-i="4" data-t="Solidi, liquidi e gas"><span class="n">4</span><span>Solidi, liquidi e gas</span></a></li><li><a href="#c5" data-i="5" data-t="Il calore e le scintille"><span class="n">5</span><span>Il calore e le scintille</span></a></li><li><a href="#c6" data-i="6" data-t="Le pozioni che spengono"><span class="n">6</span><span>Le pozioni che spengono</span></a></li><li><a href="#c7" data-i="7" data-t="La vita di un incendio"><span class="n">7</span><span>La vita di un incendio</span></a></li><li><a href="#c8" data-i="8" data-t="Gli scudi del villaggio"><span class="n">8</span><span>Gli scudi del villaggio</span></a></li><li><a href="#c9" data-i="9" data-t="Le rune"><span class="n">9</span><span>Le rune</span></a></li><li><a href="#c10" data-i="10" data-t="I guardiani dei presidi"><span class="n">10</span><span>I guardiani dei presidi</span></a></li><li><a href="#c11" data-i="11" data-t="Le terre maledette"><span class="n">11</span><span>Le terre maledette</span></a></li><li><a href="#c12" data-i="12" data-t="Pelle e corazza"><span class="n">12</span><span>Pelle e corazza</span></a></li><li><a href="#c13" data-i="13" data-t="I muri incantati"><span class="n">13</span><span>I muri incantati</span></a></li><li><a href="#c14" data-i="14" data-t="Il sentiero fuori dal bosco"><span class="n">14</span><span>Il sentiero fuori dal bosco</span></a></li><li><a href="#c15" data-i="15" data-t="Le misure del sentiero"><span class="n">15</span><span>Le misure del sentiero</span></a></li><li><a href="#c16" data-i="16" data-t="Campane e camini"><span class="n">16</span><span>Campane e camini</span></a></li><li><a href="#c17" data-i="17" data-t="Il primo strumento: l&#x27;estintore"><span class="n">17</span><span>Il primo strumento: l'estintore</span></a></li><li><a href="#c18" data-i="18" data-t="Fontane e piogge magiche"><span class="n">18</span><span>Fontane e piogge magiche</span></a></li><li><a href="#c19" data-i="19" data-t="Aprire la strada ai cavalieri"><span class="n">19</span><span>Aprire la strada ai cavalieri</span></a></li><li><a href="#c20" data-i="20" data-t="Il patto del villaggio"><span class="n">20</span><span>Il patto del villaggio</span></a></li><li><a href="#c21" data-i="21" data-t="Le maschere"><span class="n">21</span><span>Le maschere</span></a></li><li><a href="#c22" data-i="22" data-t="Il rituale"><span class="n">22</span><span>Il rituale</span></a></li><li><a href="#c23" data-i="23" data-t="Il ripasso della strega"><span class="n">23</span><span>Il ripasso della strega</span></a></li></ol></div></nav><main class="book"><section class="page" id="c1"><p class="kicker hand">Capitolo 1</p><h2 class="ct">Il sigillo del fuoco</h2><p class="sub">come nasce una fiamma, e come si fa a ucciderla</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="seal">
+<svg viewBox="0 0 440 400" role="img" aria-labelledby="sealT">
+<title id="sealT">Il triangolo del fuoco: combustibile, comburente e innesco. Tocca un lato per toglierlo.</title>
+<defs>
+<radialGradient id="glow" cx="50%" cy="60%" r="50%"><stop offset="0" stop-color="#ffd36b" stop-opacity=".7"/><stop offset="1" stop-color="#ffd36b" stop-opacity="0"/></radialGradient>
+<linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#c8401c"/><stop offset=".55" stop-color="#f08a2a"/><stop offset="1" stop-color="#ffd76a"/></linearGradient>
+</defs>
+<g id="flame">
+<circle cx="220" cy="250" r="120" fill="url(#glow)"/>
+<g class="core">
+<path d="M220 140c22 40 64 62 64 112 0 38-28 62-64 62s-64-24-64-62c0-30 18-44 26-70 8 18 18 26 26 26-6-30 0-48 12-68z" fill="url(#fl)"/>
+<path d="M221 210c12 22 30 34 30 58 0 20-14 32-31 32s-31-12-31-32c0-16 10-24 14-36 4 10 9 14 14 14-3-14 0-24 4-36z" fill="#ffe7a3"/>
+</g>
+</g>
+<g id="smoke" fill="none" stroke="var(--soft)" stroke-width="5" stroke-linecap="round"><path d="M210 300c-14-20 14-30 0-52s14-34 0-56"/><path d="M234 300c14-18-12-30 2-50"/></g>
+<g class="side" data-s="fuel" tabindex="0" role="button" aria-label="Togli il combustibile">
+<line class="hit" x1="52" y1="360" x2="220" y2="56"/><line class="stroke" x1="52" y1="360" x2="220" y2="56"/>
+<text x="96" y="196" transform="rotate(-61 126 196)" text-anchor="middle">Combustibile</text></g>
+<g class="side" data-s="heat" tabindex="0" role="button" aria-label="Togli l'innesco">
+<line class="hit" x1="220" y1="56" x2="388" y2="360"/><line class="stroke" x1="220" y1="56" x2="388" y2="360"/>
+<text x="330" y="196" transform="rotate(61 314 196)" text-anchor="middle">Innesco</text></g>
+<g class="side" data-s="air" tabindex="0" role="button" aria-label="Togli il comburente">
+<line class="hit" x1="52" y1="360" x2="388" y2="360"/><line class="stroke" x1="52" y1="360" x2="388" y2="360"/>
+<text x="220" y="394" text-anchor="middle">Comburente</text></g>
+<g fill="var(--lilac)"><circle cx="220" cy="56" r="7"/><circle cx="52" cy="360" r="7"/><circle cx="388" cy="360" r="7"/></g>
+<g aria-hidden="true">
+<g transform="translate(-6 318)"><path d="M18 42c0-10 2-16 4-20h6c2 4 4 10 4 20z" fill="light-dark(#efe2c2,#d9c9a3)"/><path d="M4 26c0-14 12-22 21-22s21 8 21 22z" fill="#b5452c"/><g fill="#fff3dc"><circle cx="16" cy="16" r="3"/><circle cx="30" cy="12" r="2.4"/><circle cx="36" cy="21" r="2.6"/></g></g>
+<g transform="translate(34 342) scale(.6)"><path d="M18 42c0-10 2-16 4-20h6c2 4 4 10 4 20z" fill="light-dark(#efe2c2,#d9c9a3)"/><path d="M4 26c0-14 12-22 21-22s21 8 21 22z" fill="var(--fungo)"/></g>
+<g transform="translate(396 330)"><path d="M14 34c0-8 1-14 3-18h5c2 4 3 10 3 18z" fill="light-dark(#efe2c2,#d9c9a3)"/><path d="M2 20c0-11 9-18 17-18s17 7 17 18z" fill="var(--rose)"/></g>
+<path d="M376 362c6-16 2-30-8-40M384 362c2-14 10-24 22-28M368 362c-8-10-20-14-30-12" stroke="var(--moss)" stroke-width="3" fill="none" stroke-linecap="round"/>
+<g transform="translate(330 70) rotate(18)"><path d="M0 0c-14-14-30-8-26 6 3 9 16 8 26-6zM0 0c14-14 30-8 26 6-3 9-16 8-26-6z" fill="var(--lilac)" opacity=".85"/><path d="M0-8v16" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><path d="M0-8l-5-7M0-8l5-7" stroke="var(--ink)" stroke-width="1.5"/></g>
+<g fill="var(--amber)"><circle cx="70" cy="110" r="3"/><circle cx="96" cy="70" r="2"/><circle cx="380" cy="160" r="2.5"/><circle cx="410" cy="230" r="2"/><circle cx="30" cy="220" r="2.5"/></g>
+<g stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round"><path d="M60 150v12M54 156h12"/><path d="M400 110v10M395 115h10"/></g>
+</g>
+</svg>
+<p class="say" id="say" aria-live="polite">Tre lati, una fiamma. <b>Tocca un lato</b> del sigillo e guarda cosa succede.</p>
+<button class="again" id="again">Riaccendi il fuoco</button>
+</div>
+
+<div class="scroll"><span class="hand">In una frase</span>
+<p>Il fuoco nasce solo se ci sono <u>tutti e tre insieme</u>: qualcosa che brucia, l'aria che lo nutre e una scintilla di calore. Ne togli uno, e il fuoco muore.</p></div>
+
+<h3 class="sh"><small>gli ingredienti dell'incantesimo</small>I tre lati del sigillo</h3>
+<div class="specs">
+<div class="spec" style="--r:-1.5deg;--pin:var(--rose)">
+<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 50h36l-4 8H18z" fill="var(--fungo)"/><path d="M10 40l44-10M12 50l40-14" stroke="var(--fungo)" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="31" r="3" fill="var(--page)"/><path d="M36 22c0-6 6-8 6-14 4 4 6 8 6 12" stroke="var(--moss)" stroke-width="3" fill="none"/></svg>
+<h4>Combustibile</h4>
+<p>Tutto ciò che può bruciare, ossidandosi: legno, carta, stoffa, benzina, metano.</p>
+<span class="hand">"io sono il cibo del fuoco"</span></div>
+<div class="spec" style="--r:1deg;--pin:var(--lilac)">
+<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 26c14 0 22-10 34-6 8 3 6 14-2 13" stroke="var(--lilac)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M8 38c18 0 26-6 40-2 8 2 8 12 0 12" stroke="var(--lilac)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M14 50c10 0 16-2 24 0" stroke="var(--lilac)" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+<h4>Comburente</h4>
+<p>Quasi sempre l'<b>ossigeno dell'aria</b>. A contatto col combustibile fa una reazione che <b>libera calore</b> (si chiama esotermica).</p>
+<span class="hand">"io sono il respiro del fuoco"</span></div>
+<div class="spec" style="--r:-.5deg;--pin:var(--amber)">
+<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6l5 15 15-5-10 13 13 8-16 1 2 16-9-13-9 13 2-16-16-1 13-8-10-13 15 5z" fill="var(--amber)"/></svg>
+<h4>Innesco</h4>
+<p>Una <b>qualsiasi sorgente di calore</b> che dà l'energia necessaria per attivare la reazione. Non serve per forza una fiamma: bastano attrito, una superficie calda, una scintilla.</p>
+<span class="hand">"io sono la scintilla che sveglia"</span></div>
+</div>
+<p style="margin-top:20px">E una volta acceso? Per <b>propagarsi</b>, cioè allargarsi agli oggetti vicini, il fuoco ha bisogno di <b>combustibile, comburente e una temperatura adeguata</b>. Se il calore non basta a scaldare quello che c'è intorno, la fiamma resta piccola e muore lì.</p>
+
+<h3 class="sh"><small>non sono la stessa cosa</small>Combustione o incendio?</h3>
+<p>La <b>combustione</b> è una reazione chimica in cui un <b>combustibile reagisce con un comburente</b>, e sviluppa <b>calore, fiamme, gas e fumi</b>. L'incendio è la stessa reazione. Cambia una cosa sola: <b>chi comanda</b>.</p>
+<div class="duo">
+<div style="--c:var(--moss)"><h4>Combustione</h4><p>Il fuoco fa quello che vuoi tu, nel posto giusto. Come la fiamma del fornello: controllata nello spazio e nel tempo.</p></div>
+<div style="--c:var(--fire)"><h4>Incendio</h4><p>Il fuoco scappa al controllo, in un posto non pensato per lui, e si allarga con fiamme, calore, fumo e gas.</p></div>
+</div>
+
+<div class="clip">
+<figure class="polaroid" style="margin:0"><img src="img/vvf-triangolo.jpg" alt="Il triangolo del fuoco come lo disegna la dispensa dei Vigili del Fuoco" width="357" height="332"></figure>
+<p class="hand">Così lo disegnano gli umani dei Vigili del Fuoco. Stessa magia, meno muschio. Se all'esame vedi questo triangolo rosso, è lui.</p>
+</div>
+
+<h3 class="sh"><small>quattro modi per spezzare il sigillo</small>Gli incantesimi per spegnere</h3>
+<p>Ogni incantesimo toglie un pezzo al fuoco. Nella realtà se ne usano <b>diversi insieme</b>.</p>
+<div class="potions">
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--fungo)"><use href="#bottle"/></svg>
+<div><h4>Esaurimento</h4><p>L'<b>allontanamento o la separazione del combustibile dal focolaio</b> d'incendio.</p><em>es. chiudi la valvola del gas</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--lilac)"><use href="#bottle"/></svg>
+<div><h4>Soffocamento</h4><p>La <b>separazione del comburente dal combustibile, o la riduzione della concentrazione di comburente nell'aria</b>. Togli l'ossigeno.</p><em>es. il coperchio sulla padella</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--sky)"><use href="#bottle"/></svg>
+<div><h4>Raffreddamento</h4><p>La <b>sottrazione di calore fino a una temperatura inferiore a quella necessaria a mantenere la combustione</b>.</p><em>es. l'acqua sulla legna</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--rose)"><use href="#bottle"/></svg>
+<div><h4>Inibizione chimica</h4><p>Una sostanza speciale <b>blocca la reazione</b> del fuoco dall'interno. Si chiama anche anticatalisi.</p><em>es. alcune polveri degli estintori</em></div></div>
+</div>
+<p class="note">Il quarto incantesimo non toglie nessun lato del triangolo: spezza la reazione in sé. Per questo è il "jolly".</p>
+
+<aside class="goblin">
+<svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg>
+<div><h4>Attenta al goblin!</h4>
+<p class="lie">"Per accendere un fuoco ci vuole esclusivamente una fiamma libera. E per spegnerlo si usa solo il raffreddamento, eh eh."</p>
+<p>Bugie. L'innesco è <b>qualsiasi</b> sorgente di calore, e per spegnere si usa <b>una qualsiasi combinazione</b> dei quattro incantesimi. Quando in una risposta vedi <b>"solo"</b> o <b>"esclusivamente"</b>, quasi sempre è il goblin che ti sta fregando.</p></div>
+</aside>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<p>Pensa alla risposta, poi tocca per scoprirla.</p>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Se manca uno dei tre lati del triangolo, cosa succede?</span></summary><div class="ans"><b>La combustione non ha luogo</b> (e se c'era, si spegne). Non basta tanto ossigeno o tanto combustibile per compensare.</div></details>
+<details><summary><span class="n">2</span><span>Il coperchio sulla padella che prende fuoco: quale incantesimo è?</span></summary><div class="ans"><b>Soffocamento</b>: separi l'aria dal combustibile.</div></details>
+<details><summary><span class="n">3</span><span>Il comburente è una sostanza che, a contatto col combustibile, fa una reazione...</span></summary><div class="ans"><b>Esotermica</b>, cioè che libera calore. Il goblin all'esame proverà a scriverti "endotermica": è il contrario.</div></details>
+</div>
+
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-1">Vai al quiz del capitolo 1</a></div></section><section class="page" id="c2"><p class="kicker hand">Capitolo 2</p><h2 class="ct">Le cinque creature del fuoco</h2><p class="sub">le classi di fuoco, una per ogni bestia</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Il combustibile può essere solido, liquido o gassoso, e gli incendi si dividono in cinque classi, A, B, C, D e F, secondo cosa sta bruciando.</p></div>
+
+<p>Ogni creatura del fuoco mangia una cosa diversa e va affrontata con la pozione giusta (le vedrai nel capitolo 6). Per questo bisogna riconoscerle al volo.</p>
+
+<div class="specs">
+<div class="spec" style="--r:-1.2deg;--pin:var(--fungo)"><img class="ic" src="img/classe-a.jpg" alt="Icona della classe A: materiali solidi"><h4>Classe A</h4><span class="tag">i solidi che fanno brace</span>
+<p>Incendi di <b>materiali solidi con formazione di braci</b>: carta, cartoni, libri, legna, segatura.</p><span class="hand">A come Albero</span></div>
+<div class="spec" style="--r:1deg;--pin:var(--amber)"><img class="ic" src="img/classe-b.jpg" alt="Icona della classe B: liquidi infiammabili"><h4>Classe B</h4><span class="tag">i liquidi che bruciano</span>
+<p>Incendi di <b>liquidi infiammabili e solidi che possono liquefare</b>: petrolio, vernici, nafta, benzina, paraffina.</p><span class="hand">B come Benzina</span></div>
+<div class="spec" style="--r:-.6deg;--pin:var(--sky)"><img class="ic" src="img/classe-c.jpg" alt="Icona della classe C: gas infiammabili"><h4>Classe C</h4><span class="tag">i gas</span>
+<p>Incendi di <b>gas infiammabili</b>: metano, propano, GPL, idrogeno.</p><span class="hand">C come Camping gas</span></div>
+<div class="spec" style="--r:.8deg;--pin:var(--lilac)"><img class="ic" src="img/classe-d.jpg" alt="Icona della classe D: metalli"><h4>Classe D</h4><span class="tag">i metalli e chi ha l'ossigeno dentro</span>
+<p>Incendi di <b>metalli combustibili e sostanze chimiche che contengono ossigeno comburente</b>: magnesio, potassio, fosforo, sodio, titanio, alluminio, carburi, nitrati, clorati, perclorati, perossidi.</p><span class="hand">D come metalli Duri</span></div>
+<div class="spec" style="--r:-1deg;--pin:var(--rose)"><img class="ic" src="img/classe-f.jpg" alt="Icona della classe F: oli da cucina"><h4>Classe F</h4><span class="tag">lo spiritello della friggitrice</span>
+<p>Incendi che interessano <b>sostanze usate nella cottura: oli e grassi vegetali o animali</b>.</p><span class="hand">F come Friggitrice</span></div>
+</div>
+
+<div class="goblin"><svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg><div><h4>Il goblin della classe E</h4>
+<p class="lie">"E la classe E? Quella degli impianti elettrici! Sono sei classi, eh eh."</p>
+<p>No: le classi sono <b>cinque, A, B, C, D ed F</b>. La E è stata abolita, perché i materiali degli apparecchi elettrici bruciano come la classe A o la B. Resta però un pericolo in più quando c'è corrente: la <b>folgorazione</b> (elettrocuzione).</p></div></div>
+
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Il fuoco in padella è classe F, non B, anche se l'olio è un liquido. Tutto ciò che si cucina sta nella F.</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Un cestino di carta che brucia: che classe è?</span></summary><div class="ans"><b>Classe A</b>, solidi che formano brace.</div></details>
+<details><summary><span class="n">2</span><span>Un incendio di magnesio o di sodio?</span></summary><div class="ans"><b>Classe D</b>: metalli combustibili.</div></details>
+<details><summary><span class="n">3</span><span>Quante sono le classi di fuoco?</span></summary><div class="ans"><b>Cinque: A, B, C, D, F.</b> La E non esiste più.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-2">Vai al quiz del capitolo 2</a></div></section><section class="page" id="c3"><p class="kicker hand">Capitolo 3</p><h2 class="ct">I numeri segreti della fiamma</h2><p class="sub">temperature, limiti e campi: quando qualcosa prende fuoco</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Ogni sostanza ha i suoi numeri segreti: a che temperatura si accende da sola, a che temperatura un liquido fa vapori pericolosi, e in che percentuale un gas nell'aria può bruciare o esplodere.</p></div>
+
+<h3 class="sh"><small>due temperature da non confondere</small>Accensione e infiammabilità</h3>
+<div class="duo">
+<div style="--c:var(--fire)"><h4>Temperatura di accensione</h4><p>Detta anche <b>di autoaccensione o di ignizione</b>: è la temperatura in corrispondenza della quale inizia la combustione. Più precisamente, è la <b>minima temperatura alla quale una sostanza combustibile (solida, liquida o gassosa), in presenza di aria, inizia a bruciare spontaneamente</b>, in modo continuo, <b>senza bisogno di innesco</b> né di energia dall'esterno.</p></div>
+<div style="--c:var(--sky)"><h4>Temperatura di infiammabilità</h4><p>Vale <b>solo per i liquidi</b>. È la <b>più bassa temperatura alla quale un combustibile liquido sviluppa vapori in quantità sufficiente da formare con l'aria una miscela che, in presenza di innesco, si accende</b>.</p></div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Accensione = brucia da solo, senza innesco. Infiammabilità = solo liquidi, servono i vapori più l'innesco.</p></div>
+
+<p>La regola d'oro sull'infiammabilità: <b>più è bassa, più il liquido è pericoloso</b>. La probabilità che si formino vapori capaci di prendere fuoco <b>aumenta con il diminuire della temperatura di infiammabilità</b>, quindi un liquido <b>è più pericoloso se ha basse temperature di infiammabilità</b>: diventa <b>più facilmente infiammabile in presenza di innesco</b>.</p>
+
+<div class="tw"><table><thead><tr><th>Liquido</th><th>Temperatura di infiammabilità</th><th>Cosa significa</th></tr></thead><tbody>
+<tr><td>Benzina</td><td><b>-20 °C</b></td><td>Fa vapori infiammabili anche d'inverno: pericolosissima</td></tr>
+<tr><td>Alcol etilico</td><td>13 °C</td><td>A temperatura ambiente è già a rischio</td></tr>
+<tr><td>Gasolio</td><td>65 °C</td><td>Va scaldato prima di fare vapori pericolosi</td></tr>
+<tr><td>Olio lubrificante</td><td>149 °C</td><td>Difficile da accendere</td></tr></tbody></table></div>
+<p class="note">Curiosità che chiarisce tutto: la benzina si infiamma con vapori già a -20 °C, ma senza innesco si accende da sola solo a circa 250 °C, più della carta (230 °C).</p>
+
+<h3 class="sh"><small>né troppo poco, né troppo</small>I limiti di infiammabilità</h3>
+<p>Un gas o un vapore brucia solo se è mescolato con l'aria nella dose giusta. I <b>limiti di infiammabilità</b> sono <b>le percentuali in volume di combustibile nella miscela aria-combustibile entro le quali può avvenire la combustione</b>.</p>
+<ul class="dots">
+<li><b>Limite inferiore</b>: la <b>minima concentrazione</b> di combustibile, in fase gas, nella miscela aria-combustibile che, se innescata, dà una combustione capace di propagarsi a tutta la miscela. Sotto, la miscela è "troppo magra".</li>
+<li><b>Limite superiore</b>: la <b>massima concentrazione</b> di combustibile nella miscela che, se innescata, dà ancora una combustione che si propaga a tutta la miscela. Sopra, è "troppo grassa": c'è troppo gas e poca aria.</li>
+<li><b>Campo di infiammabilità</b>: l'<b>intervallo di concentrazione compreso fra il limite inferiore e il limite superiore</b>, caratteristico per ciascuna sostanza. Più è largo, più la sostanza è pericolosa.</li>
+</ul>
+<figure style="margin:20px 0">
+<div style="display:flex;height:46px;border-radius:8px;overflow:hidden;border:1px solid var(--line);font:700 14px Nunito">
+<div style="flex:5;background:var(--wash);display:grid;place-items:center;color:var(--soft)">troppo poco</div>
+<div style="flex:10;background:var(--fire);color:#fff;display:grid;place-items:center">brucia</div>
+<div style="flex:5;background:var(--wash);display:grid;place-items:center;color:var(--soft)">troppo</div></div>
+<div style="display:flex;font:700 14px Nunito;color:var(--fungo)"><span style="flex:5;text-align:right">5%</span><span style="flex:10;text-align:right">15%</span><span style="flex:5"></span></div>
+<figcaption class="hand" style="font-size:20px;color:var(--fungo);margin-top:6px">Il metano del fornello: brucia solo tra il 5% e il 15% nell'aria. Giri la manopola oltre e la fiamma si spegne per troppo gas.</figcaption></figure>
+
+<h3 class="sh"><small>quando il fuoco diventa un boato</small>I limiti di esplosività</h3>
+<p>Stessa idea, ma il risultato è un'<b>esplosione</b> invece di una fiamma. Il <b>campo di esplosività</b> è <b>l'intervallo nel quale la percentuale in volume della miscela aria-combustibile, se innescata, dà origine a un'esplosione</b>.</p>
+<ul class="dots">
+<li><b>Limite inferiore di esplosività</b>: la <b>minima concentrazione</b> di combustibile nella miscela che, innescata, dà un'esplosione.</li>
+<li><b>Limite superiore di esplosività</b>: la <b>massima concentrazione</b> di combustibile nella miscela che, innescata, dà un'esplosione.</li>
+</ul>
+<p class="note">Di solito il campo di esplosività sta dentro quello di infiammabilità.</p>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Un liquido con temperatura di infiammabilità bassa è più o meno pericoloso?</span></summary><div class="ans"><b>Più pericoloso</b>: fa vapori infiammabili anche quando fa freddo.</div></details>
+<details><summary><span class="n">2</span><span>Come si chiama la temperatura a cui una sostanza brucia da sola, senza innesco?</span></summary><div class="ans"><b>Temperatura di accensione</b> (o di autoaccensione, o di ignizione).</div></details>
+<details><summary><span class="n">3</span><span>Cos'è il campo di infiammabilità?</span></summary><div class="ans">L'<b>intervallo tra limite inferiore e limite superiore</b> di infiammabilità.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-3">Vai al quiz del capitolo 3</a></div></section><section class="page" id="c4"><p class="kicker hand">Capitolo 4</p><h2 class="ct">Solidi, liquidi e gas</h2><p class="sub">tre modi di essere cibo per il fuoco</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>I solidi bruciano meglio se sono sminuzzati e secchi, i liquidi bruciano solo attraverso i loro vapori, e i gas si dividono in leggeri e pesanti: quelli pesanti strisciano in basso.</p></div>
+
+<h3 class="sh"><small>legno, carta, stoffa</small>I solidi</h3>
+<p>La combustione dei solidi dipende da <b>tutti</b> questi fattori, nessuno escluso:</p>
+<ul class="dots"><li><b>tipologia, pezzatura e forma</b> del materiale: la segatura brucia molto più in fretta di un tronco;</li>
+<li><b>grado di porosità</b>;</li><li>contenuto di <b>umidità</b>: il legno bagnato fatica a bruciare;</li><li><b>ventilazione</b>.</li></ul>
+
+<h3 class="sh"><small>il liquido non brucia: brucia il suo fiato</small>I liquidi</h3>
+<p>Un liquido prende fuoco, in presenza di innesco, solo <b>quando emette una quantità di vapori sufficiente</b>, opportunamente miscelati con l'aria. In base alla temperatura di infiammabilità i liquidi vengono <b>raggruppati in tre categorie: A, B e C</b>.</p>
+<div class="nums">
+<div class="num"><b>A</b><span>temperatura di infiammabilità <b>inferiore a 21 °C</b></span></div>
+<div class="num"><b>B</b><span>temperatura di infiammabilità <b>compresa tra 21 °C e 65 °C</b></span></div>
+<div class="num"><b>C</b><span>temperatura di infiammabilità <b>oltre 65 °C e fino a 125 °C</b></span></div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>21, 65, 125: la A è la più pericolosa perché fa vapori già a temperatura ambiente.</p></div>
+
+<h3 class="sh"><small>gli spiriti dell'aria</small>I gas</h3>
+<p>I combustibili gassosi sono <b>le sostanze che si trovano allo stato gassoso nelle condizioni normali</b>, cioè a <b>pressione atmosferica e a una temperatura di circa 15 °C</b>.</p>
+<div class="duo">
+<div style="--c:var(--sky)"><h4>Gas leggeri</h4><p>Densità rispetto all'aria <b>minore di 0,8</b>: <b>metano</b>, idrogeno. Liberati, salgono verso l'alto.</p></div>
+<div style="--c:var(--fungo)"><h4>Gas pesanti</h4><p>Densità rispetto all'aria <b>maggiore di 0,8</b>: <b>GPL, acetilene</b>. Liberati, restano in basso e si infilano in cunicoli e scantinati.</p></div>
+</div>
+<p>Per questo i vapori più pesanti dell'aria sono più pericolosi <b>in locali sotterranei</b>, e dove ci sono gas o vapori pesanti le aperture di ventilazione vanno messe <b>a filo pavimento</b>, dove il gas si accumula.</p>
+
+<p>I gas si conservano <b>in quattro modi diversi (compressi, liquefatti, refrigerati, disciolti)</b>, a seconda delle loro caratteristiche chimico-fisiche e in particolare della temperatura critica:</p>
+<div class="tw"><table><thead><tr><th>Modo</th><th>Come funziona</th><th>Esempio da ricordare</th></tr></thead><tbody>
+<tr><td><b>Compressi</b></td><td>Gas sotto pressione nelle bombole o nelle tubature</td><td>la <b>CO₂</b> (anidride carbonica) è conservata <b>compressa</b></td></tr>
+<tr><td><b>Liquefatti</b></td><td>Diventano liquidi con la pressione: un litro di liquido fa fino a 800 litri di gas. Le bombole non si riempiono mai del tutto: c'è un <b>grado di riempimento</b> massimo</td><td>il <b>GPL</b> è conservato <b>liquefatto</b></td></tr>
+<tr><td><b>Refrigerati</b></td><td>Tenuti liquidi col freddo, a pressione quasi normale</td><td></td></tr>
+<tr><td><b>Disciolti</b></td><td>Sciolti dentro un liquido</td><td>l'<b>acetilene</b> è conservato <b>disciolto</b> (in acetone)</td></tr></tbody></table></div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>"Grado di riempimento" = gas liquefatti. Serve lasciare spazio al vapore sopra il liquido.</p></div>
+
+<div class="goblin"><svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg><div><h4>Il goblin del dardo di fuoco</h4>
+<p class="lie">"Un getto di fuoco esce da un tubo del gas? Spegni subito la fiamma con l'estintore!"</p>
+<p>Sbagliato e pericoloso: se spegni la fiamma ma il gas continua a uscire, si forma una nuvola che può esplodere. Davanti a un <b>dardo di fuoco da una fuga di gas</b> si procede subito <b>all'intercettazione della fuga di gas</b>: si chiude la valvola, e la fiamma muore da sola.</p></div></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Il GPL è un gas leggero o pesante?</span></summary><div class="ans"><b>Pesante</b> (densità sopra 0,8): resta in basso.</div></details>
+<details><summary><span class="n">2</span><span>Un liquido con infiammabilità a 40 °C, che categoria è?</span></summary><div class="ans"><b>Categoria B</b> (tra 21 e 65 °C).</div></details>
+<details><summary><span class="n">3</span><span>Come si conserva l'acetilene?</span></summary><div class="ans"><b>Disciolto</b> in un liquido (acetone).</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-4">Vai al quiz del capitolo 4</a></div></section><section class="page" id="c5"><p class="kicker hand">Capitolo 5</p><h2 class="ct">Il calore e le scintille</h2><p class="sub">come viaggia il calore e cosa accende il fuoco</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Il calore è la causa principale della propagazione degli incendi: viaggia per conduzione, convezione e irraggiamento, e basta una scintilla, uno sfregamento o una stufa troppo vicina per svegliare il fuoco.</p></div>
+
+<h3 class="sh"><small>i tre sentieri del calore</small>Come viaggia il calore</h3>
+<p>I meccanismi con cui una sorgente di calore scalda un combustibile sono tre: <b>conduzione, convezione e irraggiamento</b>.</p>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--fungo)"><h4>Conduzione</h4><p>La <b>trasmissione di calore che avviene in un mezzo solido, liquido o aeriforme dalle zone a temperatura maggiore verso quelle con temperatura minore</b>, all'interno di un corpo solo o tra due corpi a contatto.</p><span class="hand">il cucchiaio nella pentola che scotta</span></div>
+<div class="spec" style="--r:.8deg;--pin:var(--sky)"><h4>Convezione</h4><p>Succede nei fluidi (aria, acqua): il fluido caldo sale e quello freddo scende. La propagazione del calore è <b>associata al trasporto di materia</b>.</p><span class="hand">il fumo caldo che sale al soffitto</span></div>
+<div class="spec" style="--r:-.5deg;--pin:var(--amber)"><h4>Irraggiamento</h4><p>La <b>radiazione elettromagnetica emessa dalla superficie di un corpo che si trova a una certa temperatura</b>. Funziona anche a distanza e perfino nel vuoto. <b>Tutti gli oggetti emettono radiazioni elettromagnetiche</b>, solo per il fatto di avere una temperatura.</p><span class="hand">il calore del sole o del camino sulla pelle</span></div>
+</div>
+<div class="clip"><figure class="polaroid wide" style="--r:2deg"><img src="img/calore.jpg" alt="Schema di conduzione, convezione e irraggiamento attraverso una parete" width="567" height="275"></figure>
+<p class="hand">Gli umani lo disegnano così: il calore passa la parete per conduzione, e ai due lati viaggia per convezione e irraggiamento.</p></div>
+
+<h3 class="sh"><small>quanto è forte una sorgente</small>Watt e potenza termica</h3>
+<p>Il <b>watt</b> è <b>l'unità di misura della potenza nel Sistema Internazionale</b>: <b>1 watt è il rapporto tra joule e secondo</b>, cioè un joule di energia al secondo. La <b>potenza termica</b> è <b>la quantità di calore per unità di tempo che una sorgente d'ignizione è in grado di trasferire</b>.</p>
+<div class="nums"><div class="num"><b>5 W</b><span>una sigaretta accesa</span></div><div class="num"><b>50 W</b><span>un fiammifero</span></div><div class="num"><b>1-3 MW</b><span>un divano in fiamme</span></div></div>
+
+<h3 class="sh"><small>chi si scalda in fretta e chi no</small>Capacità termica e calore specifico</h3>
+<ul class="dots">
+<li><b>Capacità termica</b>: la <b>quantità di calore che occorre fornire al materiale per aumentarne la temperatura di un grado centigrado</b>. Una sostanza con alta capacità termica <b>riesce ad assorbire tanto calore innalzando di poco la propria temperatura</b>.</li>
+<li><b>Calore specifico</b>: la <b>quantità di calore necessaria per innalzare di 1 °C la temperatura dell'unità di massa (1 kg)</b>.</li>
+</ul>
+<div class="duo">
+<div style="--c:var(--sky)"><h4>Il più alto: l'acqua</h4><p>4180 J/kg°C. Per scaldarla serve tantissima energia: per questo l'<b>acqua</b> raffredda così bene il fuoco.</p></div>
+<div style="--c:var(--fungo)"><h4>Il più basso: il piombo</h4><p>129 J/kg°C. I metalli in genere hanno calori specifici bassi: <b>con poca energia è possibile ottenere un considerevole aumento della temperatura</b>.</p></div>
+</div>
+
+<h3 class="sh"><small>cosa sveglia il fuoco</small>Le sorgenti di innesco</h3>
+<p>Perché parta l'incendio serve <b>un'adeguata sorgente di calore che dia la necessaria energia per l'avvio, superiore all'energia di attivazione</b>. Le principali sorgenti sono <b>tutte</b> queste: fiamme, superfici calde, scintille e archi elettrici, attrito, radiazioni termiche, reazioni chimiche che liberano calore, autocombustione.</p>
+<ul class="dots">
+<li><b>Attrito</b>: calore che nasce <b>quando c'è sfregamento tra due materiali</b>, come un cuscinetto che gira senza olio.</li>
+<li><b>Autocombustione</b> (riscaldamento spontaneo): <b>il calore viene prodotto dallo stesso combustibile, che si innesca senza sorgenti esterne</b>. Succede con stracci sporchi d'olio o mucchi di fieno umido.</li>
+<li><b>Calore radiante</b> di caminetti e stufe: sì, può innescare un incendio, <b>se il materiale investito raggiunge la temperatura di accensione</b>. Mai tende e vestiti vicino alla stufa.</li>
+</ul>
+
+<h3 class="sh"><small>cosa lascia dietro di sé</small>I prodotti della combustione</h3>
+<p>Una combustione produce <b>calore, fiamme, gas e fumi</b>.</p>
+<ul class="dots">
+<li><b>Gas di combustione</b>: i prodotti che <b>restano allo stato gassoso anche quando, raffreddandosi, raggiungono la temperatura ambiente</b>.</li>
+<li><b>Fiamme</b>: l'<b>emissione di luce</b> dovuta alla combustione dei gas sviluppati dall'incendio.</li>
+<li><b>Fumi</b>: <b>piccolissime particelle solide (aerosol) e liquide (nebbie o vapori condensati) disperse nei gas</b> prodotti dalla combustione.</li>
+</ul>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Quale sostanza ha il calore specifico più alto, tra acqua, ferro e piombo?</span></summary><div class="ans"><b>L'acqua.</b> Il più basso è il piombo.</div></details>
+<details><summary><span class="n">2</span><span>Nella convezione il calore viaggia insieme alla materia?</span></summary><div class="ans"><b>Sì</b>: è il fluido caldo stesso che si sposta.</div></details>
+<details><summary><span class="n">3</span><span>Uno straccio unto che prende fuoco da solo in un angolo: che innesco è?</span></summary><div class="ans"><b>Autocombustione</b>: il calore lo produce il combustibile stesso.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-5">Vai al quiz del capitolo 5</a></div></section><section class="page" id="c6"><p class="kicker hand">Capitolo 6</p><h2 class="ct">Le pozioni che spengono</h2><p class="sub">gli estinguenti e i loro poteri</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Gli estinguenti sono pozioni che interrompono la combustione, ma ognuna funziona solo in certi modi e su certi fuochi: la scelta giusta dipende dalla pozione, da quanto è grande il fuoco e da cosa sta bruciando.</p></div>
+
+<p>Le <b>sostanze estinguenti</b> sono <b>sostanze che hanno la proprietà di interrompere la combustione</b>. Lo fanno con i quattro incantesimi del capitolo 1: <b>raffreddamento, sottrazione del combustibile, soffocamento e inibizione chimica</b>.</p>
+<p>Attenzione però: i principi di spegnimento <b>non</b> sono gli stessi per tutti. <b>Ciascun agente estinguente, generalmente, è in grado di esercitare in modo efficace solo alcune specifiche azioni di spegnimento.</b></p>
+<p>Come pozioni si usano <b>tutte</b> queste: acqua, schiuma, polveri, gas inerti (argon, azoto) e anidride carbonica.</p>
+
+<h3 class="sh"><small>lo scaffale della strega</small>Le pozioni e i loro poteri</h3>
+<div class="potions">
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--sky)"><use href="#bottle"/></svg>
+<div><h4>Acqua</h4><p>Agisce per <b>raffreddamento e soffocamento</b> (il vapore toglie aria).</p><em>regina dei fuochi di classe A</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--lilac)"><use href="#bottle"/></svg>
+<div><h4>Schiuma</h4><p>Una <b>miscela di acqua, liquido schiumogeno e aria (o altro gas inerte)</b>. <b>Molto efficace su incendi che coinvolgono combustibili solidi e liquidi infiammabili</b>: fa una coperta che soffoca.</p><em>ottima su benzina e vernici</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--amber)"><use href="#bottle"/></svg>
+<div><h4>Polvere</h4><p>Agisce in tutti i modi: <b>raffreddamento e soffocamento, più inibizione chimica</b>. Ma <b>non è sempre idonea per qualunque classe</b>: esistono <b>diverse tipologie di polveri che danno prestazioni diverse a seconda della classe di incendio</b>.</p><em>leggi sempre l'etichetta</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--soft)"><use href="#bottle"/></svg>
+<div><h4>Anidride carbonica (CO₂)</h4><p>Agisce per <b>soffocamento e raffreddamento</b>: esce freddissima.</p><em>pulita, non lascia residui</em></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--moss)"><use href="#bottle"/></svg>
+<div><h4>Gas inerti (azoto, argon)</h4><p>Agiscono per <b>soffocamento</b>: tolgono l'ossigeno.</p><em>non conducono corrente</em></div></div>
+</div>
+
+<h3 class="sh"><small>come si sceglie</small>La pozione giusta</h3>
+<p>La scelta dell'agente estinguente <b>dipende dalle caratteristiche della sostanza estinguente, dalle dimensioni del fuoco prevedibile e dalla natura dei combustibili</b>. Non solo da una di queste cose, e non dal giudizio a occhio del datore di lavoro.</p>
+<p>Le sostanze estinguenti gassose <b>non sono ugualmente efficaci</b> su tutte le classi: sono <b>generalmente molto efficaci su incendi di liquidi e gas infiammabili o, non essendo conduttrici, su incendi che coinvolgono apparecchiature e impianti elettrici sotto tensione</b>.</p>
+
+<h3 class="sh"><small>le controindicazioni</small>Quando l'acqua è proibita</h3>
+<div class="tw"><table><thead><tr><th>Situazione</th><th>Acqua?</th></tr></thead><tbody>
+<tr><td>Impianti elettrici sotto tensione</td><td><b>Sì, è generalmente vietata</b>: conduce la corrente</td></tr>
+<tr><td>Sostanze che reagiscono con l'acqua in modo violento ed esplosivo, o che fanno prodotti tossici o corrosivi</td><td><b>Sì, è vietata</b></td></tr>
+<tr><td>Ambienti con apparecchiature delicate e documenti</td><td><b>Sì, può essere sconsigliata</b> per i danni che farebbe</td></tr></tbody></table></div>
+<p>E la schiuma? <b>Ha le stesse limitazioni di impiego dell'acqua</b>, perché <b>l'acqua ne è un componente essenziale</b>.</p>
+<p>E la CO₂? <b>È generalmente sconsigliata su apparecchiature sensibili alle brusche variazioni di temperatura</b>, perché esce gelida.</p>
+
+<div class="goblin"><svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg><div><h4>Il goblin della polvere magica</h4>
+<p class="lie">"La polvere va bene su tutto, sempre! E i gas spengono ogni fuoco allo stesso modo!"</p>
+<p>Due bugie in una frase. Le polveri cambiano secondo la classe di fuoco, e i gas sono bravi soprattutto su liquidi, gas e impianti elettrici.</p></div></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Come agisce la CO₂?</span></summary><div class="ans"><b>Soffocamento e raffreddamento.</b></div></details>
+<details><summary><span class="n">2</span><span>Perché la schiuma non si usa su un quadro elettrico in tensione?</span></summary><div class="ans">Perché è fatta d'acqua: ha <b>gli stessi limiti dell'acqua</b>.</div></details>
+<details><summary><span class="n">3</span><span>Come agiscono azoto e argon?</span></summary><div class="ans">Solo per <b>soffocamento</b>.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-6">Vai al quiz del capitolo 6</a></div></section><section class="page" id="c7"><p class="kicker hand">Capitolo 7</p><h2 class="ct">La vita di un incendio</h2><p class="sub">il rischio, le fasi, cosa fa il fuoco alle persone</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Un incendio nasce piccolo, si allarga, esplode nel flash over e poi si spegne; a uccidere le persone sono soprattutto il fumo e i gas, non le fiamme.</p></div>
+
+<h3 class="sh"><small>quanto ci si deve preoccupare</small>Il rischio d'incendio</h3>
+<p>Il <b>rischio di incendio</b> è <b>la probabilità che l'incendio si verifichi (frequenza) e l'entità dei danni sulle persone e sui beni (magnitudo)</b>. In formula: R = P × M.</p>
+<p>L'<b>incendio</b> è <b>una combustione in atmosfera di ossigeno (quello dell'aria), che avviene in un luogo non predisposto ad accoglierla e che per questo spesso sfugge al controllo dell'uomo</b>.</p>
+<p>Per le persone, il rischio (Rvita) dipende da due cose: <b>la caratteristica prevalente degli occupanti (δocc) e la velocità caratteristica prevalente di crescita dell'incendio</b>.</p>
+<div class="duo">
+<div style="--c:var(--lilac)"><h4>Chi c'è dentro (δocc)</h4><p>Le caratteristiche prevalenti degli occupanti, <b>classificate in 5 categorie</b> (A, B, C, D, E) <b>in base allo stato di veglia e alla conoscenza del luogo</b>. A: svegli e conoscono il posto (uffici, fabbriche). B: svegli ma non lo conoscono (negozi, ristoranti). C: possono dormire (case, alberghi). D: ricevono cure mediche (ospedali). E: in transito (stazioni, aeroporti).</p></div>
+<div style="--c:var(--fire)"><h4>Quanto corre il fuoco (δα)</h4><p>La velocità di crescita, <b>riferita al tempo t in secondi che serve alla potenza termica per raggiungere 1000 kW</b>. Va da 1 (lenta) a 4 (ultrarapida): plastica, scaffali alti e sostanze pericolose la fanno salire.</p></div>
+</div>
+
+<h3 class="sh"><small>nascita, furia e morte</small>Le fasi di un incendio</h3>
+<p>Le fasi caratteristiche sono: <b>fase di ignizione, fase di propagazione, punto di flash over, fase di incendio generalizzato e fase di estinzione</b> (raffreddamento).</p>
+<div class="clip"><figure class="polaroid wide" style="--r:-2deg"><img src="img/fasi.jpg" alt="Curva della temperatura nel tempo: ignizione, propagazione, incendio generalizzato, estinzione" width="640" height="392"></figure>
+<p class="hand">La curva della temperatura: sale piano, poi di colpo schizza in alto (è il flash over), resta altissima e infine scende.</p></div>
+<ol class="ritual">
+<li><div><b>Ignizione</b>: un focolaio d'incendio che interessa <b>una zona limitata dell'ambiente</b>. È il momento giusto per l'estintore.</div></li>
+<li><div><b>Propagazione</b>: brucia anche <b>ciò che sta vicino alla zona di innesco</b>, con <b>aumento rapido della temperatura e dell'energia di irraggiamento</b>.</div></li>
+<li><div><b>Incendio generalizzato</b>: la <b>transizione da incendio localizzato alla propagazione delle fiamme a tutto il volume</b>, con brusco aumento della temperatura, il <b>flash over (oltre 500 °C)</b> e una <b>crescita esponenziale</b> della velocità di combustione. Il <b>flash over</b> è proprio <b>l'istante di propagazione generalizzata dell'incendio</b>.</div></li>
+<li><div><b>Estinzione e raffreddamento</b>: inizia <b>quando la maggior parte del combustibile è bruciato</b>, e la temperatura scende perché il materiale rimasto scalda sempre meno.</div></li>
+</ol>
+<p>La <b>severità</b> dell'incendio dipende da <b>tutti</b> questi fattori: quantità, tipologia e distribuzione dei combustibili, ventilazione e geometria degli ambienti.</p>
+
+<h3 class="sh"><small>il vero nemico</small>Cosa fa il fuoco alle persone</h3>
+<p>I principali effetti sull'uomo vengono dai prodotti della combustione: <b>anossia (riduzione dell'ossigeno nell'aria), azione tossica dei gas, riduzione della visibilità per il fumo e azione termica del calore</b>.</p>
+<p>Le difficoltà respiratorie durante un incendio arrivano soprattutto per la <b>riduzione del tasso di ossigeno nell'aria</b>:</p>
+<div class="nums">
+<div class="num"><b>21%</b><span>aria normale</span></div>
+<div class="num"><b>18-21%</b><span>prime difficoltà a respirare</span></div>
+<div class="num"><b>&lt;18%</b><span>aria non respirabile</span></div>
+<div class="num"><b>&lt;12%</b><span>svenimento, morte</span></div>
+</div>
+<div class="duo">
+<div style="--c:var(--rose)"><h4>Monossido di carbonio (CO)</h4><p>Si forma negli ambienti chiusi quando manca ossigeno. È <b>tossico</b>: <b>combinandosi con l'emoglobina dei globuli rossi, impedisce all'ossigeno di raggiungere le cellule</b>. Ed è subdolo: <b>inodore, incolore e non irritante</b>, quindi l'uomo non si accorge della sua presenza.</p></div>
+<div style="--c:var(--soft)"><h4>Anidride carbonica (CO₂)</h4><p>È un <b>gas asfissiante</b> che, pur <b>non producendo effetti tossici</b>, è pericoloso perché <b>si sostituisce all'ossigeno nell'aria</b>.</p></div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>CO = il fantasma tossico (non lo vedi, non lo senti). CO₂ = il ladro d'aria (non avvelena, ruba l'ossigeno).</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Che cos'è il flash over?</span></summary><div class="ans">L'<b>istante in cui l'incendio si propaga a tutto l'ambiente</b>, oltre i 500 °C.</div></details>
+<details><summary><span class="n">2</span><span>Il CO si riconosce dall'odore?</span></summary><div class="ans"><b>No</b>: è inodore, incolore e non irritante.</div></details>
+<details><summary><span class="n">3</span><span>In quante categorie si dividono gli occupanti, e in base a cosa?</span></summary><div class="ans"><b>5 categorie</b>, in base allo <b>stato di veglia e alla conoscenza del luogo</b>.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-7">Vai al quiz del capitolo 7</a></div></section><section class="page" id="c8"><p class="kicker hand">Capitolo 8</p><h2 class="ct">Gli scudi del villaggio</h2><p class="sub">prevenzione e protezione, attiva e passiva</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>La prevenzione fa in modo che l'incendio non nasca, la protezione limita i danni se nasce comunque; e la protezione è attiva se qualcuno deve azionarla, passiva se funziona da sola.</p></div>
+
+<p>Nei luoghi di lavoro, per il D.Lgs. 81/2008, <b>è sempre obbligatorio per il datore di lavoro adottare misure per prevenire gli incendi</b> e proteggere le persone. Il rischio si abbassa con tre tipi di misure insieme: <b>misure di prevenzione</b> (per esempio impianti a regola d'arte), <b>di protezione</b> (estintori, idranti) <b>e misure precauzionali di esercizio</b> (gestionali). Non bastano una o due da sole.</p>
+
+<div class="duo">
+<div style="--c:var(--moss)"><h4>Prevenzione</h4><p>Tutte le misure che riducono il rischio <b>riducendo la probabilità/frequenza</b> che l'incendio accada. Esempio: impianti fatti a regola d'arte.</p></div>
+<div style="--c:var(--fungo)"><h4>Protezione</h4><p>Tutte le misure che riducono il rischio <b>riducendo il danno</b> se l'incendio accade: impianti antincendio, porte tagliafuoco, vie di esodo.</p></div>
+</div>
+
+<h3 class="sh"><small>scudi che si alzano da soli, e scudi da impugnare</small>Protezione attiva e passiva</h3>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--amber)"><h4>Attiva</h4><p>Dispositivi che, dopo che l'incendio è stato rivelato, <b>per proteggere hanno bisogno di un intervento o di un'azione (di un impianto o di una persona)</b>.</p><span class="hand">estintori, idranti, naspi: qualcuno deve usarli</span></div>
+<div class="spec" style="--r:1deg;--pin:var(--moss)"><h4>Passiva</h4><p>Dispositivi che proteggono <b>senza richiedere alcuna azione</b>, né di un impianto né di una persona.</p><span class="hand">vie di esodo, porte tagliafuoco: ci sono e basta</span></div>
+</div>
+<ul class="dots">
+<li><b>Estintori, idranti, naspi</b> (i sistemi di controllo dell'incendio): <b>protezione attiva</b>.</li>
+<li><b>Il sistema di esodo</b> (vie di esodo verticali e orizzontali): <b>protezione passiva</b>.</li>
+<li><b>Le porte EI tagliafuoco</b>: <b>protezione passiva</b>.</li>
+</ul>
+<div class="goblin"><svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg><div><h4>Il goblin della porta magnetica</h4>
+<p class="lie">"La porta tagliafuoco tenuta aperta dal magnete, che si chiude quando scatta l'allarme? Quella è attiva, c'è un impianto che la comanda!"</p>
+<p>No. Le <b>porte EI con fermi elettromagnetici in apertura collegati all'impianto di allarme (IRAI)</b> restano <b>protezione passiva</b>: il magnete serve solo a tenerle aperte nella vita di tutti i giorni, la protezione la fa la porta chiusa.</p></div></div>
+
+<h3 class="sh"><small>le buone abitudini della strega</small>Le misure di prevenzione</h3>
+<p>La probabilità che scoppi un incendio <b>aumenta con la presenza di sorgenti di innesco</b>. Per prevenirlo si lavora su più fronti, e la prevenzione si ottiene <b>anche riducendo gli inneschi efficaci e il quantitativo di materiale combustibile</b> negli ambienti.</p>
+<div class="tw"><table><thead><tr><th>Misura</th><th>Perché funziona</th></tr></thead><tbody>
+<tr><td><b>Pulizia dei luoghi e mantenimento dell'ordine</b></td><td>Sono <b>misure preventive</b>: riducono la probabilità di innesco e la velocità di crescita dei focolai</td></tr>
+<tr><td><b>Controllo e manutenzione regolare</b> di impianti elettrici, gas, impianti termici</td><td>Rientrano tra le azioni necessarie per prevenire gli incendi</td></tr>
+<tr><td><b>Gestione dei lavori di manutenzione o di modifica (cantieri)</b></td><td>Rientra tra le azioni necessarie per prevenire gli incendi: i lavori portano inneschi nuovi</td></tr>
+<tr><td><b>Formazione e informazione del personale</b> sui rischi</td><td>Contribuisce alla mitigazione del rischio (Codice di Prevenzione Incendi, D.M. 3 agosto 2015)</td></tr>
+<tr><td><b>Istruzioni e segnaletica con divieti e precauzioni</b></td><td>È una misura di prevenzione incendi</td></tr>
+<tr><td><b>Impianti progettati e realizzati a regola d'arte</b> (elettrici, gas, riscaldamento)</td><td>Sì, è prevenzione: vanno fatti in modo da <b>limitare la probabilità di essere causa di incendio ed esplosione</b></td></tr>
+<tr><td><b>Controllo degli ambienti</b>: vie di esodo libere, porte che si aprono</td><td>Sì: verificare le condizioni di esercizio previste dal progetto è fondamentale per tenere basso il rischio</td></tr>
+<tr><td>Locale con <b>liquidi infiammabili</b></td><td>Si riduce il pericolo dotandolo di <b>aperture di ventilazione naturale</b>, così i vapori non si accumulano</td></tr></tbody></table></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Un naspo è protezione attiva o passiva?</span></summary><div class="ans"><b>Attiva</b>: serve una persona che lo usi.</div></details>
+<details><summary><span class="n">2</span><span>Le vie di esodo sono prevenzione, protezione attiva o protezione passiva?</span></summary><div class="ans"><b>Protezione passiva.</b></div></details>
+<details><summary><span class="n">3</span><span>Tenere pulito e in ordine è prevenzione o protezione?</span></summary><div class="ans"><b>Prevenzione</b>: riduce la probabilità che il fuoco nasca.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-8">Vai al quiz del capitolo 8</a></div></section><section class="page" id="c9"><p class="kicker hand">Capitolo 9</p><h2 class="ct">Le rune</h2><p class="sub">la segnaletica di sicurezza</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Le rune della sicurezza si leggono da forma e colore: tondo rosso vieta, triangolo giallo avverte, tondo azzurro obbliga, quadrato verde salva, quadrato rosso indica l'attrezzatura antincendio.</p></div>
+
+<p>La <b>segnaletica di sicurezza</b> è una segnaletica che, <b>riferita a un oggetto, un'attività o una situazione, fornisce un'indicazione o una prescrizione sulla sicurezza</b>, usando a seconda dei casi <b>un cartello, un colore, un segnale luminoso o acustico, una comunicazione verbale o un segnale gestuale</b>. Contribuisce alla prevenzione e protezione dagli incendi: <b>sì, favorisce la corretta gestione dell'attività anche ai fini della sicurezza antincendio</b>.</p>
+<p>Forme e colori dei cartelli <b>sono puntualmente definiti nel D.Lgs. 81/2008</b>, in funzione di cosa indicano: divieto, avvertimento, prescrizione, salvataggio, attrezzature antincendio.</p>
+
+<h3 class="sh"><small>cinque famiglie di rune</small>Riconoscerle a colpo d'occhio</h3>
+<div class="tw"><table><thead><tr><th>Runa</th><th>Forma e colori</th><th>Cosa fa</th></tr></thead><tbody>
+<tr><td><b>Divieto</b></td><td><b>Rotonda</b>, pittogramma <b>nero su fondo bianco</b>, <b>bordo e banda rossi</b> (la banda scende da sinistra a destra, inclinata di 45°)</td><td><b>Vieta un comportamento che potrebbe far correre o causare un pericolo</b></td></tr>
+<tr><td><b>Avvertimento</b></td><td><b>Triangolare</b>, pittogramma <b>nero su fondo giallo</b>, bordo nero</td><td><b>Avverte di un rischio o pericolo</b></td></tr>
+<tr><td><b>Prescrizione</b></td><td><b>Rotonda</b>, pittogramma <b>bianco su fondo azzurro</b></td><td><b>Prescrive un determinato comportamento</b> (un obbligo)</td></tr>
+<tr><td><b>Salvataggio e soccorso</b></td><td><b>Quadrata o rettangolare</b>, pittogramma <b>bianco su fondo verde</b></td><td><b>Indica le uscite di sicurezza o i mezzi di soccorso o di salvataggio</b></td></tr>
+<tr><td><b>Attrezzature antincendio</b></td><td><b>Quadrata o rettangolare</b>, pittogramma <b>bianco su fondo rosso</b></td><td>Indica dove si trovano i presidi antincendio</td></tr></tbody></table></div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Tondo rosso = no. Triangolo giallo = attenzione. Tondo azzurro = devi. Verde = di qua ti salvi. Quadrato rosso = qui c'è l'arma contro il fuoco.</p></div>
+
+<h3 class="sh"><small>il libro delle rune</small>Le rune che escono all'esame</h3>
+<div class="runes">
+<div class="rune"><img src="img/c111.png" alt="Cartello di divieto: vietato usare fiamme libere">Divieto: <b>vietato usare fiamme libere</b></div>
+<div class="rune"><img src="img/c112.png" alt="Cartello di divieto: vietato spegnere con acqua">Divieto: <b>vietato usare acqua per spegnere le fiamme</b></div>
+<div class="rune"><img src="img/c114.png" alt="Cartello di avvertimento: pericolo generico">Avvertimento: <b>pericolo generico</b></div>
+<div class="rune"><img src="img/c115.png" alt="Cartello di avvertimento: sostanze infiammabili">Avvertimento: <b>presenza di sostanze infiammabili</b></div>
+<div class="rune"><img src="img/c116.png" alt="Cartello di avvertimento: rischio elettrico">Avvertimento: <b>esposizione a un rischio elettrico</b></div>
+<div class="rune"><img src="img/c118.png" alt="Cartello di prescrizione: protezione delle vie respiratorie">Prescrizione: <b>obbligo di protezione delle vie respiratorie</b></div>
+<div class="rune"><img src="img/c119.png" alt="Cartello di prescrizione: guanti protettivi">Prescrizione: <b>obbligo di usare i guanti protettivi</b></div>
+<div class="rune"><img src="img/c121.png" alt="Cartello di salvataggio: via di esodo a destra">Salvataggio: <b>la via di esodo è a destra</b></div>
+<div class="rune"><img src="img/c122.png" alt="Cartello di salvataggio: punto di raccolta">Salvataggio: <b>il punto di raccolta</b></div>
+<div class="rune"><img src="img/c124.png" alt="Cartello antincendio con tubo appeso a zig-zag: naspo">Attrezzatura: <b>lancia antincendio "naspo"</b></div>
+<div class="rune"><img src="img/c125.png" alt="Cartello antincendio con tubo a spirale: idrante">Attrezzatura: <b>lancia antincendio "idrante"</b></div>
+<div class="rune"><img src="img/c126.png" alt="Cartello antincendio con estintore">Attrezzatura: <b>estintore</b></div>
+</div>
+<div class="goblin"><svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg><div><h4>Il goblin dei tubi</h4>
+<p class="lie">"Il tubo arrotolato a spirale è il naspo, lo sanno tutti!"</p>
+<p>All'esame no. Nella banca dati il <b>naspo</b> è il cartello col <b>tubo appeso a zig-zag</b> e la fiamma accanto, l'<b>idrante</b> è quello col <b>tubo a spirale</b>. Imparali come sono qui, anche se ti sembra al contrario.</p></div></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Cartello rotondo con fondo azzurro e simbolo bianco: che tipo è?</span></summary><div class="ans"><b>Prescrizione</b>: ti obbliga a fare qualcosa.</div></details>
+<details><summary><span class="n">2</span><span>Triangolo giallo con un fulmine?</span></summary><div class="ans"><b>Avvertimento</b>: rischio elettrico.</div></details>
+<details><summary><span class="n">3</span><span>Quadrato rosso con una bombola?</span></summary><div class="ans"><b>Attrezzatura antincendio</b>: qui c'è un estintore.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-9">Vai al quiz del capitolo 9</a></div></section><section class="page" id="c10"><p class="kicker hand">Capitolo 10</p><h2 class="ct">I guardiani dei presidi</h2><p class="sub">chi controlla, chi ripara, chi sorveglia</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>I presidi antincendio vanno tenuti sempre efficienti: guardarli tutti i giorni lo può fare chiunque sia stato istruito, ma controllarli e ripararli spetta solo al tecnico manutentore qualificato.</p></div>
+
+<p>Il <b>datore di lavoro è responsabile</b> dei controlli e della manutenzione dei presidi antincendio: <b>sono obbligatori</b>, per garantire la loro <b>costante efficienza e il regolare funzionamento</b>. La manutenzione la fa <b>personale qualificato</b>: il <b>D.M. 1 settembre 2021</b> ha introdotto apposta la figura del <b>tecnico manutentore</b>.</p>
+<p>Il <b>tecnico manutentore qualificato</b> è <b>una persona fisica che ha i requisiti tecnico-professionali del D.M. 1 settembre 2021 (conoscenza, competenza, abilità)</b>.</p>
+
+<h3 class="sh"><small>tre guardiani, tre compiti</small>Chi fa cosa</h3>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--moss)"><h4>Sorveglianza</h4><p>Lo svolgimento dei <b>controlli visivi</b> dei presidi, per verificare che siano <b>nelle normali condizioni operative, correttamente fruibili e senza danni materiali evidenti</b>.</p><span class="hand">la può fare anche un lavoratore, dopo aver ricevuto istruzioni adeguate</span></div>
+<div class="spec" style="--r:.8deg;--pin:var(--amber)"><h4>Controllo periodico</h4><p>L'<b>insieme di operazioni, fatte con frequenza non superiore a quella indicata da norme, specifiche tecniche o manuali</b>, per verificare la <b>completa e corretta funzionalità</b> di impianti e attrezzature.</p><span class="hand">solo il tecnico manutentore qualificato</span></div>
+<div class="spec" style="--r:-.4deg;--pin:var(--fungo)"><h4>Manutenzione</h4><p>Un'<b>operazione o un intervento finalizzato a mantenere in efficienza e in buono stato</b> impianti, attrezzature e altri sistemi di sicurezza antincendio.</p><span class="hand">personale qualificato</span></div>
+</div>
+<ul class="dots">
+<li>La <b>sorveglianza</b> <b>può essere effettuata anche dai lavoratori normalmente presenti, dopo aver ricevuto adeguate istruzioni</b>.</li>
+<li>Il <b>controllo periodico</b> <b>può essere effettuato solo da un tecnico manutentore qualificato</b>, perché richiede competenze, conoscenze e abilità adeguate.</li>
+</ul>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Se senti la parola "visivo", è sorveglianza e la può fare chiunque sia istruito. Tutto il resto è roba da tecnico.</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Un collega controlla che l'estintore sia al suo posto e non ammaccato. Che attività è?</span></summary><div class="ans"><b>Sorveglianza</b>: un controllo visivo.</div></details>
+<details><summary><span class="n">2</span><span>Chi può fare il controllo periodico?</span></summary><div class="ans"><b>Solo il tecnico manutentore qualificato.</b></div></details>
+<details><summary><span class="n">3</span><span>Quale decreto ha introdotto il tecnico manutentore?</span></summary><div class="ans">Il <b>D.M. 1 settembre 2021</b>.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-10">Vai al quiz del capitolo 10</a></div></section><section class="page" id="c11"><p class="kicker hand">Capitolo 11</p><h2 class="ct">Le terre maledette</h2><p class="sub">aree a rischio specifico ed esplosioni</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Alcune zone sono più pericolose del resto e vanno individuate apposta; dove gas, vapori o polveri si mescolano all'aria il fuoco può diventare un'esplosione, lenta come una deflagrazione o più veloce del suono come una detonazione.</p></div>
+
+<h3 class="sh"><small>dove il bosco è più scuro</small>Le aree a rischio specifico</h3>
+<p>Sono <b>ambiti dell'attività con un rischio di incendio sostanzialmente differente rispetto a quello tipico dell'attività</b>: una centrale termica in un ufficio, un deposito di vernici in un negozio.</p>
+<p>Chi le individua? Il <b>progettista della sicurezza antincendio</b>, <b>sulla base delle regole tecniche di prevenzione incendi, della valutazione del rischio incendio</b> e dei criteri di progettazione generale.</p>
+
+<h3 class="sh"><small>quando il fuoco urla</small>Le esplosioni</h3>
+<p>L'<b>esplosione</b> è <b>il risultato di una rapida espansione di gas, causata da una reazione di combustione molto veloce</b>. Fa sovrappressione e onde d'urto.</p>
+<p>Le <b>atmosfere esplosive</b> sono <b>miscele con l'aria di sostanze infiammabili allo stato di gas, vapori, nebbie o polveri, a condizioni atmosferiche, in cui, dopo l'accensione, la combustione si propaga a tutta la miscela incombusta</b>.</p>
+<p>Le sostanze che possono esplodere sono <b>tutte</b> queste: le miscele infiammabili di gas o vapori <b>e anche</b> le polveri combustibili sospese nell'aria (farina, segatura, zucchero).</p>
+<div class="duo">
+<div style="--c:var(--amber)"><h4>Deflagrazione</h4><p>La combustione si propaga alla miscela non ancora bruciata <b>con una velocità minore di quella del suono</b>.</p></div>
+<div style="--c:var(--fire)"><h4>Detonazione</h4><p>La reazione procede <b>con una velocità superiore a quella del suono</b>: velocità supersoniche, <b>dell'ordine del chilometro al secondo</b>.</p></div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Detonazione = Di più veloce del suono. Deflagrazione = più lenta.</p></div>
+
+<h3 class="sh"><small>la runa EX e le sue zone</small>Le zone ATEX</h3>
+<div class="clip"><figure class="polaroid" style="--r:3deg;width:170px"><img src="img/c142.png" alt="Cartello triangolare giallo con la scritta EX" width="220" height="196"></figure>
+<p class="hand">Questo triangolo giallo con la scritta EX è un <b>segnale di avvertimento</b> che indica <b>le aree in cui possono formarsi atmosfere esplosive</b>.</p></div>
+<div class="nums">
+<div class="num"><b>0 · 1 · 2</b><span>per <b>gas, vapori e nebbie</b>: <b>3 zone (zona 0, zona 1, zona 2)</b></span></div>
+<div class="num"><b>20 · 21 · 22</b><span>per le <b>polveri</b>: <b>3 zone (zona 20, zona 21, zona 22)</b></span></div>
+</div>
+<p class="note">Il numero più basso è la zona dove l'atmosfera esplosiva c'è più spesso: zona 0 e zona 20 vogliono dire presenza continua o per lunghi periodi.</p>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Le polveri possono esplodere?</span></summary><div class="ans"><b>Sì</b>, se sono sospese nell'aria: possono esplodere sia gas e vapori sia polveri.</div></details>
+<details><summary><span class="n">2</span><span>Una detonazione è più veloce o più lenta del suono?</span></summary><div class="ans"><b>Più veloce.</b></div></details>
+<details><summary><span class="n">3</span><span>Zone ATEX delle polveri?</span></summary><div class="ans"><b>20, 21, 22.</b> Per i gas: 0, 1, 2.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-11">Vai al quiz del capitolo 11</a></div></section><section class="page" id="c12"><p class="kicker hand">Capitolo 12</p><h2 class="ct">Pelle e corazza</h2><p class="sub">reazione al fuoco e resistenza al fuoco</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>La reazione al fuoco dice quanto un materiale aiuta il fuoco a nascere e correre; la resistenza al fuoco dice per quanti minuti una struttura regge, trattiene il fumo e blocca il calore.</p></div>
+
+<h3 class="sh"><small>la pelle: quanto un materiale si lascia bruciare</small>La reazione al fuoco</h3>
+<p>La <b>reazione al fuoco</b> è <b>il comportamento di un materiale che, decomponendosi, partecipa al fuoco al quale è sottoposto in specifiche condizioni</b>. È una <b>misura di protezione passiva</b> che fa il suo lavoro soprattutto <b>nella fase iniziale dell'incendio</b>, con l'obiettivo di <b>limitare l'innesco dei materiali e la propagazione dell'incendio</b>.</p>
+<p>Le classi di reazione al fuoco <b>sono determinate sperimentalmente, con prove di laboratorio</b>:</p>
+<div class="tw"><table><thead><tr><th>Sigle</th><th>Cosa classificano</th></tr></thead><tbody>
+<tr><td><b>0, 1, 2, 3, 4, 5</b></td><td>Le <b>classi italiane</b> di reazione al fuoco <b>dei materiali</b> (0 = non brucia)</td></tr>
+<tr><td><b>1 IM, 2 IM, 3 IM</b></td><td>La reazione al fuoco dei <b>mobili imbottiti</b> (IM = imbottiti)</td></tr>
+<tr><td><b>A1, A2, B, C, D, E, F</b></td><td>Le <b>classi europee</b> dei <b>prodotti da costruzione</b> (A1 = la migliore)</td></tr></tbody></table></div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Numeri = Italia. IM = divani e poltrone. Lettere A1-F = Europa, materiali da costruzione.</p></div>
+
+<h3 class="sh"><small>la corazza: quanto una struttura resiste</small>La resistenza al fuoco</h3>
+<p>La <b>resistenza al fuoco</b> è <b>la capacità portante in caso di incendio</b> di una struttura, di una sua parte o di un elemento strutturale, <b>e la capacità di compartimentazione</b> degli elementi di separazione, sia <b>strutturali (muri, solai)</b> sia <b>non strutturali (porte, divisori)</b>.</p>
+<p>A cosa serve: <b>garantire la capacità portante delle strutture e la capacità di compartimentazione per un tempo minimo necessario</b> a raggiungere gli obiettivi di sicurezza.</p>
+<p>La <b>classe di resistenza al fuoco</b> (R 60, R 90...) è <b>un intervallo di tempo espresso in minuti, definito in base al carico di incendio specifico di progetto</b>, durante il quale il compartimento garantisce la resistenza al fuoco. Le classi <b>sono codificate dalle norme</b>: per esempio, per elementi portanti senza funzione di compartimento, <b>R 15, 20, 30, 45, 60</b> e così via.</p>
+
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--fungo)"><h4>R</h4><span class="tag">capacità portante</span><p>L'elemento <b>porta i carichi</b> in condizioni di incendio normalizzato per un certo tempo. Non crolla.</p></div>
+<div class="spec" style="--r:.7deg;--pin:var(--soft)"><h4>E</h4><span class="tag">tenuta</span><p>L'elemento <b>impedisce il passaggio di fumi e gas caldi</b> per un certo tempo.</p></div>
+<div class="spec" style="--r:-.5deg;--pin:var(--fire)"><h4>I</h4><span class="tag">isolamento</span><p>L'elemento <b>impedisce il passaggio del calore</b> per un certo tempo: dall'altra parte non scotta.</p></div>
+</div>
+<div class="nums">
+<div class="num"><b>REI 60</b><span>per <b>60 minuti</b> conserva <b>capacità portante, tenuta e isolamento termico</b></span></div>
+<div class="num"><b>RE 60</b><span>per <b>60 minuti</b> conserva <b>capacità portante e tenuta</b></span></div>
+<div class="num"><b>R 60</b><span>per <b>60 minuti</b> conserva <b>solo la capacità portante</b></span></div>
+</div>
+<p>La <b>capacità di compartimentazione</b> è l'<b>attitudine di un elemento a conservare, sotto l'azione del fuoco, un sufficiente isolamento termico (I) e una sufficiente tenuta ai fumi e ai gas caldi (E)</b>, più le altre prestazioni se richieste. Insomma: <b>E + I</b>.</p>
+
+<div class="goblin"><svg viewBox="0 0 88 96" aria-hidden="true"><use href="#gob"/></svg><div><h4>Il goblin della porta debole</h4>
+<p class="lie">"Il muro è REI 120? Allora la porta basta che sia REI 60, tanto è solo una porta!"</p>
+<p>No: in un compartimento di classe 120, la porta deve avere una resistenza al fuoco <b>uguale a quella della struttura attraversata</b>. Una porta debole è un buco nella corazza.</p></div></div>
+
+<p>Si può costruire senza resistenza al fuoco (livello di prestazione I del D.M. 3 agosto 2015)? <b>Sì, ma solo se l'attività non prevede la presenza di occupanti</b>, salvo la <b>presenza occasionale e di breve durata del personale addetto</b>.</p>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Cosa significa la E di REI?</span></summary><div class="ans"><b>Tenuta</b>: blocca fumi e gas caldi.</div></details>
+<details><summary><span class="n">2</span><span>Cosa garantisce un elemento R 60?</span></summary><div class="ans"><b>Solo la capacità portante</b>, per 60 minuti.</div></details>
+<details><summary><span class="n">3</span><span>Le classi A1, A2, B, C, D, E, F cosa sono?</span></summary><div class="ans">Le <b>classi europee</b> di reazione al fuoco dei <b>prodotti da costruzione</b>.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-12">Vai al quiz del capitolo 12</a></div></section><section class="page" id="c13"><p class="kicker hand">Capitolo 13</p><h2 class="ct">I muri incantati</h2><p class="sub">compartimentazione e carico d'incendio</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Si chiude il fuoco in una stanza con muri e porte che resistono, oppure lo si tiene lontano con la distanza; e la quantità di roba che può bruciare in un posto si misura col carico d'incendio, che poi va rispettato.</p></div>
+
+<h3 class="sh"><small>chiudere il drago in una stanza</small>La compartimentazione</h3>
+<p>Serve a <b>limitare la propagazione dell'incendio e dei suoi effetti verso altre attività</b> (di un altro responsabile o di tipo diverso) <b>e all'interno della stessa attività</b>. Si realizza in <b>entrambi</b> questi modi:</p>
+<ul class="dots"><li>con <b>elementi, strutturali e non</b>, che sotto il fuoco conservano per un certo tempo resistenza, tenuta ai fumi e isolamento;</li>
+<li>con <b>distanze di separazione</b> tra edifici o altri bersagli combustibili, anche in spazio a cielo libero.</li></ul>
+<div class="tw"><table><thead><tr><th>Nome</th><th>Cos'è</th></tr></thead><tbody>
+<tr><td><b>Compartimento</b></td><td><b>Parte dell'edificio delimitata da elementi capaci di garantire, sotto l'azione del fuoco e per un dato intervallo di tempo, la resistenza al fuoco</b> (EI...)</td></tr>
+<tr><td><b>Filtro</b></td><td>Un compartimento dove, per <b>basso carico di incendio e pochissimi inneschi</b>, la probabilità che un incendio parta è <b>trascurabile</b></td></tr>
+<tr><td><b>Compartimento a prova di fumo</b></td><td>Fatto per <b>limitare l'ingresso del fumo</b> di un incendio che si sviluppa in compartimenti comunicanti</td></tr>
+<tr><td><b>Filtro a prova di fumo</b></td><td>Le due cose insieme: è un <b>filtro</b> (incendio improbabile) <b>e</b> un compartimento <b>a prova di fumo</b> (non entrano gli effluenti dell'incendio)</td></tr></tbody></table></div>
+
+<p>Perché la compartimentazione funzioni, pareti e solai devono essere <b>una barriera continua</b>: <b>la continuità delle chiusure orizzontali e verticali è fondamentale</b>, quindi vanno realizzate con molta cura, comprese <b>giunzioni e serrande tagliafuoco</b>. Ogni buco per cavi e tubi è una porta per il fuoco.</p>
+
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--fire)"><h4>La porta tagliafuoco (EI)</h4><p>È <b>l'elemento di chiusura di un varco di comunicazione tra compartimenti adiacenti</b>, capace di <b>limitare per un determinato intervallo di tempo la propagazione</b> degli effetti di un incendio.</p><span class="hand">va segnalata su entrambi i lati e tenuta sotto sorveglianza, controllo e manutenzione</span></div>
+</div>
+
+<h3 class="sh"><small>quando c'è il cielo in mezzo</small>Lo spazio aperto non basta</h3>
+<p>Tra attività separate da uno spazio a cielo libero <b>l'incendio può propagarsi lo stesso</b>, per irraggiamento. Per questo <b>bisogna sempre verificare che ci sia un'adeguata distanza di separazione</b>.</p>
+<div class="clip"><figure class="polaroid wide" style="--r:-2deg"><img src="img/irraggiamento.jpg" alt="Un incendio che irraggia calore verso un edificio vicino" width="593" height="316"></figure>
+<p class="hand">Il calore salta il vuoto. Una distanza "d" adeguata tiene l'irraggiamento sotto i valori critici e protegge gli edifici e i depositi vicini.</p></div>
+<ul class="dots">
+<li>Un'adeguata distanza tra edifici, o tra edifici e depositi esterni di combustibile, <b>limita l'irraggiamento al di sotto dei valori critici</b>.</li>
+<li>Un cortile qualsiasi <b>non</b> basta: per essere uno "spazio scoperto" un'area a cielo libero <b>deve avere una superficie determinata e un'adeguata distanza fra gli edifici che la delimitano</b>.</li>
+</ul>
+
+<h3 class="sh"><small>quanta legna c'è nella stanza</small>Il carico d'incendio</h3>
+<div class="tw"><table><thead><tr><th>Termine</th><th>Definizione</th><th>Unità</th></tr></thead><tbody>
+<tr><td><b>Carico di incendio</b></td><td><b>Potenziale termico netto di tutti i materiali combustibili contenuti in uno spazio</b>, corretto in base a quanto ciascun materiale partecipa alla combustione</td><td><b>MJ</b></td></tr>
+<tr><td><b>Carico di incendio specifico</b></td><td>Lo stesso, <b>riferito all'unità di superficie lorda di piano</b></td><td><b>MJ/m²</b></td></tr>
+<tr><td><b>Carico di incendio specifico di progetto</b></td><td>Lo specifico (MJ/m²) <b>corretto in base ai parametri del rischio di incendio del compartimento e alle misure antincendio presenti</b></td><td>MJ/m²</td></tr></tbody></table></div>
+<ul class="dots">
+<li>Il carico d'incendio è un <b>parametro fondamentale</b> della progettazione: <b>in particolare quello specifico di progetto serve a progettare la resistenza al fuoco delle strutture</b>.</li>
+<li>I valori usati nel progetto sono un <b>vincolo d'esercizio</b>: <b>mantenere le condizioni che li hanno determinati è un obbligo</b>. Non puoi riempire il magazzino oltre quanto previsto.</li>
+</ul>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Cos'è un filtro?</span></summary><div class="ans">Un <b>compartimento dove è improbabile che parta un incendio</b>, perché c'è poco da bruciare e pochi inneschi.</div></details>
+<details><summary><span class="n">2</span><span>Il carico d'incendio specifico in che unità si misura?</span></summary><div class="ans"><b>MJ/m²</b>.</div></details>
+<details><summary><span class="n">3</span><span>Un incendio può saltare da un edificio all'altro attraverso un cortile?</span></summary><div class="ans"><b>Sì</b>, per irraggiamento: serve una distanza adeguata.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-13">Vai al quiz del capitolo 13</a></div></section><section class="page" id="c14"><p class="kicker hand">Capitolo 14</p><h2 class="ct">Il sentiero fuori dal bosco</h2><p class="sub">l'esodo: luoghi sicuri e modi di uscire</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Il sistema di esodo serve a portare tutti in un luogo sicuro, da soli o con aiuto, prima che il fuoco renda l'aria irrespirabile; e ci sono quattro modi diversi di uscire dal bosco.</p></div>
+
+<p>La misura <b>Esodo</b> (la S.4 del Codice di Prevenzione Incendi) ha lo scopo di <b>assicurare che gli occupanti possano raggiungere un luogo sicuro o restare al sicuro, autonomamente o con assistenza, prima che l'incendio determini condizioni incapacitanti</b> negli ambienti dove si trovano.</p>
+<p>Il <b>Sistema di Esodo</b> è <b>l'insieme delle misure di salvaguardia della vita</b> che permettono proprio questo: raggiungere un luogo sicuro o restare al sicuro, da soli o aiutati, prima delle condizioni incapacitanti.</p>
+
+<h3 class="sh"><small>la mappa del bosco</small>I luoghi dell'esodo</h3>
+<div class="tw"><table><thead><tr><th>Luogo</th><th>Cos'è</th></tr></thead><tbody>
+<tr><td><b>Luogo sicuro</b></td><td>Un luogo dove il rischio d'incendio è <b>permanentemente trascurabile</b> per chi ci sta o ci passa</td></tr>
+<tr><td><b>Luogo sicuro temporaneo</b></td><td>Un luogo dove il rischio è <b>temporaneamente trascurabile</b> per chi ci sta o ci passa <b>durante l'esodo</b></td></tr>
+<tr><td><b>Spazio calmo</b></td><td>Un <b>luogo sicuro temporaneo dove gli occupanti possono attendere e ricevere assistenza</b> per completare l'esodo verso il luogo sicuro (pensato per chi non scende le scale da solo)</td></tr>
+<tr><td><b>Via di esodo</b></td><td>Un <b>percorso senza ostacoli al deflusso</b>, parte del sistema di esodo, che porta gli occupanti dal punto in cui sono a un luogo sicuro</td></tr>
+<tr><td><b>Corridoio cieco</b></td><td>Una <b>porzione di via di esodo da cui si può uscire in un'unica direzione</b></td></tr></tbody></table></div>
+<ul class="dots">
+<li>La <b>pubblica via</b> è luogo sicuro? <b>Sì, sempre.</b></li>
+<li>Uno <b>spazio a cielo libero</b> è luogo sicuro <b>solo se è collegato alla pubblica via in ogni condizione di incendio</b>, protegge le persone <b>dai prodotti della combustione e dal pericolo di crolli</b>, ed è <b>abbastanza ampio</b> per contenere chi ci arriva.</li>
+</ul>
+
+<h3 class="sh"><small>quattro modi di lasciare il bosco</small>Le modalità di esodo</h3>
+<p>Le modalità sono diverse: <b>esodo simultaneo, esodo per fasi, esodo orizzontale progressivo e protezione sul posto</b>.</p>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--moss)"><h4>Simultaneo</h4><p>Prevede lo <b>spostamento contemporaneo degli occupanti</b> fino al luogo sicuro. Tutti fuori insieme.</p></div>
+<div class="spec" style="--r:.8deg;--pin:var(--amber)"><h4>Per fasi</h4><p>In una struttura con <b>più compartimenti</b>, l'evacuazione fino al luogo sicuro avviene <b>in successione</b>, dopo aver evacuato <b>il compartimento di primo innesco</b>.</p></div>
+<div class="spec" style="--r:-.5deg;--pin:var(--lilac)"><h4>Orizzontale progressivo</h4><p>Gli occupanti si spostano <b>dal compartimento di primo innesco in un compartimento adiacente</b>, capace di contenerli e proteggerli finché l'incendio è spento o finché si può proseguire verso il luogo sicuro.</p><span class="hand">tipico degli ospedali</span></div>
+<div class="spec" style="--r:1deg;--pin:var(--rose)"><h4>Protezione sul posto</h4><p>Prevede la <b>protezione degli occupanti nell'ambiente in cui si trovano</b>.</p></div>
+</div>
+
+<h3 class="sh"><small>come dev'essere il sentiero</small>I requisiti</h3>
+<ul class="dots">
+<li>Nel sistema di esodo <b>non</b> si possono considerare <b>scale portatili, ascensori e rampe con pendenza superiore al 20%</b>.</li>
+<li>Le superfici (corridoi, scale, androni) <b>non devono essere sdrucciolevoli, né presentare avvallamenti o sporgenze pericolose</b>, e devono rendere sicuro il passaggio.</li>
+<li>Le porte lungo le vie di esodo devono essere <b>facilmente identificabili e apribili da tutti</b>, e la loro <b>apertura non deve ostacolare il deflusso</b>.</li>
+<li>Con <b>elevata densità di affollamento</b>, le porte manuali devono avere <b>dispositivi di apertura a semplice spinta</b> (il maniglione antipanico).</li>
+<li>Il sistema di esodo deve essere <b>sempre riconoscibile, mediante apposita segnaletica di sicurezza</b>. Le planimetrie da sole non bastano.</li>
+<li>La <b>lunghezza d'esodo</b> si valuta <b>sulla base della valutazione del rischio e del profilo di rischio vita</b>.</li>
+</ul>
+
+<h3 class="sh"><small>le rune verdi del sentiero</small>I cartelli dell'esodo</h3>
+<div class="runes">
+<div class="rune"><img src="img/c197.png" alt="Cartello verde con persone e frecce verso il centro">Persone e frecce verso il centro: <b>luogo sicuro, punto di ritrovo</b></div>
+<div class="rune"><img src="img/c198.png" alt="Cartello verde con sedia a rotelle e frecce verso il centro">Sedia a rotelle e frecce verso il centro: <b>spazio calmo, attesa dei soccorritori</b></div>
+<div class="rune"><img src="img/c199.png" alt="Cartello verde con omino che corre verso una porta">Omino che corre verso la porta: <b>via di esodo</b></div>
+<div class="rune"><img src="img/c200.png" alt="Cartello verde con sedia a rotelle dentro una porta">Sedia a rotelle dentro una porta: <b>via di esodo verso spazio calmo</b></div>
+</div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Si può usare l'ascensore normale per l'esodo?</span></summary><div class="ans"><b>No</b>, e nemmeno scale portatili o rampe oltre il 20%.</div></details>
+<details><summary><span class="n">2</span><span>Che differenza c'è tra luogo sicuro e spazio calmo?</span></summary><div class="ans">Il luogo sicuro lo è <b>per sempre</b>; lo spazio calmo è <b>temporaneo</b>, ci si aspetta assistenza.</div></details>
+<details><summary><span class="n">3</span><span>Ci si sposta nel compartimento accanto e si aspetta lì: che modalità è?</span></summary><div class="ans"><b>Esodo orizzontale progressivo.</b></div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-14">Vai al quiz del capitolo 14</a></div></section><section class="page" id="c15"><p class="kicker hand">Capitolo 15</p><h2 class="ct">Le misure del sentiero</h2><p class="sub">lunghezze, larghezze, luci e porte</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Il sentiero di fuga ha misure precise: lunghezze massime, larghezze minime secondo quante persone ci passano, almeno due metri di altezza, e luci che non lasciano mai al buio.</p></div>
+
+<h3 class="sh"><small>i numeri magici del sentiero</small>Lunghezze e larghezze</h3>
+<p>Le vie di esodo devono essere di <b>lunghezza limitata</b>, secondo il rischio dell'attività (Codice di Prevenzione Incendi, D.M. 3 agosto 2015):</p>
+<div class="nums">
+<div class="num"><b>20-70 m</b><span>lunghezza massima delle <b>vie di esodo</b>, a seconda del profilo di rischio</span></div>
+<div class="num"><b>10-45 m</b><span>lunghezza massima dei <b>corridoi ciechi</b>, a seconda del profilo di rischio</span></div>
+<div class="num"><b>2 m</b><span><b>altezza minima</b> delle vie di esodo</span></div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Il corridoio cieco è più corto perché da lì si esce da una parte sola: 10-45 contro 20-70.</p></div>
+<p>L'altezza di 2 metri vale sempre, <b>tranne brevi tratti segnalati usati solo da personale formato, o usati occasionalmente da poche persone</b>.</p>
+
+<div class="tw"><table><thead><tr><th>Larghezza minima</th><th>Quando è consentita</th></tr></thead><tbody>
+<tr><td><b>80 cm</b>, vie orizzontali</td><td>Solo se l'affollamento non è elevato: <b>massimo 50 occupanti</b></td></tr>
+<tr><td><b>90 cm</b>, vie verticali (scale)</td><td>Solo se l'affollamento non è molto elevato: <b>massimo 300 occupanti</b></td></tr>
+<tr><td><b>1,20 m</b>, vie orizzontali <b>e</b> verticali</td><td>Obbligatoria con <b>più di 1000 occupanti</b>, <b>a prescindere dal numero di vie di esodo disponibili</b></td></tr></tbody></table></div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>50 persone, 80 cm. 300 persone, 90 cm. Oltre 1000, sempre 1 metro e 20.</p></div>
+
+<h3 class="sh"><small>quante uscite</small>Il numero di vie</h3>
+<p>Per evitare che l'incendio blocchi l'unica uscita, <b>il numero minimo di vie di esodo e di uscite indipendenti</b> da ogni locale va progettato <b>in funzione del rischio di incendio e dell'affollamento</b>.</p>
+<p>Se a un piano ci sono in modo non occasionale persone che <b>non possono raggiungere da sole un luogo sicuro scendendo le scale</b>, bisogna adottare <b>almeno una</b> di queste soluzioni: <b>spazi calmi, esodo orizzontale progressivo o esodo orizzontale verso luogo sicuro</b>.</p>
+
+<h3 class="sh"><small>le lucciole del sentiero</small>Le luci</h3>
+<div class="clip"><figure class="polaroid" style="--r:2deg"><img src="img/uscita.jpg" alt="Uscita di sicurezza con lampada di emergenza e cartello verde" width="359" height="348"></figure>
+<div><p>L'<b>illuminazione di sicurezza</b> lungo le vie di esodo va installata <b>sempre, quando l'illuminazione normale può risultare anche solo occasionalmente insufficiente</b> per uscire.</p>
+<p>Dove si lavora con luce assente o ridotta (<b>cinema, teatri</b>), i gradini lungo le vie di esodo devono avere <b>sempre l'illuminazione "segnapasso"</b>.</p></div></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Un corridoio largo 80 cm va bene per 200 persone?</span></summary><div class="ans"><b>No</b>: 80 cm solo fino a 50 occupanti.</div></details>
+<details><summary><span class="n">2</span><span>Lunghezza massima dei corridoi ciechi?</span></summary><div class="ans">Tra <b>10 e 45 metri</b>, secondo il rischio.</div></details>
+<details><summary><span class="n">3</span><span>Con 1500 persone, quanto devono essere larghe le scale?</span></summary><div class="ans">Almeno <b>1,20 m</b>, qualunque sia il numero di vie.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-15">Vai al quiz del capitolo 15</a></div></section><section class="page" id="c16"><p class="kicker hand">Capitolo 16</p><h2 class="ct">Campane e camini</h2><p class="sub">rivelazione, allarme e controllo di fumo e calore</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Prima si scopre il fuoco e si suona la campana, così partono sia gli impianti sia il piano di emergenza; poi bisogna far uscire il fumo, perché è lui che toglie la vista e il respiro.</p></div>
+
+<h3 class="sh"><small>le campane del villaggio</small>Rivelazione e allarme</h3>
+<p>La misura "Rivelazione e allarme" sorveglia gli ambienti, scopre presto un incendio e diffonde l'allarme per <b>attivare sia le misure protettive sia le misure gestionali</b>:</p>
+<div class="duo">
+<div style="--c:var(--fungo)"><h4>Misure protettive</h4><p>Impianti automatici di estinzione, ripristino della compartimentazione (le porte si chiudono), evacuazione di fumo e calore.</p></div>
+<div style="--c:var(--lilac)"><h4>Misure gestionali</h4><p>Il piano e le procedure di emergenza e di esodo, pensati per quell'incendio e per quella zona.</p></div>
+</div>
+<p>Gli <b>IRAI</b> (Impianti di Rivelazione e segnalazione Allarme Incendio) sono <b>impianti capaci di rivelare un incendio quanto prima possibile e di segnalare l'allarme</b>, per attivare le misure <b>tecniche</b> (impianti automatici di controllo o estinzione, compartimentazione, evacuazione di fumi e calore) e <b>procedurali</b> (piano e procedure di emergenza e di esodo).</p>
+<p>Si può fare a meno dell'impianto e affidarsi <b>solo alla sorveglianza degli occupanti</b>? <b>Sì, dove la valutazione del rischio non evidenzia rischi particolari</b>, ma <b>a condizione che siano scritte nel piano di emergenza procedure per avvisare tutti in modo rapido e sicuro</b>.</p>
+
+<h3 class="sh"><small>il pulsante da rompere</small>I punti di segnalazione manuale</h3>
+<div class="clip"><figure class="polaroid wide" style="--r:-2deg"><img src="img/pulsante.jpg" alt="Una persona che corre verso un pulsante di allarme incendio rosso" width="640" height="195"></figure>
+<p class="hand">Il pulsante rosso "rompere il vetro": sempre a portata di corsa.</p></div>
+<div class="nums">
+<div class="num"><b>15-30 m</b><span>i pulsanti devono essere <b>raggiungibili con percorsi compresi tra 15 e 30 m</b>, secondo il rischio</span></div>
+<div class="num"><b>110 cm</b><span>da terra: così lo raggiunge <b>anche chi usa ausili di movimento</b>, come la sedia a rotelle</span></div>
+</div>
+<p>E vanno installati <b>in posizione ben visibile e segnalata, facilmente accessibili</b>.</p>
+
+<h3 class="sh"><small>i camini del bosco</small>Il controllo di fumo e calore</h3>
+<p>Lo scopo della misura "Controllo fumo e calore" è <b>individuare i presidi che permettono il controllo, l'evacuazione o lo smaltimento dei prodotti della combustione</b>. Si realizza con: <b>aperture di smaltimento di fumo e calore d'emergenza, sistemi di ventilazione orizzontale forzata (SVOF) e sistemi di evacuazione di fumo e calore (SEFC)</b>.</p>
+
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--sky)"><h4>Aperture di smaltimento</h4><p>Vanno bene anche <b>finestre, lucernari, porte</b> che ci sono già. Hanno <b>la sola funzione di facilitare l'opera di estinzione dei soccorritori</b>.</p></div>
+<div class="spec" style="--r:.8deg;--pin:var(--soft)"><h4>SVOF</h4><span class="tag">ventilazione orizzontale forzata</span><p><b>Sì, fanno smaltimento d'emergenza</b>: <b>come le aperture, facilitano l'opera dei soccorritori</b>, creando condizioni favorevoli <b>da un punto di accesso fino all'incendio</b>.</p></div>
+<div class="spec" style="--r:-.5deg;--pin:var(--moss)"><h4>SEFC</h4><span class="tag">evacuazione di fumo e calore</span><p><b>Creano e mantengono uno strato d'aria sostanzialmente pulito nella parte bassa</b> dell'ambiente, evacuando fumo e calore.</p></div>
+</div>
+
+<p><b>Le aperture di smaltimento</b>:</p>
+<ul class="dots">
+<li>vanno <b>sempre gestite e protette dall'ostruzione accidentale</b>, perché <b>sono parte integrante di una misura antincendio</b>: niente scaffali davanti;</li>
+<li><b>non</b> devono essere per forza permanentemente aperte: salvo carichi d'incendio elevati, vanno bene anche <b>aperture con apertura automatica (comandata dall'impianto di rivelazione), con infissi comandati da posizione protetta e segnalata o da posizione non protetta, o con chiusura bassofondente</b> (che si scioglie col calore);</li>
+<li>vanno <b>distribuite in modo uniforme e preferibilmente nella parte alta dei locali</b>, per facilitare l'uscita di fumi e gas caldi.</li>
+</ul>
+
+<div class="clip"><figure class="polaroid" style="--r:2deg;width:180px"><img src="img/fumo-strati.jpg" alt="Tre disegni di una casa che si riempie di fumo dall'alto verso il basso" width="262" height="432"></figure>
+<div><p>Il fumo sale e riempie la stanza dall'alto. I <b>SEFC</b> lo tirano fuori e tengono pulita la parte bassa, e così raggiungono <b>tutti</b> questi obiettivi:</p>
+<ul class="dots"><li><b>mantenere le vie di esodo libere da fumo e calore</b>;</li><li><b>ritardare o prevenire il flash over</b>, cioè l'incendio generalizzato;</li><li><b>limitare i danni agli impianti e al contenuto</b>;</li><li><b>ridurre gli effetti termici sulle strutture</b>.</li></ul></div></div>
+<p>I SEFC possono essere <b>di tipo naturale (SENFC) o forzato (SEFFC)</b>. Quelli <b>naturali</b> hanno <b>evacuatori ad apertura automatica</b> che mantengono uno strato libero da fumo fino a un'altezza stabilita nel progetto, <b>comunque superiore all'altezza di una persona</b>.</p>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>A che altezza va un pulsante di allarme?</span></summary><div class="ans">Circa <b>110 cm</b> da terra.</div></details>
+<details><summary><span class="n">2</span><span>Le aperture di smaltimento a cosa servono?</span></summary><div class="ans">Solo a <b>facilitare il lavoro dei soccorritori</b>.</div></details>
+<details><summary><span class="n">3</span><span>I SEFC dove tengono l'aria pulita?</span></summary><div class="ans">Nella <b>parte bassa</b> dell'ambiente, sopra l'altezza di una persona c'è il fumo.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-16">Vai al quiz del capitolo 16</a></div></section><section class="page" id="c17"><p class="kicker hand">Capitolo 17</p><h2 class="ct">Il primo strumento: l'estintore</h2><p class="sub">il presidio di base, da usare sul principio d'incendio</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>L'estintore è la bacchetta di base di ogni addetto: c'è sempre, si usa solo sul principio d'incendio, e va scelto, posizionato e segnalato secondo regole precise.</p></div>
+
+<h3 class="sh"><small>l'armeria contro il fuoco</small>Il controllo dell'incendio</h3>
+<p>La misura "Controllo dell'incendio" serve a <b>individuare i presidi antincendio da installare per fronteggiare gli eventuali incendi</b>. Questi presidi sono <b>gli estintori e gli impianti di protezione attiva</b> (rete idranti, impianti sprinkler).</p>
+<p>Il loro scopo è <b>tutto</b> insieme: proteggere da un principio d'incendio, controllarlo o inibirlo in modo manuale o automatico, e anche spegnerlo del tutto. Gli estinguenti, nel loro insieme, possono mettere in atto <b>tutti e quattro gli effetti</b>: soffocamento, raffreddamento, diluizione e inibizione chimica.</p>
+<p>Lo <b>sprinkler</b> svolge soprattutto un'<b>azione di controllo</b>: <b>tiene l'incendio fermo o piccolo</b>, così che <b>le squadre di emergenza lo possano poi attaccare e spegnere facilmente</b> (lo rivedi nel capitolo 18).</p>
+
+<h3 class="sh"><small>la bacchetta di base</small>Cos'è un estintore</h3>
+<div class="clip"><figure class="polaroid wide" style="--r:-2deg"><img src="img/estintori.jpg" alt="Estintori portatili di varie dimensioni" width="266" height="196"></figure>
+<div><p>Gli estintori sono <b>un presidio di base</b>, e si usano <b>solo su un principio d'incendio</b>. Devono <b>sempre</b> esserci nei luoghi di lavoro: <b>sono un presidio di base complementare</b> alle altre misure.</p>
+<p>Si distinguono <b>per il peso</b> in <b>portatili</b> e <b>carrellati</b>, e per <b>l'agente estinguente</b>: <b>a polvere, ad anidride carbonica, ad acqua e a base d'acqua (schiuma), a "clean agent"</b>.</p></div></div>
+<div class="nums">
+<div class="num"><b>20 kg</b><span><b>portatili</b>: massa <b>minore o uguale a 20 kg</b></span></div>
+<div class="num"><b>150 kg</b><span><b>carrellati</b>: massa <b>fino a 150 kg</b>, su ruote</span></div>
+<div class="num"><b>6 kg</b><span>carica massima dei portatili <b>dove c'è pubblico</b>: <b>non più di 6 kg o 6 litri</b></span></div>
+</div>
+<p>La <b>prestazione</b> di un estintore, cioè quanto è grande il fuoco che riesce a spegnere, <b>è determinata sperimentalmente, in funzione della classe d'incendio</b>, e si scrive <b>con un codice di lettere e numeri, per esempio 13 A - 89 B</b>.</p>
+<div class="clip"><figure class="polaroid wide" style="--r:2deg"><img src="img/etichetta.jpg" alt="Etichetta di un estintore con istruzioni d'uso" width="640" height="366"></figure>
+<p class="hand">L'etichetta è il foglietto delle istruzioni: dice tipo, classi di fuoco e come si usa. Leggila sempre.</p></div>
+
+<h3 class="sh"><small>quale bacchetta per quale drago</small>Scegliere l'estintore</h3>
+<ul class="dots">
+<li>La tipologia va <b>scelta in base alla valutazione del rischio</b>, soprattutto in base alle <b>classi di fuoco</b>: estintori per la classe A, <b>polivalenti AB</b>, per la classe F...</li>
+<li>Nei <b>luoghi chiusi</b>, contro fuochi di <b>classe A o B</b>, salvo incompatibilità, è opportuno usare <b>estintori a base d'acqua</b> (idrici).</li>
+</ul>
+<div class="duo">
+<div style="--c:var(--amber)"><h4>Polvere e CO₂ sull'elettrico</h4><p>Gli estintori portatili si possono usare su impianti elettrici <b>fino a 1000 V, alla distanza di 1 metro</b>, se l'estinguente <b>non conduce elettricità</b> (polvere, anidride carbonica).</p></div>
+<div style="--c:var(--sky)"><h4>Acqua sull'elettrico</h4><p>Anche quelli <b>a base d'acqua</b>, fino a <b>1000 V a almeno 1 metro</b>, ma <b>solo se l'etichetta lo dice</b>, perché hanno superato la <b>prova dielettrica</b>.</p></div>
+</div>
+<figure class="polaroid wide" style="--r:-1deg;margin:18px auto"><img src="img/dielettrico.jpg" alt="Etichetta: dielettrico, utilizzabile su apparecchi in tensione fino a 1000 V alla distanza di 1 metro" width="351" height="146"></figure>
+
+<h3 class="sh"><small>dove si appende la bacchetta</small>Posizione e segnaletica</h3>
+<ul class="dots">
+<li>Devono essere <b>sempre pronti all'uso</b>: in posizione <b>facilmente visibile e raggiungibile</b>, <b>lungo i percorsi d'esodo vicino alle uscite</b> dei locali, di piano o finali, e <b>vicino alle aree a rischio specifico</b>.</li>
+<li>Le <b>impugnature</b> devono stare a circa <b>110 cm da terra</b>, così le raggiunge chiunque.</li>
+<li>La loro posizione va <b>sempre segnalata</b>, e il cartello <b>indica anche il tipo: portatile o carrellato</b>.</li>
+</ul>
+<div class="nums">
+<div class="num"><b>20-40 m</b><span>distanza massima per raggiungere gli estintori di <b>classe A</b>, in funzione del rischio per le persone (Rvita)</span></div>
+<div class="num"><b>15 m</b><span>distanza massima degli estintori di <b>classe B</b> dalle sorgenti di rischio (es. deposito di liquidi infiammabili)</span></div>
+</div>
+<div class="runes">
+<div class="rune"><img src="img/c255.png" alt="Cartello rosso con estintore portatile">Il punto di installazione di un <b>estintore portatile</b></div>
+<div class="rune"><img src="img/c256.png" alt="Cartello rosso con estintore su ruote">Il punto di installazione di un <b>estintore carrellato</b> (ha le ruote)</div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Come si usa: getto alla base delle fiamme, muovendolo a ventaglio in orizzontale. Il rituale completo è nel capitolo 22.</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Un estintore da 30 kg è portatile o carrellato?</span></summary><div class="ans"><b>Carrellato</b>: i portatili arrivano al massimo a 20 kg.</div></details>
+<details><summary><span class="n">2</span><span>Cosa vuol dire 13 A - 89 B su un estintore?</span></summary><div class="ans">È la sua <b>prestazione</b>: quanto fuoco spegne per la classe A e per la classe B.</div></details>
+<details><summary><span class="n">3</span><span>Un estintore a CO₂ su un quadro elettrico a 400 V?</span></summary><div class="ans"><b>Sì</b>: fino a 1000 V, a 1 metro di distanza.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-17">Vai al quiz del capitolo 17</a></div></section><section class="page" id="c18"><p class="kicker hand">Capitolo 18</p><h2 class="ct">Fontane e piogge magiche</h2><p class="sub">idranti, naspi, sprinkler e impianti automatici</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Idranti e naspi sono fontane fisse che qualcuno deve aprire; sprinkler, diluvio, nebbie e gas sono piogge magiche che partono da sole e spengono o tengono a bada il fuoco.</p></div>
+
+<h3 class="sh"><small>le fontane fisse</small>La rete idranti</h3>
+<p>La rete idranti è un impianto di protezione attiva per il controllo dell'incendio: <b>sì, è un impianto fisso ad azionamento manuale</b>. Si divide in <b>ordinaria</b>, per proteggere le attività <b>all'interno degli edifici</b>, e <b>all'aperto</b>, per le attività che stanno fuori.</p>
+<p>I componenti principali sono: <b>alimentazione idrica; rete di tubazioni fisse, preferibilmente chiuse ad anello, ad uso esclusivo; attacchi di mandata per autopompa; valvole; apparecchi erogatori</b>.</p>
+<div class="strip">
+<figure><div class="polaroid" style="--r:-2deg"><img src="img/idrante-kit.jpg" alt="Cassetta idrante con manichetta piatta, lancia e rubinetto" width="593" height="507"></div><figcaption>idrante a muro: manichetta flessibile da stendere</figcaption></figure>
+<figure><div class="polaroid" style="--r:2deg"><img src="img/naspo.jpg" alt="Cassetta naspo con tubo avvolto su una bobina" width="262" height="180"></div><figcaption>naspo: tubo semirigido avvolto sulla bobina</figcaption></figure>
+</div>
+<div class="tw"><table><thead><tr><th>Erogatore (reti ordinarie)</th><th>Diametro</th><th>Tubo</th></tr></thead><tbody>
+<tr><td><b>Idrante a muro</b></td><td><b>DN 45</b> (45 mm)</td><td>Tubazione flessibile <b>lunga in genere 20 metri</b></td></tr>
+<tr><td><b>Naspo</b></td><td><b>DN 25</b> (25 mm)</td><td>Tubazione semirigida <b>lunga al massimo 30 metri</b></td></tr></tbody></table></div>
+<p>I <b>tubi di mandata</b> delle reti idranti possono avere diametro <b>da 45 e 70 mm</b>.</p>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Idrante 45 e 20 metri. Naspo 25 e 30 metri. Il naspo è più piccolo ma ha il tubo più lungo.</p></div>
+
+<h3 class="sh"><small>le piogge che partono da sole</small>Gli impianti automatici</h3>
+<p>Gli impianti automatici di inibizione, controllo o estinzione <b>possono erogare agenti diversi (acqua, gas, polvere), in relazione alla classe dell'incendio e al rischio</b> dell'attività. Un impianto automatico di estinzione ha la funzione di <b>spegnimento dell'incendio</b>.</p>
+
+<div class="clip"><figure class="polaroid wide" style="--r:-2deg"><img src="img/bulbi.jpg" alt="Bulbi degli sprinkler di vari colori con le temperature di rottura" width="379" height="176"></figure>
+<p class="hand">Il colore del bulbo dice a che temperatura si rompe: rosso 68 °C, giallo 79, verde 93, blu 141...</p></div>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--sky)"><h4>Sprinkler</h4><p>Serve ad <b>assicurare una pronta risposta all'incendio, rivelandone la presenza e controllandolo in modo che l'estinzione possa essere completata con altri mezzi, oppure estinguendolo nello stadio iniziale</b>. Gli <b>ugelli</b> sono <b>chiusi da elementi termosensibili che a una data temperatura si rompono</b> e fanno uscire l'acqua.</p></div>
+<div class="spec" style="--r:.8deg;--pin:var(--lilac)"><h4>A diluvio</h4><p>Un sistema fisso che <b>inonda totalmente l'area con acqua sotto pressione</b>, attraverso <b>erogatori sprinkler privi del tappo e dell'elemento termosensibile</b>. Le tubazioni sono <b>vuote</b>: l'acqua aspetta dietro una <b>valvola a diluvio, comandata da un sistema di rivelazione</b>, e quando si apre esce <b>contemporaneamente da tutti gli erogatori</b>.</p></div>
+</div>
+<div class="duo">
+<div style="--c:var(--sky)"><h4>Sprinkler a umido</h4><p>Le <b>tubazioni sono costantemente riempite di acqua in pressione</b>.</p></div>
+<div style="--c:var(--soft)"><h4>Sprinkler a secco</h4><p>Si preferisce <b>quando c'è il rischio che l'acqua nei tubi geli</b> per le temperature troppo rigide.</p></div>
+</div>
+<div class="potions">
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--sky)"><use href="#bottle"/></svg><div><h4>Water mist</h4><p>Sistemi ad acqua <b>ad alto potere di spegnimento</b>, a pressioni <b>tra 80 e 140 bar</b>, che fanno una <b>nebbia di particelle finissime</b>.</p></div></div>
+<div class="potion"><svg viewBox="0 0 58 72" aria-hidden="true" style="color:var(--soft)"><use href="#bottle"/></svg><div><h4>Deplezione</h4><p>Sistemi basati sulla <b>riduzione continuativa della concentrazione di ossigeno</b> nell'ambiente: il fuoco non trova abbastanza comburente.</p></div></div>
+</div>
+<div class="clip"><figure class="polaroid" style="--r:2deg"><img src="img/watermist.jpg" alt="Ugello che spruzza una nebbia d'acqua finissima" width="640" height="260"></figure>
+<p class="hand">E per un <b>archivio di carta</b>? L'acqua lo rovinerebbe: il metodo più indicato è un <b>impianto automatico di controllo o estinzione con estinguente gassoso</b>.</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Che diametro ha un naspo, e quanto è lungo il suo tubo?</span></summary><div class="ans"><b>DN 25</b>, tubo semirigido fino a <b>30 metri</b>.</div></details>
+<details><summary><span class="n">2</span><span>Perché si sceglie uno sprinkler a secco?</span></summary><div class="ans">Perché <b>l'acqua nei tubi potrebbe gelare</b>.</div></details>
+<details><summary><span class="n">3</span><span>Negli impianti a diluvio, gli erogatori hanno il bulbo?</span></summary><div class="ans"><b>No</b>: sono aperti, e l'acqua esce da tutti insieme.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-18">Vai al quiz del capitolo 18</a></div></section><section class="page" id="c19"><p class="kicker hand">Capitolo 19</p><h2 class="ct">Aprire la strada ai cavalieri</h2><p class="sub">l'operatività antincendio per i Vigili del Fuoco</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Quando arrivano i Vigili del Fuoco, i cavalieri del villaggio, devono trovare la strada libera, l'acqua pronta, i comandi degli impianti a portata di mano e un modo per salire a tutti i piani.</p></div>
+
+<p>La misura "Operatività antincendio" ha lo scopo di <b>agevolare l'efficace conduzione degli interventi di soccorso dei Vigili del Fuoco in tutte le attività</b>.</p>
+<p>È sempre necessario, in relazione al rischio, progettare soluzioni che aiutino i soccorsi? <b>Sì: agevolare il soccorso dei Vigili del Fuoco è uno dei requisiti per minimizzare il rischio incendio</b> e raggiungere gli obiettivi di sicurezza.</p>
+
+<h3 class="sh"><small>quattro modi di aprire la strada</small>Cosa serve ai cavalieri</h3>
+<ol class="ritual">
+<li><div><b>Accessibilità per i mezzi di soccorso</b>: in genere deve essere possibile <b>avvicinare i mezzi a 50 m dagli accessi</b> dell'attività.</div></li>
+<li><div><b>Acqua pronta</b>: <b>rete idranti con protezione interna</b>, oppure, per attività a più piani fuori terra, <b>colonna a secco e rete idranti con protezione esterna</b>, oppure <b>almeno un idrante</b> (della rete interna o di quella pubblica) <b>raggiungibile con un percorso massimo di 500 m dai confini</b> dell'attività.</div></li>
+<li><div><b>Poter controllare o fermare gli impianti</b> (anche quelli di sicurezza): i <b>sistemi di controllo e comando vanno messi in posizione segnalata e facilmente raggiungibile</b> durante l'incendio.</div></li>
+<li><div><b>Accesso protetto a tutti i piani</b>: per esempio <b>l'autoscala dei Vigili del Fuoco (o un mezzo equivalente) deve poter accostarsi a tutti i piani</b>.</div></li>
+</ol>
+<div class="nums"><div class="num"><b>50 m</b><span>mezzi di soccorso vicino agli accessi</span></div><div class="num"><b>500 m</b><span>percorso massimo fino a un idrante dai confini</span></div></div>
+
+<h3 class="sh"><small>due ascensori, due compiti</small>Ascensore antincendio e di soccorso</h3>
+<div class="duo">
+<div style="--c:var(--moss)"><h4>Ascensore antincendio</h4><p>Un ascensore <b>installato principalmente per gli occupanti</b>, ma con <b>protezioni, comandi e segnalazioni in più</b> che permettono di usarlo <b>anche in caso di incendio, sotto il controllo delle squadre di soccorso</b>.</p></div>
+<div style="--c:var(--fire)"><h4>Ascensore di soccorso</h4><p>Un ascensore utilizzabile in caso di incendio, <b>installato esclusivamente per trasportare le attrezzature antincendio</b> ed eventualmente per <b>l'evacuazione di emergenza</b> degli occupanti.</p></div>
+</div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>Antincendio = di tutti i giorni, ma blindato. Di soccorso = nato per gli attrezzi dei pompieri.</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>A quanti metri dagli accessi devono poter arrivare i mezzi dei Vigili del Fuoco?</span></summary><div class="ans"><b>50 metri.</b></div></details>
+<details><summary><span class="n">2</span><span>A cosa serve l'operatività antincendio?</span></summary><div class="ans">Ad <b>agevolare gli interventi dei Vigili del Fuoco</b>.</div></details>
+<details><summary><span class="n">3</span><span>L'ascensore di soccorso è fatto soprattutto per chi?</span></summary><div class="ans">Per <b>le attrezzature antincendio</b>, ed eventualmente l'evacuazione.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-19">Vai al quiz del capitolo 19</a></div></section><section class="page" id="c20"><p class="kicker hand">Capitolo 20</p><h2 class="ct">Il patto del villaggio</h2><p class="sub">gestione della sicurezza e piano di emergenza</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>La sicurezza antincendio è un patto che si rispetta ogni giorno (esercizio) e si mette in pratica quando scoppia l'incendio (emergenza), con un piano scritto che tutti conoscono e in cui gli addetti hanno compiti precisi.</p></div>
+
+<h3 class="sh"><small>il patto</small>La Gestione della Sicurezza Antincendio (GSA)</h3>
+<p>La GSA è la misura <b>finalizzata a gestire un'attività in sicurezza, sia in esercizio sia in emergenza, con un'organizzazione fatta di ruoli, compiti, responsabilità e procedure</b>. La sua finalità è <b>garantire nel tempo un adeguato livello di sicurezza in caso di incendio</b>.</p>
+<p>Si divide in due aspetti: <b>sì, gestione della sicurezza in esercizio e gestione della sicurezza in emergenza</b>.</p>
+<div class="duo">
+<div style="--c:var(--moss)"><h4>GSA in esercizio</h4><p>Comprende <b>tutte</b> queste azioni: adottare e verificare le misure preventive, mettere la segnaletica, far rispettare divieti e limitazioni, <b>controllo e manutenzione di impianti e attrezzature con la compilazione del registro dei controlli</b>; e poi la <b>preparazione all'emergenza</b> (piano, formazione e addestramento degli addetti, esercitazioni e prove di evacuazione periodiche) e la gestione dei momenti più rischiosi (lavori di manutenzione, interferenze, impianti di sicurezza disattivati).</p></div>
+<div style="--c:var(--fire)"><h4>GSA in emergenza</h4><p>Riguarda <b>l'attivazione e l'attuazione del piano di emergenza</b>.</p></div>
+</div>
+
+<h3 class="sh"><small>il tuo ruolo nel patto</small>Gli addetti antincendio</h3>
+<p>Gli addetti <b>attuano le misure antincendio in esercizio e in emergenza, nei modi stabiliti dal datore di lavoro nei documenti della GSA e nel piano di emergenza</b>.</p>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--moss)"><h4>Nei giorni normali</h4><p><b>Attuano le misure antincendio preventive; garantiscono la fruibilità delle vie di esodo; svolgono la sorveglianza dei presidi antincendio.</b></p></div>
+<div class="spec" style="--r:.8deg;--pin:var(--fire)"><h4>Nell'emergenza</h4><p><b>Mettono in atto le azioni del piano di emergenza; attuano l'evacuazione degli occupanti; eseguono le comunicazioni previste; supportano le squadre di soccorso; spengono un principio di incendio.</b></p></div>
+</div>
+
+<h3 class="sh"><small>tenere vivi gli incantesimi</small>La manutenzione nel patto</h3>
+<p>Il <b>controllo e la manutenzione di impianti e attrezzature antincendio è parte integrante e fondamentale della GSA</b>: garantisce nel tempo che funzionino.</p>
+<p>Devono avere una manutenzione fatta secondo le disposizioni vigenti, le norme applicate e i manuali del costruttore o installatore: <b>gli impianti elettrici, gli impianti di trasporto e utilizzo di sostanze liquide e gassose infiammabili, gli impianti di processo a rischio d'incendio e i presidi antincendio</b>. Perché? <b>La manutenzione, insieme alla realizzazione a regola d'arte, garantisce il corretto funzionamento e riduce il rischio a un livello accettabile</b>.</p>
+
+<h3 class="sh"><small>il libro delle istruzioni</small>Il piano di emergenza</h3>
+<p>Il piano di emergenza che il datore di lavoro scrive (D.Lgs. 81/2008) è <b>l'organizzazione della risposta all'emergenza, costruita sulla valutazione del rischio incendio e anche su altri eventi credibili, come un terremoto</b>.</p>
+<p><b>Cosa deve contenere</b>:</p>
+<ul class="dots">
+<li>le <b>azioni che i lavoratori devono fare in caso di incendio</b>;</li>
+<li>le <b>procedure di evacuazione</b> per i lavoratori e per le altre persone presenti;</li>
+<li>le <b>disposizioni per chiamare i Vigili del Fuoco e per dare loro le informazioni necessarie al loro arrivo</b>;</li>
+<li>le <b>misure per assistere le persone con esigenze speciali</b>;</li>
+<li>i <b>compiti degli addetti</b>: <b>come dare l'allerta e fare le chiamate di emergenza e soccorso, in particolare ai Vigili del Fuoco; come fare il primo intervento; come avviare e coordinare l'evacuazione</b>;</li>
+<li><b>istruzioni scritte chiare</b> e <b>una o più planimetrie</b> dei luoghi con <b>l'ubicazione dei presidi antincendio</b>.</li>
+</ul>
+<p><b>Altre regole del piano</b>:</p>
+<ul class="dots">
+<li>deve indicare un <b>numero di addetti adeguato</b>, <b>congruo con turni e assenze ordinariamente prevedibili</b>;</li>
+<li>va fatto conoscere a <b>tutti i lavoratori, anche se non addetti</b>: il piano indica <b>come assicurare che tutto il personale sia informato</b>;</li>
+<li>se nello stesso edificio ci sono più luoghi di lavoro con <b>titolari diversi</b>, i piani vanno <b>coordinati</b>, in modo che siano <b>coerenti fra loro</b>;</li>
+<li>la gestione dell'emergenza va <b>preparata durante l'attività normale e provata con prove periodiche</b>;</li>
+<li>per le persone con <b>ridotte capacità sensoriali o motorie</b> servono misure di supporto, con allarmi adatti: <b>dispositivi sensoriali (luci, scritte luminose, dispositivi a vibrazione) e messaggi da altoparlanti, per esempio con il sistema EVAC</b>.</li>
+</ul>
+
+<h3 class="sh"><small>la formula per chiamare i cavalieri</small>La chiamata ai Vigili del Fuoco</h3>
+<p>Il piano deve indicare le procedure per chiamare i Vigili del Fuoco, dando le informazioni utili:</p>
+<ol class="ritual">
+<li><div>l'<b>indirizzo del luogo di lavoro</b>;</div></li>
+<li><div>la <b>tipologia di emergenza e la gravità</b>;</div></li>
+<li><div>eventuali <b>infortunati</b> e <b>materiali o sostanze pericolose presenti</b>;</div></li>
+<li><div>le <b>informazioni su accesso e vie preferenziali</b> per arrivare.</div></li>
+</ol>
+
+<h3 class="sh"><small>quando suona la campana</small>Durante l'emergenza</h3>
+<ul class="dots">
+<li>Chi scopre un incendio deve <b>dare l'allarme secondo le indicazioni del piano di emergenza, evitando di trasmettere agitazione</b> agli altri.</li>
+<li>I lavoratori <b>devono seguire le indicazioni del piano di emergenza</b> scritto dal datore di lavoro.</li>
+<li>Oltre al sistema d'esodo, <b>sì, il datore di lavoro deve predisporre nel piano le procedure di evacuazione</b>.</li>
+<li>Nell'evacuazione gli addetti hanno un <b>ruolo fondamentale: assicurano e sovrintendono il corretto svolgimento delle procedure</b>.</li>
+</ul>
+<p>Le azioni degli addetti durante l'evacuazione sono <b>tutte</b> queste:</p>
+<div class="specs">
+<div class="spec" style="--r:-1deg;--pin:var(--amber)"><h4>Prima</h4><p><b>Accertarsi che le uscite di sicurezza siano fruibili.</b></p></div>
+<div class="spec" style="--r:.6deg;--pin:var(--lilac)"><h4>Durante</h4><p>Sorvegliare la corretta evacuazione, controllare che nessuno abbia problemi a raggiungere l'uscita, <b>assistere le persone con necessità specifiche (disabili) fino al punto di raccolta</b>.</p></div>
+<div class="spec" style="--r:-.4deg;--pin:var(--moss)"><h4>Dopo</h4><p><b>Riunire gli occupanti al punto di raccolta, fare l'appello</b> per verificare che ci siano tutti, e controllare che <b>restino nelle aree stabilite fino alla fine dell'emergenza</b>.</p></div>
+</div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>La GSA in emergenza in cosa consiste?</span></summary><div class="ans">Nell'<b>attivazione e attuazione del piano di emergenza</b>.</div></details>
+<details><summary><span class="n">2</span><span>Il piano di emergenza va fatto conoscere solo agli addetti?</span></summary><div class="ans"><b>No, a tutti i lavoratori.</b></div></details>
+<details><summary><span class="n">3</span><span>Cosa dici al telefono ai Vigili del Fuoco?</span></summary><div class="ans"><b>Indirizzo, tipo e gravità dell'emergenza, feriti e sostanze pericolose, come arrivare.</b></div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-20">Vai al quiz del capitolo 20</a></div></section><section class="page" id="c21"><p class="kicker hand">Capitolo 21</p><h2 class="ct">Le maschere</h2><p class="sub">i DPI per le vie respiratorie</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Le maschere a filtro puliscono l'aria che c'è, ma non creano ossigeno: se ce n'è meno del 17% serve un respiratore isolante, con la sua scorta d'aria.</p></div>
+
+<p>Gli apparecchi di protezione delle vie respiratorie sono <b>tutti DPI di III categoria</b>, la più alta: per usarli servono formazione e addestramento.</p>
+
+<div class="duo">
+<div style="--c:var(--moss)"><h4>Respiratori a filtro</h4><p>Filtrano l'aria dell'ambiente. In base all'inquinante si dividono in <b>antipolvere, antigas e combinati</b>. La <b>maschera a filtro</b> si può usare solo dove l'ossigeno <b>non è inferiore al 17%</b>.</p></div>
+<div style="--c:var(--sky)"><h4>Respiratori isolanti</h4><p>Ti isolano dall'ambiente e ti danno aria pulita da una riserva. Gli <b>autorespiratori a ciclo aperto</b> hanno bombole che contengono <b>aria compressa</b> (non ossigeno puro): l'aria espirata esce fuori.</p></div>
+</div>
+<div class="clip"><figure class="polaroid wide" style="--r:-2deg"><img src="img/autorespiratore.jpg" alt="Autorespiratore con bombola, spallacci e maschera" width="361" height="238"></figure>
+<p class="hand">L'autorespiratore: la bombola sulla schiena è piena d'aria compressa, come quella dei sub.</p></div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>17 è il numero della maschera: sotto il 17% di ossigeno il filtro non serve a niente.</p></div>
+
+<h3 class="sh"><small>prima di andare avanti</small>Le prove della strega</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Con il 15% di ossigeno posso usare la maschera a filtro?</span></summary><div class="ans"><b>No</b>: serve almeno il 17%.</div></details>
+<details><summary><span class="n">2</span><span>Cosa c'è nelle bombole degli autorespiratori a ciclo aperto?</span></summary><div class="ans"><b>Aria compressa.</b></div></details>
+<details><summary><span class="n">3</span><span>Di che categoria sono i DPI per le vie respiratorie?</span></summary><div class="ans"><b>III categoria.</b></div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/#g-21">Vai al quiz del capitolo 21</a></div></section><section class="page" id="c22"><p class="kicker hand">Capitolo 22</p><h2 class="ct">Il rituale</h2><p class="sub">la prova pratica, un gesto alla volta</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<p>Alla prova pratica userai l'estintore e farai una manovra con l'idrante UNI 45 oppure con il naspo, rispondendo anche a domande su come si usano: qui c'è ogni gesto, in ordine.</p></div>
+<p>Durante l'addestramento e la prova si indossano <b>tutti i DPI previsti</b>. Respira: sono pochi gesti, sempre gli stessi.</p>
+
+<h3 class="sh"><small>primo rituale</small>L'estintore portatile</h3>
+<ol class="ritual">
+<li><div>Con la <b>mano dominante</b> afferra la <b>valvola di erogazione</b>; appoggia l'altra mano, a palmo aperto, sotto la <b>base</b>. Sgancia l'estintore dal muro.<img src="img/est-1.jpg" alt="Mano che afferra la valvola dell'estintore appeso al muro" width="547" height="431"></div></li>
+<li><div><b>Appoggialo a terra.</b><img src="img/est-2.jpg" alt="Estintore appoggiato a terra" width="561" height="374"></div></li>
+<li><div>Con l'estintore a terra, tieni la mano dominante sulla valvola <b>senza premere</b> e con l'altra mano <b>togli la spina di sicurezza</b>.<img src="img/est-3.jpg" alt="Estrazione della spina di sicurezza" width="534" height="353"></div></li>
+<li><div>Risollevalo con la mano dominante e con l'altra afferra la <b>manichetta vicino all'estremità</b>, per orientare il getto.<img src="img/est-4.jpg" alt="Operatore che solleva l'estintore e tiene la manichetta" width="640" height="425"></div></li>
+</ol>
+<p><b>Come spegnere</b>:</p>
+<ul class="dots">
+<li>avvicinati alla <b>giusta distanza</b>, compatibile con il calore;</li>
+<li>stai <b>sopravento</b>, col vento alle spalle;</li>
+<li>avanza <b>basso</b>, sotto il fumo;</li>
+<li>getto <b>alla base delle fiamme</b>, muovendolo <b>a ventaglio</b>;</li>
+<li>parti <b>dalle fiamme più vicine</b> e vai verso quelle lontane;</li>
+<li>su un <b>liquido</b> non sparare dentro il recipiente: schizzerebbe fuori;</li>
+<li>in due: <b>mai uno di fronte all'altro</b>, angolo non oltre 90°;</li>
+<li>prima di andare, controlla che sia <b>davvero spento</b>;</li>
+<li><b>mai l'ascensore</b> (tranne quelli antincendio e di soccorso).</li>
+</ul>
+
+<h3 class="sh"><small>secondo rituale</small>Il naspo (un operatore)</h3>
+<p>Il tubo è <b>già collegato</b> al rubinetto e alla lancia, avvolto su una bobina.</p>
+<ol class="ritual">
+<li><div>Apri lo <b>sportello</b> e ruota il naspo di lato, aprendolo a compasso.<img src="img/naspo-apertura.jpg" alt="Mano che apre il naspo dalla cassetta" width="262" height="184"></div></li>
+<li><div>Apri il <b>rubinetto</b> per mettere in pressione il tubo.</div></li>
+<li><div>Impugna il tubo con la <b>mano destra vicino alla lancia</b> e l'altra poco più avanti; vai verso il fuoco col tubo <b>sul lato destro</b>: si srotola da solo.</div></li>
+<li><div>A circa <b>5-6 metri</b> fermati in posizione sicura e <b>apri la lancia</b>.</div></li>
+</ol>
+
+<h3 class="sh"><small>terzo rituale</small>L'idrante a muro UNI 45 (un operatore)</h3>
+<p>Nella cassetta c'è la manichetta da 45 mm, già avvitata all'idrante e alla lancia, <b>avvolta in doppio</b>.</p>
+<ol class="ritual">
+<li><div>Apri lo sportello (se è in policarbonato si rompe). Prendi la manichetta e <b>appoggiala a terra in orizzontale</b>.</div></li>
+<li><div>Impugna la lancia con la <b>mano destra vicino alla leva</b>, controllando che sia <b>chiusa</b>. Vai verso l'incendio tenendo la manichetta <b>sul lato destro</b>.<img src="img/manichetta.jpg" alt="Manichetta stesa a terra" width="257" height="430"></div></li>
+<li><div>A manichetta <b>tutta stesa</b>, girati e controlla che <b>non ci siano pieghe</b>. Torna alla cassetta e <b>apri la valvola</b>.</div></li>
+<li><div>Quando la manichetta è <b>piena e in pressione</b>, torna alla lancia e <b>aprila</b>, scegliendo <b>getto pieno</b> o <b>frazionato</b>.<img src="img/getto.jpg" alt="Lancia che spruzza un getto d'acqua" width="231" height="400"></div></li>
+</ol>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>La formula dell'idrante: lancia chiusa, stendi tutto, niente pieghe, apri la valvola, poi apri la lancia.</p></div>
+
+<h3 class="sh"><small>le domande del rituale</small>Cosa ti possono chiedere</h3>
+<div class="trials">
+<details><summary><span class="n">1</span><span>Che estintore useresti su questo fuoco?</span></summary><div class="ans">Guarda la <b>classe di fuoco</b> (capitolo 2) e scegli la pozione giusta (capitolo 6), poi controlla l'etichetta.</div></details>
+<details><summary><span class="n">2</span><span>Si può usare su un quadro elettrico?</span></summary><div class="ans">Polvere e CO₂ <b>sì, fino a 1000 V a 1 m</b>; quelli ad acqua solo se l'etichetta lo dice.</div></details>
+<details><summary><span class="n">3</span><span>Che differenza c'è tra naspo e idrante?</span></summary><div class="ans">Naspo <b>DN 25</b>, tubo semirigido già collegato, fino a 30 m. Idrante <b>DN 45</b>, manichetta flessibile da stendere, di solito 20 m.</div></details>
+</div>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/">Vai al quiz</a></div></section><section class="page" id="c23"><p class="kicker hand">Capitolo 23</p><h2 class="ct">Il ripasso della strega</h2><p class="sub">tutti i numeri magici in una pagina</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><p>Il giorno prima dell'esame rileggi solo questa pagina: ci sono tutti i numeri che escono nelle domande, e le coppie di concetti che il goblin prova a farti confondere.</p>
+
+<h3 class="sh"><small>il fuoco</small>Combustione e gas</h3>
+<div class="nums">
+<div class="num"><b>5</b><span>classi di fuoco: A, B, C, D, F</span></div>
+<div class="num"><b>21 · 65 · 125</b><span>°C: confini delle categorie A, B, C dei liquidi</span></div>
+<div class="num"><b>0,8</b><span>densità che separa gas leggeri e pesanti</span></div>
+<div class="num"><b>4</b><span>modi di conservare i gas</span></div>
+<div class="num"><b>500 °C</b><span>oltre questa temperatura, flash over</span></div>
+<div class="num"><b>1000 kW</b><span>la soglia della velocità di crescita</span></div>
+</div>
+
+<h3 class="sh"><small>persone e vie di fuga</small>Esodo e allarme</h3>
+<div class="nums">
+<div class="num"><b>5</b><span>categorie di occupanti (A-E)</span></div>
+<div class="num"><b>17%</b><span>ossigeno minimo per la maschera a filtro</span></div>
+<div class="num"><b>20-70 m</b><span>vie di esodo</span></div>
+<div class="num"><b>10-45 m</b><span>corridoi ciechi</span></div>
+<div class="num"><b>2 m</b><span>altezza minima vie di esodo</span></div>
+<div class="num"><b>80 · 90 · 120</b><span>cm: 50 persone in piano, 300 sulle scale, oltre 1000 sempre 1,20 m</span></div>
+<div class="num"><b>20%</b><span>pendenza oltre la quale la rampa non vale</span></div>
+<div class="num"><b>15-30 m</b><span>percorso fino ai pulsanti di allarme</span></div>
+<div class="num"><b>110 cm</b><span>altezza di pulsanti e impugnature</span></div>
+</div>
+
+<h3 class="sh"><small>gli strumenti</small>Estintori, idranti, impianti</h3>
+<div class="nums">
+<div class="num"><b>20 kg</b><span>massimo per un estintore portatile</span></div>
+<div class="num"><b>150 kg</b><span>massimo per un carrellato</span></div>
+<div class="num"><b>6 kg</b><span>carica massima dove c'è pubblico</span></div>
+<div class="num"><b>20-40 m</b><span>distanza degli estintori di classe A</span></div>
+<div class="num"><b>15 m</b><span>estintori di classe B dalla sorgente</span></div>
+<div class="num"><b>1000 V · 1 m</b><span>estintori su impianti elettrici</span></div>
+<div class="num"><b>DN 45 · 20 m</b><span>idrante a muro</span></div>
+<div class="num"><b>DN 25 · 30 m</b><span>naspo</span></div>
+<div class="num"><b>45 · 70</b><span>mm: tubi di mandata</span></div>
+<div class="num"><b>80-140</b><span>bar: water mist</span></div>
+<div class="num"><b>50 m</b><span>mezzi dei Vigili del Fuoco dagli accessi</span></div>
+<div class="num"><b>500 m</b><span>idrante per i Vigili del Fuoco dai confini</span></div>
+</div>
+
+<h3 class="sh"><small>le trappole del goblin</small>Le coppie da non confondere</h3>
+<div class="tw"><table><thead><tr><th>Questo</th><th>Non confonderlo con</th></tr></thead><tbody>
+<tr><td><b>Accensione</b>: brucia da solo, senza innesco, per tutte le sostanze</td><td><b>Infiammabilità</b>: solo liquidi, vapori che bruciano con innesco</td></tr>
+<tr><td><b>Deflagrazione</b>: più lenta del suono</td><td><b>Detonazione</b>: più veloce del suono</td></tr>
+<tr><td><b>Attiva</b>: serve un'azione (estintori, idranti, naspi)</td><td><b>Passiva</b>: nessuna azione (vie di esodo, porte EI, anche col magnete)</td></tr>
+<tr><td><b>Sorveglianza</b>: controllo visivo, anche un lavoratore istruito</td><td><b>Controllo periodico</b>: solo il tecnico manutentore qualificato</td></tr>
+<tr><td><b>R</b>: portante</td><td><b>E</b>: tenuta ai fumi; <b>I</b>: isolamento dal calore</td></tr>
+<tr><td><b>Reazione al fuoco</b>: quanto il materiale aiuta il fuoco</td><td><b>Resistenza al fuoco</b>: quanto la struttura regge e separa</td></tr>
+<tr><td><b>Luogo sicuro</b>: per sempre</td><td><b>Spazio calmo</b>: temporaneo, si aspetta aiuto</td></tr>
+<tr><td><b>CO</b>: tossico, invisibile, senza odore</td><td><b>CO₂</b>: asfissiante, non tossica</td></tr>
+<tr><td><b>Ascensore antincendio</b>: per gli occupanti, usabile coi soccorritori</td><td><b>Ascensore di soccorso</b>: per le attrezzature</td></tr>
+<tr><td><b>Sprinkler a umido</b>: tubi pieni d'acqua</td><td><b>A secco</b>: dove l'acqua gelerebbe</td></tr>
+<tr><td><b>Cartello naspo</b> (nel quiz): tubo appeso a zig-zag</td><td><b>Cartello idrante</b> (nel quiz): tubo a spirale</td></tr></tbody></table></div>
+<div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>E l'ultimo incantesimo: quando una risposta dice "solo", "esclusivamente" o "mai", controlla due volte. Spesso è il goblin.</p></div>
+</section></main><footer class="end"><span class="hand">Fine del grimorio. Ora vai e spegni tutto.</span></footer><script>
+{
+const flame=document.getElementById('flame'),smoke=document.getElementById('smoke'),say=document.getElementById('say'),again=document.getElementById('again');
+const msg={fuel:'Hai tolto il <b>combustibile</b>: il fuoco non ha più niente da mangiare. È l\'incantesimo dell\'<b>esaurimento</b>.',
+air:'Hai tolto il <b>comburente</b>: niente ossigeno, niente respiro. È l\'incantesimo del <b>soffocamento</b>.',
+heat:'Hai tolto il <b>calore</b>: il fuoco si raffredda finché non si regge più. È l\'incantesimo del <b>raffreddamento</b>.'};
+if(flame){
+ const brk=el=>{if(flame.classList.contains('out'))return;el.classList.add('off');flame.classList.add('out');smoke.classList.add('on');say.innerHTML=msg[el.dataset.s];again.classList.add('show');again.focus({preventScroll:true})};
+ document.querySelectorAll('.side').forEach(s=>{s.addEventListener('click',()=>brk(s));s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();brk(s)}})});
+ again.addEventListener('click',()=>{document.querySelectorAll('.side').forEach(s=>s.classList.remove('off'));flame.classList.remove('out');smoke.classList.remove('on');again.classList.remove('show');say.innerHTML='Il fuoco è tornato. <b>Prova un altro lato</b> del sigillo.'});
+}
+const toc=document.querySelector('.toc'),first=document.getElementById('c1');
+const showToc=()=>{if(toc&&first)toc.classList.toggle('show',window.scrollY>first.offsetTop-120)};
+window.addEventListener('scroll',showToc,{passive:true});showToc();
+const links=[...document.querySelectorAll('.toc .menu a')],secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const menu=document.getElementById('tocmenu'),cur=document.querySelector('.toc .cur'),pv=document.querySelector('.toc .pv'),nx=document.querySelector('.toc .nx'),tn=document.getElementById('tn'),tt=document.getElementById('tt');
+let idx=0;
+const setCur=i=>{idx=i;links.forEach((a,k)=>a.classList.toggle('on',k===i));tn.textContent=links[i].dataset.i;tt.textContent=links[i].dataset.t;pv.disabled=i===0;nx.disabled=i===links.length-1};
+const openMenu=o=>{menu.hidden=!o;cur.setAttribute('aria-expanded',o)};
+const go=i=>{openMenu(false);secs[i].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});setCur(i)};
+if(links.length){
+ setCur(0);
+ cur.addEventListener('click',()=>openMenu(menu.hidden));
+ pv.addEventListener('click',()=>idx>0&&go(idx-1));
+ nx.addEventListener('click',()=>idx<links.length-1&&go(idx+1));
+ links.forEach((a,k)=>a.addEventListener('click',e=>{e.preventDefault();go(k)}));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')openMenu(false)});
+ document.addEventListener('click',e=>{if(!menu.hidden&&!e.target.closest('.toc'))openMenu(false)});
+ if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);if(i>-1)setCur(i)}})},{rootMargin:'-40% 0px -55% 0px'});
+  secs.forEach(s=>s&&io.observe(s));
+ }
+}
+}
+</script>
+</body></html>

@@ -1,0 +1,21 @@
+{
+ "name": "Il Grimorio del Fuoco",
+ "short_name": "Grimorio",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#1f261c",
+ "theme_color": "#1f261c",
+ "icons": [
+  {
+   "src": "icons/grimorio-180.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/grimorio-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}

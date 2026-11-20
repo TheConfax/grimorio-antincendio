@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f261c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Quiz Fuoco">
+<link rel="apple-touch-icon" href="../icons/quiz-180.png">
+<link rel="icon" type="image/png" href="../icons/quiz-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<title>Quiz del Grimorio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Caveat:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: serio e chiaro, è l'allenamento per un esame vero; la grafica è quella del grimorio
+   IDEA: le pagine d'esame del grimorio: pergamena, etichette appuntate, inchiostro e muschio
+   PICTURE: il quiz stesso, la domanda come una pagina del libro e le risposte come etichette
+   COLOUR and TYPE: muschio, fungo, ambra candela, rosa antico, lilla su pergamena; IM Fell + Caveat + Nunito
+   LAYOUT: copertina con le tre prove, poi i capitoli; durante il quiz una sola colonna calma */
+:root{color-scheme:light dark;
+--bg:light-dark(#efe5cf,#171c15);--page:light-dark(#f7efdc,#1f261c);--card:light-dark(#fffaf0,#262f21);--ink:light-dark(#2e251a,#ece2cc);--mute:light-dark(#6b5a44,#b8ab92);
+--moss:light-dark(#4d6a35,#93b56e);--fungo:light-dark(#7b4f30,#d39b6c);--amber:light-dark(#b8741a,#f2b54f);--rose:light-dark(#b0676e,#e4a4aa);--lilac:light-dark(#7e6fa8,#b8a9e0);
+--line:light-dark(#d8c9a8,#3b4532);--wash:light-dark(#efe2c2,#2a3323);
+--grn:var(--moss);--grnbg:light-dark(#e3ead2,#26331f);--red2:light-dark(#a24a3a,#e98a74);--redbg:light-dark(#f6e0d6,#3a2620)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip;
+background-image:radial-gradient(circle at 12% 8%,light-dark(#e6d6b0,#222b1d) 0 18%,transparent 40%),radial-gradient(circle at 90% 60%,light-dark(#e9dcc0,#1b2318) 0 15%,transparent 35%)}
+h1,h2,h3{font-family:"IM Fell English",Georgia,serif;font-weight:400;line-height:1.05;margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto}
+.top{padding:clamp(26px,5vw,52px) max(5vw,16px) 8px;text-align:center}
+.top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
+.top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
+.top p{margin:0 auto;max-width:58ch;color:var(--mute)}
+.vine{display:block;width:min(100%,560px);height:26px;margin:14px auto 0;color:var(--moss)}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px;text-align:left}
+.mode{position:relative;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:24px 16px 16px;min-height:104px;box-shadow:0 10px 22px -18px light-dark(#7b5c33,#000)}
+.mode::before{content:"";position:absolute;top:-8px;left:50%;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff8 0 20%,var(--pin,var(--rose)) 25%);box-shadow:0 2px 2px #0004}
+.mode b{display:block;font:400 25px/1.1 "IM Fell English",serif}
+.mode span{font-size:14px;color:var(--mute)}
+.mode.exam{background:var(--wash);border-color:var(--fungo);--pin:var(--amber)}
+.mode:hover:not(:disabled){border-color:var(--moss)}
+.mode:disabled{opacity:.55;cursor:default}
+.band{padding:clamp(20px,3vw,36px) max(5vw,16px) 56px}
+.stats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 28px;margin-bottom:24px;color:var(--mute)}
+.stats strong{color:var(--fungo);font:800 20px Nunito}
+.chaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}
+.chap{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-align:left;min-height:72px}
+.chap:hover{border-color:var(--moss)}
+.chap .num{grid-row:span 2;width:40px;height:40px;border-radius:50%;background:var(--moss);color:var(--page);display:grid;place-items:center;font:800 18px Nunito}
+.chap .nm{font-weight:700;line-height:1.25}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .ok{background:var(--moss)}.bar .ko{background:var(--red2)}
+.chap small{color:var(--mute);font-size:13px}
+h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
+.reset{display:block;margin:22px auto 0;background:none;border:0;color:var(--mute);text-decoration:underline;padding:8px 0;min-height:44px}
+#quiz{display:none}
+.qhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 auto 14px;max-width:780px}
+.qhead .ttl{font:400 26px "IM Fell English",serif;flex:1}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-weight:700;white-space:nowrap}
+.pill.timer{background:var(--ink);color:var(--page);font-variant-numeric:tabular-nums}
+.pill.timer.low{background:var(--red2);color:#fff}
+.exit{background:none;border:1px solid var(--line);border-radius:99px;padding:8px 16px;min-height:44px}
+.prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:0 auto 22px;max-width:780px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--amber));transition:width .3s}
+.qcard{background:var(--page);border:1px solid var(--line);border-radius:4px 4px 10px 10px;padding:clamp(20px,3.5vw,34px);max-width:780px;margin:0 auto;box-shadow:0 18px 40px -26px light-dark(#7b5c33,#000)}
+.qn{font:700 21px/1.1 Caveat,cursive;color:var(--lilac)}
+.qt{font-size:clamp(19px,2.4vw,22px);font-weight:700;line-height:1.4;margin:6px 0 16px}
+.qimg{display:block;width:120px;height:120px;object-fit:contain;margin:0 0 16px;background:#fff;border-radius:6px;padding:6px;border:1px solid var(--line);transform:rotate(-2deg);box-shadow:0 6px 14px -8px #0007}
+.opts{display:grid;gap:10px}
+.opt{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:start;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;min-height:56px;line-height:1.45}
+.opt .l{width:34px;height:34px;border-radius:50%;background:var(--wash);color:var(--fungo);border:1.5px solid var(--fungo);display:grid;place-items:center;font:400 19px "IM Fell English SC",serif}
+.opt:hover:not(:disabled){border-color:var(--moss)}
+.opt.sel{border-color:var(--fungo);box-shadow:inset 0 0 0 1px var(--fungo)}.opt.sel .l{background:var(--fungo);color:var(--page)}
+.opt.right{border-color:var(--grn);background:var(--grnbg)}.opt.right .l{background:var(--grn);border-color:var(--grn);color:var(--page)}
+.opt.wrong{border-color:var(--red2);background:var(--redbg)}.opt.wrong .l{background:var(--red2);border-color:var(--red2);color:#fff}
+.opt:disabled{cursor:default}
+.fb{margin-top:16px;padding:14px 16px;border-radius:8px;display:none;border:1px dashed var(--line)}
+.fb.show{display:block}
+.fb.good{background:var(--grnbg);border-color:var(--moss)}.fb.bad{background:var(--redbg);border-color:var(--red2)}
+.fb b{font:400 23px "IM Fell English",serif}
+.fb p{margin:4px 0 0}
+.fb .tip{font:700 21px/1.25 Caveat,cursive;color:var(--fungo)}
+.fb a{color:var(--fungo);font-weight:700}
+.nav{display:flex;flex-wrap:wrap;gap:10px;margin:18px auto 0;max-width:780px}
+.btn{border:0;border-radius:99px;padding:12px 24px;min-height:48px;font-weight:800;background:var(--fungo);color:var(--page)}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin:18px auto 0;max-width:780px}
+.dot{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:14px}
+.dot.done{background:var(--moss);color:var(--page);border-color:var(--moss)}.dot.cur{outline:3px solid var(--amber)}
+.res{max-width:780px;margin:0 auto}
+.score{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:22px 24px;border-radius:10px;margin-bottom:22px;border:2px solid}
+.score.pass{background:var(--grnbg);border-color:var(--moss)}.score.fail{background:var(--redbg);border-color:var(--red2)}
+.score .big{font:800 clamp(52px,10vw,76px)/1 Nunito;color:var(--fungo)}
+.score h2{font-size:clamp(28px,4vw,38px)}
+.rv{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.rv.bad{border-left:6px solid var(--red2)}.rv.good{border-left:6px solid var(--moss)}
+.rv .q{font-weight:700}
+.rv .a{margin-top:6px;font-size:15px}
+.rv .a em{font-style:normal;color:var(--moss);font-weight:700}
+.rv .a s{color:var(--red2)}
+.empty{color:var(--mute)}
+body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,body.inquiz .top .hand,body.inquiz .vine{display:none}body.inquiz .top h1{font-size:clamp(26px,4vw,34px)}
+@media(max-width:600px){.qhead .ttl{flex-basis:100%}.modes{grid-template-columns:1fr}.mode{min-height:0}}
+@media(prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <p class="hand">le prove del Grimorio del Fuoco</p>
+  <h1>Quiz Antincendio Livello 3</h1>
+  <p>Le 345 domande ufficiali della banca dati 3-FOR. Allo scritto ne escono 15: per passare ne servono almeno 10 giuste in 30 minuti.</p>
+  <svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
+  <div class="modes">
+    <button class="mode exam" id="bExam"><b>Simulazione d'esame</b><span>15 domande a caso, 30 minuti, soglia 10</span></button>
+    <button class="mode" id="bErr" style="--pin:var(--lilac)"><b>Ripassa gli errori</b><span id="errLbl">Nessun errore da ripassare</span></button>
+    <button class="mode" id="bAll" style="--pin:var(--moss)"><b>Tutte le domande</b><span>345 domande in ordine casuale</span></button>
+  </div>
+</div></header>
+
+<main class="band"><div class="wrap">
+  <section id="home">
+    <div class="stats" id="stats"></div>
+    <h2 class="sec">Allenati per capitolo</h2>
+    <div class="chaps" id="chaps"></div>
+    <button class="reset" id="bReset">Azzera i progressi salvati</button>
+  </section>
+  <section id="quiz"></section>
+</div></main>
+
+<script>
+{
+const CH={1:"La combustione",2:"Le sostanze estinguenti",3:"Rischio, dinamica ed effetti sull'uomo",4:"Prevenzione e protezione",5:"La segnaletica di sicurezza",6:"Controlli e manutenzione",7:"Aree a rischio ed esplosioni",8:"Reazione, resistenza al fuoco, compartimentazione",9:"L'esodo",10:"Rivelazione, allarme, fumo e calore",11:"Estintori, idranti, impianti automatici",12:"Gestione della sicurezza ed emergenza",13:"DPI per le vie respiratorie"};
+const L="ABC";
+const GR="../",GT={"1": "Il sigillo del fuoco", "2": "Le cinque creature del fuoco", "3": "I numeri segreti della fiamma", "4": "Solidi, liquidi e gas", "5": "Il calore e le scintille", "6": "Le pozioni che spengono", "7": "La vita di un incendio", "8": "Gli scudi del villaggio", "9": "Le rune", "10": "I guardiani dei presidi", "11": "Le terre maledette", "12": "Pelle e corazza", "13": "I muri incantati", "14": "Il sentiero fuori dal bosco", "15": "Le misure del sentiero", "16": "Campane e camini", "17": "Il primo strumento: l'estintore", "18": "Fontane e piogge magiche", "19": "Aprire la strada ai cavalieri", "20": "Il patto del villaggio", "21": "Le maschere", "22": "Il rituale", "23": "Il ripasso della strega"};
+let Q=[],st={},S=null,timerId=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const load=()=>{try{st=JSON.parse(localStorage.getItem("qa3for_grimorio")||"{}")}catch(e){st={}}};
+const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}catch(e){}};
+const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;save()};
+const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
+
+function home(){
+  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");
+  $("quiz").style.display="none";$("home").style.display="block";
+  const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
+  $("stats").innerHTML=`<span><strong>${seen}</strong> di 345 provate</span><span><strong>${ok}</strong> giuste all'ultimo tentativo</span><span><strong>${seen?Math.round(ok/seen*100):0}%</strong> di risposte corrette</span>`;
+  const e=errs().length;$("errLbl").textContent=e?`${e} domande sbagliate l'ultima volta`:"Nessun errore da ripassare";$("bErr").disabled=!e;
+  $("chaps").innerHTML=Object.keys(CH).map(c=>{const qs=Q.filter(q=>q.c==c),g=qs.filter(q=>st[q.n]&&st[q.n].l===1).length,b=qs.filter(q=>st[q.n]&&st[q.n].l===0).length;
+    return `<button class="chap" data-c="${c}"><span class="num">${c}</span><span class="nm">${CH[c]}</span><span><span class="bar"><i class="ok" style="width:${g/qs.length*100}%"></i><i class="ko" style="width:${b/qs.length*100}%"></i></span><small>${qs.length} domande${g||b?` · ${g} giuste, ${b} da ripassare`:""}</small></span></button>`}).join("");
+}
+
+function start(list,mode,title){
+  S={list,mode,title,i:0,ans:{},done:{},end:mode==="exam"?Date.now()+30*60e3:0};
+  $("home").style.display="none";$("quiz").style.display="block";document.body.classList.add("inquiz");
+  if(mode==="exam"){clearInterval(timerId);timerId=setInterval(tick,1000)}
+  render();window.scrollTo({top:0});
+}
+function tick(){
+  const left=Math.max(0,S.end-Date.now()),el=$("tmr");
+  if(el){const m=Math.floor(left/60e3),s=Math.floor(left/1e3)%60;el.textContent=`${m}:${String(s).padStart(2,"0")}`;el.classList.toggle("low",left<5*60e3)}
+  if(!left)finish();
+}
+function render(){
+  const q=S.list[S.i],n=S.list.length,ex=S.mode==="exam",a=S.ans[S.i],shown=!ex&&S.done[S.i];
+  let o=q.o.map((t,k)=>{let c="opt";if(shown){if(k===q.a)c+=" right";else if(k===a)c+=" wrong"}else if(k===a)c+=" sel";
+    return `<button class="${c}" data-k="${k}" ${shown?"disabled":""}><span class="l">${L[k]}</span><span>${esc(t)}</span></button>`}).join("");
+  let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}<p>Ripassa nel grimorio: <a href="${GR}#c${q.g}">capitolo ${q.g}, ${esc(GT[q.g])}</a></p></div>`}
+  const last=S.i===n-1;
+  $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span><button class="exit" id="bExit">${ex?"Abbandona":"Torna ai capitoli"}</button></div>
+  <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
+  <article class="qcard"><div class="qn">Domanda n. ${q.n} della banca dati · Capitolo ${q.c}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
+  <div class="nav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>Indietro</button>${ex?`<button class="btn ghost" id="bNext" ${last?"disabled":""}>Avanti</button><button class="btn" id="bEnd">Consegna</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Prossima"}</button>`}</div>
+  ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
+  if(ex)tick();
+}
+function choose(k){
+  if(S.mode==="exam"){S.ans[S.i]=k;render();return}
+  if(S.done[S.i])return;
+  S.ans[S.i]=k;S.done[S.i]=1;mark(S.list[S.i].n,k===S.list[S.i].a);render();
+}
+function next(){if(S.mode!=="exam"&&!S.done[S.i])return;if(S.i<S.list.length-1){S.i++;render()}else finish()}
+function finish(){
+  clearInterval(timerId);
+  const ex=S.mode==="exam",n=S.list.length;
+  if(ex)S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a);else mark(q.n,false)});
+  const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3;
+  const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
+  const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
+  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(pass?`Ne servivano almeno 10, ne hai fatte ${ok}.`:`Ne servivano almeno 10: te ne mancano ${10-ok}.`):`Hai risposto bene al ${Math.round(ok/n*100)}% delle domande.`}</p></div></div>
+  <div class="nav" style="margin:0 0 18px"><button class="btn" id="bAgain">${ex?"Nuova simulazione":"Rifai questo blocco"}</button><button class="btn ghost" id="bHome">Torna ai capitoli</button></div>
+  <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
+  const again=S;S={again};window.scrollTo({top:$("quiz").offsetTop-20});
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.classList.contains("chap")){const c=+t.dataset.c;start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`);return}
+  if(t.classList.contains("opt")){choose(+t.dataset.k);return}
+  if(t.classList.contains("dot")){S.i=+t.dataset.j;render();return}
+  switch(t.id){
+    case"bExam":start(shuffle(Q).slice(0,15),"exam","Simulazione d'esame");break;
+    case"bErr":start(shuffle(errs()),"err","Ripasso degli errori");break;
+    case"bAll":start(shuffle(Q),"all","Tutte le domande");break;
+    case"bExit":home();break;
+    case"bHome":home();break;
+    case"bPrev":if(S.i){S.i--;render()}break;
+    case"bNext":next();break;
+    case"bEnd":finish();break;
+    case"bAgain":{const p=S.again;start(p.mode==="exam"?shuffle(Q).slice(0,15):shuffle(p.list),p.mode,p.title);break}
+    case"bReset":if(t.dataset.sure){st={};save();t.textContent="Azzera i progressi salvati";delete t.dataset.sure;home()}else{t.dataset.sure=1;t.textContent="Sicuro? Clicca di nuovo per azzerare"}break;
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(!S||!S.list||$("quiz").style.display==="none")return;
+  const k={"1":0,"2":1,"3":2,a:0,b:1,c:2}[e.key.toLowerCase()];
+  if(k!==undefined){choose(k);e.preventDefault()}
+  else if(e.key==="Enter"){S.mode==="exam"?(S.i<S.list.length-1&&(S.i++,render())):next()}
+});
+load();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){const l=Q.filter(q=>q.g===g);if(l.length){start(shuffle(l),"chap",`Grimorio, capitolo ${g}: ${GT[g]}`);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`);return true}return false};
+window.addEventListener("hashchange",()=>{if(Q.length)fromHash()});
+fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();fromHash()}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
+}
+</script>
+</body>
+</html>
