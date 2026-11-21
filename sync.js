@@ -99,12 +99,12 @@ function ago(t){
 }
 function paintBox(){
   const box=document.getElementById("gsBox");if(!box)return;
-  const st=linked()?`<p class="gsst">🔗 Collegato · ${state==="busy"?"sto salvando…":state==="err"?"senza rete, salvo appena torna":esc(ago(get("gs_at",0))||"sto salvando…")}</p>`:"";
+  const st=linked()?`<button type="button" class="gsst" data-gs="unlink">🔗 Collegato · ${state==="busy"?"sto salvando…":state==="err"?"senza rete, salvo appena torna":esc(ago(get("gs_at",0))||"sto salvando…")}</button>`:"";
   const btn=phone()?(linked()?"":`<button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra il QR</button>`):`<button class="btn ghost gsb" data-gs="show">${I.phone}Collega il telefono</button>`;
   box.innerHTML=btn+st;
 }
-addEventListener("gs:status",paintBox);
-setInterval(()=>{if(state==="ok")paintBox()},30e3);
+addEventListener("gs:status",()=>{if(!document.querySelector('#gsBox [data-sure]'))paintBox()});
+setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))paintBox()},30e3);
 
 function overlay(html){
   const o=document.createElement("div");o.className="gsov";o.innerHTML=`<div class="gscard" role="dialog" aria-modal="true">${html}</div>`;
@@ -171,7 +171,15 @@ function scanQR(){
   });
 }
 
-document.addEventListener("click",e=>{const b=e.target.closest("#gsBox [data-gs]");if(!b)return;if(b.dataset.gs==="show")showQR();else if(b.dataset.gs==="scan")scanQR()});
+/* Scollega: un tocco chiede "Scollega?", il secondo conferma. I progressi restano su questo dispositivo. */
+function unlink(){clearTimeout(timer);timer=0;["gs_id","gs_wipe","gs_at"].concat(MERGE).forEach(del);state="idle";paintBox()}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("#gsBox [data-gs]"),u=document.querySelector('#gsBox [data-gs="unlink"][data-sure]');
+  if(u&&u!==b)paintBox();
+  if(!b)return;
+  if(b.dataset.gs==="show")showQR();else if(b.dataset.gs==="scan")scanQR();
+  else if(b.dataset.gs==="unlink"){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.textContent="Scollega?"}}
+});
 
 window.GS={sync,soon,wipeAll,linked,paint:paintBox,_merge:merge};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",paintBox);else paintBox();
