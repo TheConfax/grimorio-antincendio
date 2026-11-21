@@ -1319,10 +1319,12 @@ const paint=()=>{const r=read();
 document.addEventListener('click',e=>{const b=e.target.closest('.kicker .letto');
  document.querySelectorAll('.kicker .letto[data-sure]').forEach(x=>{if(x!==b){delete x.dataset.sure;x.innerHTML='Letto '+BOOK}});
  if(!b)return;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Rimuovi?';return}
- const r=read();r.delete(+b.dataset.cap);try{localStorage.setItem(RK,JSON.stringify([...r]))}catch(x){}paint()});
+ const r=read();r.delete(+b.dataset.cap);try{localStorage.setItem(RK,JSON.stringify([...r]))}catch(x){}paint();window.GS&&GS.soon()});
 paint();
 // "Quiz capitolo N" in fondo al capitolo segna il capitolo come letto
-document.querySelectorAll('.go a[href^="quiz/#g-"]').forEach(a=>a.addEventListener('click',()=>{const n=+a.getAttribute('href').split('-')[1],r=read();if(!r.has(n)){r.add(n);try{localStorage.setItem(RK,JSON.stringify([...r]))}catch(x){}paint()}}));
+document.querySelectorAll('.go a[href^="quiz/#g-"]').forEach(a=>a.addEventListener('click',()=>{const n=+a.getAttribute('href').split('-')[1],r=read();if(!r.has(n)){r.add(n);try{localStorage.setItem(RK,JSON.stringify([...r]))}catch(x){}paint();window.GS&&GS.soon()}}));
+addEventListener('gs:update',paint);
 }
 </script>
+<script src="sync.js"></script>
 </body></html>

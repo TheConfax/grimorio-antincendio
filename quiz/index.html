@@ -177,6 +177,18 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none}
 body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,body.inquiz .top .hand,body.inquiz .vine{display:none}body.inquiz .top h1{font-size:clamp(26px,4vw,34px)}
 @media(max-width:600px){.qhead .ttl{flex-basis:100%}.modes{grid-template-columns:1fr;gap:30px}.mode{min-height:0}.mode .snail{bottom:-11px}.mode .shroom{top:-15px}}
 @media(prefers-reduced-motion:reduce){.prog i{transition:none}}
+.gsbox{display:flex;flex-direction:column;align-items:center;gap:8px;margin:36px auto 0}.gsbox:empty{display:none}.gsbox+.rwrap{margin-top:18px}
+.gsb{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;font-size:15px}.gsb svg,.gsx svg{width:19px;height:19px}
+.gsst{margin:0;font-size:14px;color:var(--mute);text-align:center}
+.gslock,.gslock body{overflow:hidden}
+.gsov{position:fixed;inset:0;z-index:50;background:#0008;display:grid;place-items:center;padding:16px}
+.gscard{width:min(360px,100%);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:22px 20px 18px;text-align:center;box-shadow:0 20px 50px -20px #000}
+.gscard h3{margin:0 0 14px;font:700 26px/1.1 Caveat,cursive;color:var(--fungo)}
+.gsqr{width:236px;height:236px;margin:0 auto;display:grid;place-items:center;background:#fff;border-radius:6px}.gsqr svg{width:100%;height:100%;display:block}
+.gscam{width:100%;aspect-ratio:1;margin:0 auto;border-radius:6px;overflow:hidden;background:#000}.gscam video{width:100%;height:100%;object-fit:cover;display:block}
+.gsmsg{margin:14px 0 4px;font-size:15px}.gsmute{margin:6px 0 0;font-size:14px;color:var(--mute)}.gsqr .gsmute{color:#6b5a44}
+.gsok{margin:0;font:800 54px/1 Nunito,system-ui,sans-serif;color:var(--moss)}
+.gsx{display:inline-flex;align-items:center;gap:8px;margin-top:14px}.gsagain{margin-top:6px}
 </style>
 </head>
 <body>
@@ -200,6 +212,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
     <h2 class="sec">Quiz per capitolo</h2>
     <div class="chaps" id="chaps"></div>
     <svg class="vine sep end" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
+    <div class="gsbox" id="gsBox"></div>
     <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Cancella tutti i dati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><g class="tears"><path d="M17 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/><path d="M57 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/></g></svg></div>
   </section>
   <section id="quiz"></section>
@@ -216,7 +229,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const pct=v=>(v===0?"allo ":v===1||v===8||v===11||(v>=80&&v<=89)?"all'":"al ")+v+"%";
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const load=()=>{try{st=JSON.parse(localStorage.getItem("qa3for_grimorio")||"{}")}catch(e){st={}}};
-const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}catch(e){}};
+const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}catch(e){}window.GS&&GS.soon()};
 const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;save()};
 const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
 const letti=()=>{try{return new Set(JSON.parse(localStorage.getItem("grimorio_letti")||"[]"))}catch(e){return new Set()}};
@@ -353,7 +366,7 @@ document.addEventListener("click",e=>{
     case"bYes":finish();break;
     case"bNo":S.confirm=0;render();break;
     case"bAgain":{const p=S.again;if((p.mode==="err"&&!errs().length)||(p.mode==="all"&&Q.filter(q=>st[q.n]).length<20)){home();break}start(p.mode==="exam"?shuffle(Q).slice(0,15):p.mode==="chap"?pickChapter(p.chap):p.mode==="err"?shuffle(errs()).slice(0,QN):pickBombeiro(),p.mode,p.title,p.chap);break}
-    case"bReset":{const w=t.closest(".rwrap"),k=+(t.dataset.step||0);if(k===0){t.dataset.step=1;$("bResetT").textContent="Sei sicura di voler uccidere questa ranetta?";w.classList.add("cry")}else if(k===1){t.dataset.step=2;$("bResetT").textContent="SICURISSIMA?"}else{st={};try{["qa3for_grimorio","qa3for_sess","qa3for_homey","grimorio_letti","grimorio_pos","gq_last"].forEach(k=>localStorage.removeItem(k))}catch(x){}location.replace(GR);break}break}
+    case"bReset":{const w=t.closest(".rwrap"),k=+(t.dataset.step||0);if(k===0){t.dataset.step=1;$("bResetT").textContent="Sei sicura di voler uccidere questa ranetta?";w.classList.add("cry")}else if(k===1){t.dataset.step=2;$("bResetT").textContent="SICURISSIMA?"}else{st={};if(window.GS)GS.wipeAll();else try{["qa3for_grimorio","qa3for_sess","qa3for_homey","grimorio_letti","grimorio_pos","gq_last"].forEach(k=>localStorage.removeItem(k))}catch(x){}location.replace(GR);break}break}
   }
 });
 document.addEventListener("keydown",e=>{
@@ -363,6 +376,7 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="Enter"){S.mode==="exam"?(S.i<S.list.length-1&&(S.i++,render())):next()}
 });
 load();
+addEventListener("gs:update",()=>{load();if(Q.length&&!S)home()});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){if(Q.some(q=>q.c===g)){start(pickChapter(g),"chap",`Capitolo ${g}: ${GT[g]}`,g);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(pickChapter(c),"chap",`Capitolo ${c}: ${CH[c]}`,c);return true}return false};
 window.addEventListener("hashchange",()=>{if(Q.length)fromHash()});
@@ -376,5 +390,6 @@ fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();
   if(!restore(rawSess)){const y=+(localStorage.getItem(HY)||0);if(y){const r=document.documentElement;r.style.scrollBehavior="auto";scrollTo(0,y);r.style.scrollBehavior=""}}}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
 }
 </script>
+<script src="../sync.js"></script>
 </body>
 </html>
