@@ -39,7 +39,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offs
 .wrap{max-width:980px;margin:0 auto}
 .top{padding:clamp(26px,5vw,52px) max(5vw,16px) 8px;text-align:center}
 .qbar{position:fixed;top:0;left:0;right:0;z-index:5;background:color-mix(in srgb,var(--bg) 95%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -16px #0008}
-.qbar .in{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:7px 12px}
+.qbar .in{position:relative;max-width:780px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:7px 12px;min-height:56px}
+.qbar .timer{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;padding:8px 16px}
+.qbar .timer[hidden]{display:none}
 .tog,.mq{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border-radius:99px;font:700 16px/1 Nunito,system-ui,sans-serif;text-decoration:none;white-space:nowrap}
 .tog{background:var(--fungo);color:var(--page);border:1px solid var(--fungo);font-weight:800}
 .tog .ch{font-size:22px;line-height:1;margin-top:-3px}
@@ -121,6 +123,9 @@ h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
 .nav{display:flex;flex-wrap:wrap;gap:10px;margin:18px auto 0;max-width:780px}
 .qnav{justify-content:space-between;flex-wrap:nowrap}
 .qnav{align-items:center}
+#bHome,#bAgain{display:inline-flex;align-items:center;gap:8px}
+#bAgain .ri{width:15px;height:15px;flex:none}
+#bHome .xi{width:11px;height:11px;flex:none}
 .qnav [hidden-slot]{visibility:hidden}
 .qnav .ask{font-weight:800;font-size:17px}
 .qnav #bYes,.qnav #bNo{min-width:96px;justify-content:center}
@@ -151,6 +156,9 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none}
 @keyframes jump{0%,100%{transform:none}50%{transform:translateY(-20px) rotate(-6deg)}}
 .rv{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:10px}
 .rv.bad{border-left:6px solid var(--red2)}.rv.good{border-left:6px solid var(--moss)}
+.rv .rvn{font:700 21px/1.1 Caveat,cursive;color:var(--lilac);margin-bottom:4px}
+.rip{display:inline-block;margin:0 0 18px;padding:6px 0;color:var(--fungo);font-weight:800;font-size:16px;text-decoration:none}
+.rip:hover{text-decoration:underline}
 .rv .q{font-weight:700}
 .rv .a{margin-top:6px;font-size:15px}
 .rv .a em{font-style:normal;color:var(--moss);font-weight:700}
@@ -162,7 +170,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 </style>
 </head>
 <body>
-<nav class="qbar" aria-label="Navigazione"><div class="in"><a class="tog" id="back" href="../"><span class="ch" aria-hidden="true">&lsaquo;</span>Grimorio</a><button class="mq" id="bMenu" type="button" hidden><svg viewBox="0 0 16 14" aria-hidden="true"><path d="M1 2h14M1 7h14M1 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span id="bMenuT">Tutti i quiz</span></button></div></nav>
+<nav class="qbar" aria-label="Navigazione"><div class="in"><a class="tog" id="back" href="../"><span class="ch" aria-hidden="true">&lsaquo;</span>Grimorio</a><span class="pill timer" id="tmr" hidden>30:00</span></div></nav>
 <header class="top"><div class="wrap">
     <p class="hand">le prove del Grimorio del Fuoco</p>
   <h1>Quiz Antincendio</h1>
@@ -207,13 +215,13 @@ const pack=o=>({list:o.list.map(q=>q.n),mode:o.mode,title:o.title,chap:o.chap,i:
 const unpack=o=>{const m={};Q.forEach(q=>m[q.n]=q);const list=o.list.map(n=>m[n]);if(list.some(q=>!q))return null;return {...o,list}};
 const persist=()=>{try{if(S&&S.list)localStorage.setItem(SK,JSON.stringify({ph:"q",s:pack(S)}));else if(S&&S.again)localStorage.setItem(SK,JSON.stringify({ph:"r",s:pack(S.again)}));else localStorage.removeItem(SK)}catch(e){}};
 function enterQuiz(mode){
-  $("back").href=GR;$("back").hidden=mode==="exam";$("bMenu").hidden=false;delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";
+  $("back").href=GR;$("back").hidden=mode==="exam";$("tmr").hidden=mode!=="exam";
   $("home").style.display="none";$("quiz").style.display="block";document.body.classList.add("inquiz");
   clearInterval(timerId);if(mode==="exam")timerId=setInterval(tick,1000);
 }
 
 function home(){
-  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;$("back").hidden=false;$("bMenu").hidden=true;
+  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;$("back").hidden=false;$("tmr").hidden=true;
   $("quiz").style.display="none";$("home").style.display="block";
   const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
   const ko=seen-ok;$("stats").innerHTML=`<span class="bar"><i class="ok" style="width:${ok/Q.length*100}%"></i><i class="ko" style="width:${ko/Q.length*100}%"></i></span><small>${Q.length} domande${seen?` · ${ok} ${ok===1?"giusta":"giuste"}, ${ko} da ripassare`:""}</small>`;
@@ -239,10 +247,10 @@ function render(){
     return `<button class="${c}" data-k="${k}" ${shown?"disabled":""}><span class="l">${L[k]}</span><span>${esc(t)}</span></button>`}).join("");
   let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}</div>`}
   const last=S.i===n-1;
-  $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span></div>
+  $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span><span class="pill">${S.i+1} di ${n}</span></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
   <article class="qcard"><div class="qn"><span>#${q.n} · Capitolo ${q.c}</span>${ex?"":`<span class="lvl ${lv[0]}">${lv[1]}</span>`}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
-  <div class="nav qnav">${ex&&S.confirm?`<button class="btn yes" id="bYes">Sì</button><b class="ask">Sicura?</b><button class="btn ghost" id="bNo">No</button>`:`<button class="btn ghost" id="bPrev" ${S.i?"":"disabled hidden-slot"}>&lsaquo; Precedente</button>${ex?`<button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled hidden-slot":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}`}</div>
+  <div class="nav qnav">${ex&&S.confirm?`<button class="btn yes" id="bYes">Sì</button><b class="ask">Sicura?</b><button class="btn ghost" id="bNo">No</button>`:(ex?`<button class="btn ghost" id="bPrev" ${S.i?"":"disabled hidden-slot"}>&lsaquo; Precedente</button><button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled hidden-slot":""}>Successiva &rsaquo;</button>`:`<button class="btn ghost" id="bHome"><svg class="xi" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Chiudi</button><button class="btn" id="bNext" ${shown?"":"disabled hidden-slot"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`)}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
   persist();
   if(ex)tick();
@@ -256,7 +264,7 @@ function choose(k){
 function next(){S.confirm=0;if(S.mode!=="exam"&&!S.done[S.i])return;if(S.i<S.list.length-1){S.i++;render()}else finish()}
 function finish(){
   clearInterval(timerId);
-  if(S.mode==="exam")S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a);else mark(q.n,false)});
+  if(S.mode==="exam")S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a)});
   const Rr={list:S.list,mode:S.mode,title:S.title,chap:S.chap,ans:S.ans};S={again:Rr};persist();
   showRes(Rr);window.scrollTo({top:$("quiz").offsetTop-20});
   const ok=Rr.list.filter((q,k)=>Rr.ans[k]===q.a).length,n=Rr.list.length,pass=Rr.mode==="exam"?ok>=10:ok/n>=2/3;
@@ -281,12 +289,13 @@ function showRes(S){
   clearInterval(timerId);
   const ex=S.mode==="exam",n=S.list.length;
   const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3,e=n-ok,maxE=n-Math.ceil(n*2/3-1e-9),quasi=!ex&&!pass&&e===maxE+1,err=k=>`${k} ${k===1?"errore":"errori"}`;
-  const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
+  const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="rvn">#${q.n}</div><div class="q">${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
   const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
   $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":quasi?"mid":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):e===0?"Perfetto!":(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${e===0?(ex?"Perfetto! 0 errori!":"0 errori!"):pass?`Hai fatto solo ${err(e)}!`:(ex&&e===6)||quasi?`Hai fatto ${err(e)}, ci sei quasi!`:`Hai fatto ${err(e)}.`}</p></div></div>
-  <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">&lsaquo; Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Nuovo quiz"}</button></div>
+  <div class="nav rnav"><button class="btn ghost" id="bHome"><svg class="xi" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Chiudi</button><button class="btn" id="bAgain"><svg class="ri" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 8.6A5.3 5.3 0 1 1 11.6 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12.4 1.4v3.4H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${ex?"Nuova simulazione":"Nuovo quiz"}</button></div>
+  ${S.chap&&!pass?`<a class="rip" href="${GR}#c${S.chap}">&lsaquo; Ripassa il capitolo ${S.chap} nel Grimorio</a>`:""}
   <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
-  delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";$("back").hidden=false;
+  $("back").hidden=false;$("tmr").hidden=true;
 }
 document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
@@ -297,7 +306,6 @@ document.addEventListener("click",e=>{
     case"bExam":start(shuffle(Q).slice(0,15),"exam","Simulazione d'esame");break;
     case"bErr":start(shuffle(errs()),"err","Ripasso degli errori");break;
     case"bAll":start(shuffle(Q),"all","Tutte le domande");break;
-    case"bMenu":if(S&&S.mode==="exam"&&!t.dataset.sure){t.dataset.sure=1;$("bMenuT").textContent="Vuoi davvero gettare la spugna?";break}
     case"bExit":case"bHome":if(location.hash)try{history.replaceState(null,"",location.pathname)}catch(e){}home();break;
     case"bPrev":if(S.i){S.confirm=0;S.i--;render()}break;
     case"bNext":next();break;
