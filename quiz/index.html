@@ -13,6 +13,7 @@
 <link rel="manifest" href="../manifest.webmanifest">
 
 <title>Quiz del Grimorio</title>
+<script>try{localStorage.setItem("gq_last","quiz");sessionStorage.setItem("gq_open","1")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Caveat:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -184,6 +185,15 @@ const load=()=>{try{st=JSON.parse(localStorage.getItem("qa3for_grimorio")||"{}")
 const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}catch(e){}};
 const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;save()};
 const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
+const SK="qa3for_sess",HY="qa3for_homey";
+const pack=o=>({list:o.list.map(q=>q.n),mode:o.mode,title:o.title,chap:o.chap,i:o.i||0,ans:o.ans,done:o.done||{},end:o.end||0});
+const unpack=o=>{const m={};Q.forEach(q=>m[q.n]=q);const list=o.list.map(n=>m[n]);if(list.some(q=>!q))return null;return {...o,list}};
+const persist=()=>{try{if(S&&S.list)localStorage.setItem(SK,JSON.stringify({ph:"q",s:pack(S)}));else if(S&&S.again)localStorage.setItem(SK,JSON.stringify({ph:"r",s:pack(S.again)}));else localStorage.removeItem(SK)}catch(e){}};
+function enterQuiz(mode){
+  $("back").href=GR;$("back").hidden=mode==="exam";$("bMenu").hidden=false;delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";
+  $("home").style.display="none";$("quiz").style.display="block";document.body.classList.add("inquiz");
+  clearInterval(timerId);if(mode==="exam")timerId=setInterval(tick,1000);
+}
 
 function home(){
   clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;$("back").hidden=false;$("bMenu").hidden=true;
@@ -191,16 +201,14 @@ function home(){
   const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
   const ko=seen-ok;$("stats").innerHTML=`<span class="bar"><i class="ok" style="width:${ok/Q.length*100}%"></i><i class="ko" style="width:${ko/Q.length*100}%"></i></span><small>${Q.length} domande${seen?` · ${ok} ${ok===1?"giusta":"giuste"}, ${ko} da ripassare`:""}</small>`;
   const e=errs().length;$("bErr").disabled=!e;
+  persist();
   $("chaps").innerHTML=Object.keys(CH).map(c=>{const qs=Q.filter(q=>q.c==c),g=qs.filter(q=>st[q.n]&&st[q.n].l===1).length,b=qs.filter(q=>st[q.n]&&st[q.n].l===0).length;
     return `<button class="chap" data-c="${c}"><span class="num">${c}</span><span class="nm">${CH[c]}</span><span><span class="bar"><i class="ok" style="width:${g/qs.length*100}%"></i><i class="ko" style="width:${b/qs.length*100}%"></i></span><small>${qs.length} domande${g||b?` · ${g} ${g===1?"giusta":"giuste"}, ${b} da ripassare`:""}</small></span></button>`}).join("");
 }
 
 function start(list,mode,title,chap){
   S={list,mode,title,chap,i:0,ans:{},done:{},end:mode==="exam"?Date.now()+30*60e3:0};
-  $("back").href=GR;$("back").hidden=mode==="exam";$("bMenu").hidden=false;delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";
-  $("home").style.display="none";$("quiz").style.display="block";document.body.classList.add("inquiz");
-  if(mode==="exam"){clearInterval(timerId);timerId=setInterval(tick,1000)}
-  render();window.scrollTo({top:0});
+  enterQuiz(mode);render();window.scrollTo({top:0});
 }
 function tick(){
   const left=Math.max(0,S.end-Date.now()),el=$("tmr");
@@ -218,6 +226,7 @@ function render(){
   <article class="qcard"><div class="qn">#${q.n} · Capitolo ${q.c}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
   <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`${S.confirm?`<span class="conf"><b>Sicura?</b><button class="btn yes" id="bYes">Sì</button><button class="btn ghost" id="bNo">No</button></span>`:`<button class="btn" id="bEnd">Consegna</button>`}<button class="btn ghost" id="bNext" ${last?"disabled":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
+  persist();
   if(ex)tick();
 }
 function choose(k){
@@ -229,8 +238,13 @@ function choose(k){
 function next(){S.confirm=0;if(S.mode!=="exam"&&!S.done[S.i])return;if(S.i<S.list.length-1){S.i++;render()}else finish()}
 function finish(){
   clearInterval(timerId);
+  if(S.mode==="exam")S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a);else mark(q.n,false)});
+  const Rr={list:S.list,mode:S.mode,title:S.title,chap:S.chap,ans:S.ans};S={again:Rr};persist();
+  showRes(Rr);window.scrollTo({top:$("quiz").offsetTop-20});
+}
+function showRes(S){
+  clearInterval(timerId);
   const ex=S.mode==="exam",n=S.list.length;
-  if(ex)S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a);else mark(q.n,false)});
   const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3;
   const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
   const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
@@ -238,7 +252,6 @@ function finish(){
   <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Riprova il quiz"}</button></div>
   <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
   delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";$("back").hidden=false;
-  const again=S;S={again};window.scrollTo({top:$("quiz").offsetTop-20});
 }
 document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
@@ -270,7 +283,14 @@ load();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){const l=Q.filter(q=>q.g===g);if(l.length){start(shuffle(l),"chap",`Capitolo ${g}: ${GT[g]}`,g);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`,c);return true}return false};
 window.addEventListener("hashchange",()=>{if(Q.length)fromHash()});
-fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();fromHash()}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
+const restore=raw=>{let o;try{o=JSON.parse(raw||"null")}catch(e){}if(!o||!o.s)return false;const x=unpack(o.s);if(!x)return false;
+  if(o.ph==="r"){S={again:x};enterQuiz("res");$("back").hidden=false;showRes(x);return true}
+  S=x;enterQuiz(x.mode);if(x.mode==="exam"&&Date.now()>=x.end){finish();return true}render();return true};
+let hyT;addEventListener("scroll",()=>{if(S)return;clearTimeout(hyT);hyT=setTimeout(()=>{try{localStorage.setItem(HY,String(Math.round(scrollY)))}catch(e){}},250)},{passive:true});
+let rawSess=null;try{rawSess=localStorage.getItem(SK)}catch(e){}
+fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();
+  if(fromHash()){try{history.replaceState(null,"",location.pathname)}catch(e){}return}
+  if(!restore(rawSess)){const y=+(localStorage.getItem(HY)||0);if(y){const r=document.documentElement;r.style.scrollBehavior="auto";scrollTo(0,y);r.style.scrollBehavior=""}}}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
 }
 </script>
 </body>

@@ -12,6 +12,7 @@
 <link rel="icon" type="image/png" href="icons/grimorio-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 
+<script>try{if(!sessionStorage.getItem("gq_open")&&!location.hash&&localStorage.getItem("gq_last")==="quiz"){sessionStorage.setItem("gq_open","1");document.write('<style>body{display:none}html{background:'+(matchMedia("(prefers-color-scheme: dark)").matches?"#171c15":"#efe5cf")+'}html::before{content:"";position:fixed;inset:0;margin:auto;width:112px;height:112px;border-radius:26px;background:url(icons/grimorio-180.png) center/cover;box-shadow:0 12px 30px -12px #0008}</style>');location.replace("quiz/")}else{sessionStorage.setItem("gq_open","1");localStorage.setItem("gq_last","grimorio")}}catch(e){}</script>
 <title>Il Grimorio del Fuoco</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +36,7 @@ h1,h2,h3{font-family:"IM Fell English",Georgia,serif;font-weight:400;line-height
 .hand{font-family:Caveat,cursive;font-weight:700}
 a{color:var(--fungo)}
 img{max-width:100%;height:auto}
-.book{max-width:780px;margin:0 auto;padding:0 14px 64px;display:grid;gap:28px}
+.book{max-width:780px;margin:0 auto;padding:0 14px 64px;display:grid;gap:42px}
 /* copertina */
 .cover{max-width:780px;margin:0 auto;padding:clamp(28px,6vw,64px) 18px 18px;text-align:center}
 .cover .hand{color:var(--moss);font-size:28px;margin:0}
@@ -182,6 +183,9 @@ details .ans b{color:var(--moss)}
 .again:focus-visible,summary:focus-visible,.toc button:focus-visible,.toc .menu a:focus-visible,.index a:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 .end{text-align:center;color:var(--soft);padding:10px 0 30px}
 .end .hand{font-size:28px;color:var(--moss);display:block}
+.end{padding-top:44px}
+.end .del{position:relative}
+.end .seal{position:absolute;left:50%;bottom:72%;width:84px;height:64px;transform:translateX(-50%);pointer-events:none}
 @media(max-width:600px){.potions,.duo,.index ol{grid-template-columns:1fr}.spec{--r:0deg!important}.clip{flex-direction:column;text-align:center}.clip>p,.clip>div{flex:none}.goblin{grid-template-columns:56px minmax(0,1fr);transform:none;padding:14px}.goblin svg{width:56px;height:62px}table{font-size:14px}th,td{padding:7px 8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.toc{transition:none}#flame .core{animation:none}#flame,#smoke,.side .stroke{transition:none}}
 </style>
@@ -1249,7 +1253,7 @@ details .ans b{color:var(--moss)}
 <tr><td><b>Sprinkler a umido</b>: tubi pieni d'acqua</td><td><b>A secco</b>: dove l'acqua gelerebbe</td></tr>
 <tr><td><b>Cartello naspo</b> (nel quiz): tubo appeso a zig-zag</td><td><b>Cartello idrante</b> (nel quiz): tubo a spirale</td></tr></tbody></table></div>
 <div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>E l'ultimo incantesimo: quando una risposta dice "solo", "esclusivamente" o "mai", controlla due volte. Spesso è il goblin.</p></div>
-</section></main><footer class="end"><span class="hand">Fine del Grimorio. Ora vai e spegni tutto.</span></footer><script>
+</section></main><footer class="end"><span class="hand">Fine <span class="del">del<svg class="seal" viewBox="0 0 120 92" aria-hidden="true"><g fill="none" stroke="#6fb7e0" stroke-width="2.6" stroke-linecap="round"><path d="M62 30c-3-10-1-20 4-26"/><path d="M62 30c2-11 9-18 18-20"/><path d="M62 30c-6-8-14-12-22-11"/></g><g fill="#8fd0f0"><circle cx="67" cy="2.5" r="2.4"/><circle cx="83" cy="9" r="2.6"/><circle cx="37" cy="18" r="2.4"/><circle cx="74" cy="15" r="1.6"/><circle cx="50" cy="12" r="1.6"/></g><path d="M24 92c0-30 14-58 38-58s38 28 38 58z" fill="#9aa6b2" stroke="#4a5560" stroke-width="2.2"/><ellipse cx="62" cy="66" rx="17" ry="13" fill="#c9d1d8"/><circle cx="50" cy="52" r="4.6" fill="#2b2118"/><circle cx="74" cy="52" r="4.6" fill="#2b2118"/><circle cx="51.6" cy="50.4" r="1.6" fill="#fff"/><circle cx="75.6" cy="50.4" r="1.6" fill="#fff"/><ellipse cx="62" cy="60" rx="4" ry="2.8" fill="#2b2118"/><path d="M56 65c3 3 9 3 12 0" stroke="#2b2118" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M46 62l-12-2M46 66l-12 2M78 62l12-2M78 66l12 2" stroke="#4a5560" stroke-width="1.4" stroke-linecap="round"/><ellipse cx="44" cy="64" rx="4" ry="2.4" fill="#e9a3a3" opacity=".75"/><ellipse cx="80" cy="64" rx="4" ry="2.4" fill="#e9a3a3" opacity=".75"/></svg></span> Grimorio. Ora vai e spegni tutto.</span></footer><script>
 {
 const flame=document.getElementById('flame'),smoke=document.getElementById('smoke'),say=document.getElementById('say'),again=document.getElementById('again');
 const msg={fuel:'Hai tolto il <b>combustibile</b>: il fuoco non ha più niente da mangiare. È l\'incantesimo dell\'<b>esaurimento</b>.',
