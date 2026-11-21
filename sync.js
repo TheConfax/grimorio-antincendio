@@ -162,7 +162,7 @@ setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))
 function overlay(html){
   const o=document.createElement("div");o.className="gsov";o.innerHTML=`<div class="gscard" role="dialog" aria-modal="true">${html}</div>`;
   document.body.appendChild(o);document.documentElement.classList.add("gslock");
-  o.close=()=>{o.remove();document.documentElement.classList.remove("gslock")};return o;
+  o.close=()=>{o.remove();if(!document.querySelector(".gsov:not([hidden])"))document.documentElement.classList.remove("gslock")};return o;
 }
 const OK='<h3>Collegato!</h3><p class="gsok">✓</p><p class="gsmsg">Ora i progressi si salvano su tutti i dispositivi collegati.</p>';
 

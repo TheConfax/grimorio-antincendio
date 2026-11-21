@@ -190,10 +190,12 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 .gsmsg{margin:14px 0 4px;font-size:15px}.gsmute{margin:6px 0 0;font-size:14px;color:var(--mute)}.gsqr .gsmute{color:#6b5a44}
 .gsok{margin:0;font:800 54px/1 Nunito,system-ui,sans-serif;color:var(--moss)}
 .gsx{display:inline-flex;align-items:center;gap:8px;margin-top:14px}.gsagain{margin-top:6px}
+.gear{margin-left:auto;width:42px;height:42px;padding:0;display:grid;place-items:center;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--fungo);cursor:pointer}.gear svg{width:21px;height:21px}.gear:hover{filter:brightness(1.04)}body.inquiz .gear{display:none}
+.gsov[hidden]{display:none}.setcard{width:min(400px,100%)}.setcard .gsbox{margin-top:4px}.setcard .gsbox+.rwrap{margin-top:40px}.setcard .gsx{margin-top:26px}
 </style>
 </head>
 <body>
-<nav class="qbar" aria-label="Navigazione"><div class="in"><a class="tog" id="back" href="../"><span class="ch" aria-hidden="true">&lsaquo;</span>Grimorio</a><span class="pill timer" id="tmr" hidden>30:00</span></div></nav>
+<nav class="qbar" aria-label="Navigazione"><div class="in"><a class="tog" id="back" href="../"><span class="ch" aria-hidden="true">&lsaquo;</span>Grimorio</a><span class="pill timer" id="tmr" hidden>30:00</span><button class="gear" id="bGear" type="button" aria-label="Impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></g></svg></button></div></nav>
 <header class="top"><div class="wrap">
     <p class="hand">le prove del Grimorio del Fuoco</p>
   <h1>Quiz Antincendio</h1>
@@ -213,11 +215,15 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
     <h2 class="sec">Quiz per capitolo</h2>
     <div class="chaps" id="chaps"></div>
     <svg class="vine sep end" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
-    <div class="gsbox" id="gsBox"></div>
-    <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Cancella tutti i dati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><g class="tears"><path d="M17 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/><path d="M57 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/></g></svg></div>
+
   </section>
   <section id="quiz"></section>
 </div></main>
+<div class="gsov" id="setOv" hidden><div class="gscard setcard" role="dialog" aria-modal="true" aria-labelledby="setT"><h3 id="setT">Impostazioni</h3>
+  <div class="gsbox" id="gsBox"></div>
+  <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Cancella tutti i dati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><g class="tears"><path d="M17 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/><path d="M57 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/></g></svg></div>
+  <button class="btn ghost gsx" id="setClose" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Chiudi</button>
+</div></div>
 
 <script>
 {
@@ -272,6 +278,8 @@ function enterQuiz(mode){
   clearInterval(timerId);if(mode==="exam")timerId=setInterval(tick,1000);
 }
 
+function openSet(){$("setOv").hidden=false;document.documentElement.classList.add("gslock");window.GS&&GS.paint();window.GS&&GS.sync()}
+function closeSet(){resetReset();$("setOv").hidden=true;document.documentElement.classList.remove("gslock")}
 function resetReset(){const b=$("bReset");if(!b||!b.dataset.step)return;delete b.dataset.step;$("bResetT").textContent="Cancella tutti i dati";b.closest(".rwrap").classList.remove("cry")}
 function home(){
   resetReset();
@@ -376,6 +384,7 @@ document.addEventListener("keydown",e=>{
   if(k!==undefined){choose(k);e.preventDefault()}
   else if(e.key==="Enter"){S.mode==="exam"?(S.i<S.list.length-1&&(S.i++,render())):next()}
 });
+$("bGear").onclick=openSet;$("setClose").onclick=closeSet;$("setOv").addEventListener("click",e=>{if(e.target.id==="setOv")closeSet()});addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("setOv").hidden&&!document.querySelector(".gsov:not(#setOv)"))closeSet()});
 load();
 addEventListener("gs:update",()=>{load();if(Q.length&&!S)home()});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
