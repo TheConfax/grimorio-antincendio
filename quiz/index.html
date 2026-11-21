@@ -105,8 +105,8 @@ h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
 .pill.timer{background:var(--ink);color:var(--page);font-variant-numeric:tabular-nums}
 .pill.timer.low{background:var(--red2);color:#fff}
 .exit{background:none;border:1px solid var(--line);border-radius:99px;padding:8px 16px;min-height:44px}
-.prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:0 auto 22px;max-width:780px}
-.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--amber));transition:width .3s}
+.prog{display:block;width:100%;max-width:780px;height:auto;margin:0 auto 22px;overflow:visible}.prog .pv0{fill:none;stroke:var(--line);stroke-width:2}.prog .pv1{fill:none;stroke:var(--moss);stroke-width:2.6}.prog .pvl{fill:var(--moss)}
+
 .qcard{background:var(--page);border:1px solid var(--line);border-radius:4px 4px 10px 10px;padding:clamp(20px,3.5vw,34px);max-width:780px;margin:0 auto;box-shadow:0 18px 40px -26px light-dark(#7b5c33,#000)}
 .qn{display:flex;align-items:center;justify-content:space-between;gap:10px;font:700 21px/1.1 Caveat,cursive;color:var(--lilac)}
 .lvl{flex:none;font:800 12px/1 Nunito,system-ui,sans-serif;padding:5px 9px;border-radius:5px;letter-spacing:.02em}
@@ -177,7 +177,7 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none}
 .empty{color:var(--mute)}
 body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,body.inquiz .top .hand,body.inquiz .vine{display:none}body.inquiz .top h1{font-size:clamp(26px,4vw,34px)}
 @media(max-width:600px){.qhead .ttl{font-size:21px}.modes{grid-template-columns:1fr;gap:30px}.mode{min-height:0}.mode .snail{bottom:-11px}.mode .shroom{top:-15px}}
-@media(prefers-reduced-motion:reduce){.prog i{transition:none}}
+@media(prefers-reduced-motion:reduce){}
 .gsbox{display:flex;flex-direction:column;align-items:center;gap:12px;margin:36px auto 0}.gsbox:empty{display:none}.gsbox+.rwrap{margin-top:44px}
 .btn.gsb{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;font-size:15px;background:light-dark(#dcebf4,#1d3240);color:light-dark(#255b7c,#9ccbe8);border:1px solid #5b8fb0}.btn.gsb:hover{filter:brightness(1.04)}.gsb svg,.gsx svg{width:19px;height:19px}
 .gsst{display:inline-flex;align-items:center;gap:5px;margin:0;font:800 12px/1 Nunito,system-ui,sans-serif;letter-spacing:.02em;padding:5px 9px;border-radius:5px;background:light-dark(#dcebf4,#1d3240);color:light-dark(#255b7c,#9ccbe8);border:1px solid light-dark(#5b8fb0,#5b8fb0);cursor:pointer}.gsst svg{width:13px;height:13px;margin:-2px 0}.gsbtns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.gsst.solo{cursor:default}
@@ -281,6 +281,13 @@ function enterQuiz(mode){
 
 function openSet(){$("setOv").hidden=false;document.documentElement.classList.add("gslock");window.GS&&GS.paint();window.GS&&GS.sync()}
 function closeSet(){resetReset();$("setOv").hidden=true;document.documentElement.classList.remove("gslock")}
+/* barra di avanzamento: un tralcio da 8 foglie che cresce; le foglie spuntano quando il tralcio le raggiunge */
+function vineBar(f){
+  const W=Math.max(200,Math.min(780,($("quiz").clientWidth||330))),H=26,m=13,N=8,sg=W/N;let d=`M0 ${m}`,lv="";
+  for(let i=0;i<N;i++){const x=i*sg,u=i%2?-1:1;d+=` C${(x+sg*.35).toFixed(1)} ${m-7*u} ${(x+sg*.65).toFixed(1)} ${m-7*u} ${(x+sg).toFixed(1)} ${m}`;
+    if((i+.5)/N<=f+1e-9){const cx=(x+sg*.5).toFixed(1),cy=m-10.2*u;lv+=`<ellipse cx="${cx}" cy="${cy}" rx="7" ry="3.2" transform="rotate(${u>0?-28:28} ${cx} ${cy})"/>`}}
+  return `<svg class="prog" viewBox="0 0 ${W} ${H}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(f*100)}" aria-label="Avanzamento"><clipPath id="pvc"><rect width="${(W*f).toFixed(1)}" height="${H}"/></clipPath><path class="pv0" d="${d}"/><path class="pv1" d="${d}" clip-path="url(#pvc)"/><g class="pvl">${lv}</g></svg>`;
+}
 function resetReset(){const b=$("bReset");if(!b||!b.dataset.step)return;delete b.dataset.step;$("bResetT").textContent="Cancella tutti i dati";b.closest(".rwrap").classList.remove("cry")}
 function home(){
   resetReset();
@@ -311,7 +318,7 @@ function render(){
   let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}</div>`}
   const last=S.i===n-1;
   $("quiz").innerHTML=`<div class="qhead"><span class="pill">${S.i+1} di ${n}</span><span class="ttl">${esc(S.title)}</span></div>
-  <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
+  ${vineBar((ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n)}
   <article class="qcard"><div class="qn"><span>#${q.n} · Capitolo ${q.c}</span>${ex?"":`<span class="lvl ${lv[0]}">${lv[1]}</span>`}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
   <div class="nav qnav">${ex&&S.confirm?`<button class="btn yes" id="bYes">Sì</button><b class="ask">Sicura?</b><button class="btn ghost" id="bNo">No</button>`:(ex?`<button class="btn ghost" id="bPrev" ${S.i?"":"disabled hidden-slot"}>&lsaquo; Precedente</button><button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled hidden-slot":""}>Successiva &rsaquo;</button>`:`<button class="btn ghost" id="bHome"><svg class="xi" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Chiudi</button><button class="btn" id="bNext" ${shown?"":"disabled hidden-slot"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`)}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
