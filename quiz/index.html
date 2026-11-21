@@ -40,9 +40,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offs
 .tog:hover{filter:brightness(1.08)}
 .tog[hidden]{display:none}
 body.inquiz .tog{margin-bottom:8px}
-.reset{display:flex;flex-direction:column;align-items:center;gap:6px;margin:40px auto 0;padding:16px 26px 14px;min-height:44px;background:light-dark(#b8392b,#c9483a);color:#fff;border:0;border-radius:16px;font:800 16px Nunito,system-ui,sans-serif;box-shadow:0 10px 22px -14px #000a}
+.rwrap{position:relative;display:table;margin:36px auto 0}
+.reset{display:block;min-height:44px;padding:0 18px;background:light-dark(#b8392b,#c9483a);color:#fff;border:0;border-radius:99px;font:700 14px Nunito,system-ui,sans-serif}
 .reset:hover{filter:brightness(1.07)}
-.reset svg{width:74px;height:56px}
+.frog{position:absolute;top:-22px;right:-26px;width:44px;height:34px;transform:rotate(12deg);cursor:default;user-select:none}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
@@ -139,7 +140,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
     <div class="stats" id="stats"></div>
     <h2 class="sec">Allenati per capitolo</h2>
     <div class="chaps" id="chaps"></div>
-    <button class="reset" id="bReset"><svg viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/></svg><span id="bResetT">Azzera i progressi salvati</span></button>
+    <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Azzera i progressi salvati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/></svg></div>
   </section>
   <section id="quiz"></section>
 </div></main>
