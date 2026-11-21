@@ -36,11 +36,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .wrap{max-width:980px;margin:0 auto}
 .top{padding:clamp(26px,5vw,52px) max(5vw,16px) 8px;text-align:center}
-.sw{display:inline-flex;gap:4px;padding:4px;margin:0 auto 16px;background:var(--card);border:1px solid var(--line);border-radius:99px}
-.sw a,.sw span{display:flex;align-items:center;min-height:40px;padding:0 20px;border-radius:99px;font:700 15px Nunito,system-ui,sans-serif;text-decoration:none;color:var(--ink)}
-.sw a:hover{background:var(--wash)}
-.sw [aria-current]{background:var(--moss);color:var(--page)}
-body.inquiz .sw{margin-bottom:8px}
+.tog{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;margin:0 auto 14px;border-radius:99px;background:var(--fungo);color:var(--page);font-weight:800;text-decoration:none}
+.tog:hover{filter:brightness(1.08)}
+.tog[hidden]{display:none}
+body.inquiz .tog{margin-bottom:8px}
+.reset{display:flex;flex-direction:column;align-items:center;gap:6px;margin:40px auto 0;padding:16px 26px 14px;min-height:44px;background:light-dark(#b8392b,#c9483a);color:#fff;border:0;border-radius:16px;font:800 16px Nunito,system-ui,sans-serif;box-shadow:0 10px 22px -14px #000a}
+.reset:hover{filter:brightness(1.07)}
+.reset svg{width:74px;height:56px}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
@@ -66,7 +68,6 @@ body.inquiz .sw{margin-bottom:8px}
 .bar .ok{background:var(--moss)}.bar .ko{background:var(--red2)}
 .chap small{color:var(--mute);font-size:13px}
 h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
-.reset{display:block;margin:22px auto 0;background:none;border:0;color:var(--mute);text-decoration:underline;padding:8px 0;min-height:44px}
 #quiz{display:none}
 .qhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 auto 14px;max-width:780px}
 .qhead .ttl{font:400 26px "IM Fell English",serif;flex:1}
@@ -121,7 +122,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <nav class="sw" aria-label="Sezioni"><a id="back" href="../">Grimorio</a><span aria-current="page">Quiz</span></nav>
+  <a class="tog" id="back" href="../">Vai al grimorio</a>
   <p class="hand">le prove del Grimorio del Fuoco</p>
   <h1>Quiz Antincendio Livello 3</h1>
   <p>Le 345 domande ufficiali della banca dati 3-FOR, divise negli stessi capitoli del grimorio. Allo scritto ne escono 15: per passare ne servono almeno 10 giuste in 30 minuti.</p>
@@ -138,7 +139,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
     <div class="stats" id="stats"></div>
     <h2 class="sec">Allenati per capitolo</h2>
     <div class="chaps" id="chaps"></div>
-    <button class="reset" id="bReset">Azzera i progressi salvati</button>
+    <button class="reset" id="bReset"><svg viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/></svg><span id="bResetT">Azzera i progressi salvati</span></button>
   </section>
   <section id="quiz"></section>
 </div></main>
@@ -158,7 +159,7 @@ const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;s
 const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
 
 function home(){
-  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;
+  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;$("back").hidden=false;
   $("quiz").style.display="none";$("home").style.display="block";
   const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
   $("stats").innerHTML=`<span><strong>${seen}</strong> di 345 provate</span><span><strong>${ok}</strong> giuste all'ultimo tentativo</span><span><strong>${seen?Math.round(ok/seen*100):0}%</strong> di risposte corrette</span>`;
@@ -169,7 +170,7 @@ function home(){
 
 function start(list,mode,title,chap){
   S={list,mode,title,chap,i:0,ans:{},done:{},end:mode==="exam"?Date.now()+30*60e3:0};
-  $("back").href=chap?`${GR}#c${chap}`:GR;
+  $("back").href=chap?`${GR}#c${chap}`:GR;$("back").hidden=mode==="exam";
   $("home").style.display="none";$("quiz").style.display="block";document.body.classList.add("inquiz");
   if(mode==="exam"){clearInterval(timerId);timerId=setInterval(tick,1000)}
   render();window.scrollTo({top:0});
@@ -185,7 +186,7 @@ function render(){
     return `<button class="${c}" data-k="${k}" ${shown?"disabled":""}><span class="l">${L[k]}</span><span>${esc(t)}</span></button>`}).join("");
   let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}<p>Ripassa nel grimorio: <a href="../#c${q.g}">capitolo ${q.g}, ${esc(GT[q.g])}</a></p></div>`}
   const last=S.i===n-1;
-  $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span><button class="exit" id="bExit">${ex?"Abbandona":"Torna ai capitoli"}</button></div>
+  $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span><button class="exit" id="bExit">${ex?"Abbandona":"Menu quiz"}</button></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
   <article class="qcard"><div class="qn">Domanda n. ${q.n} della banca dati · Capitolo ${q.c}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
   <div class="nav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>Indietro</button>${ex?`<button class="btn ghost" id="bNext" ${last?"disabled":""}>Avanti</button><button class="btn" id="bEnd">Consegna</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Prossima"}</button>`}</div>
@@ -206,7 +207,7 @@ function finish(){
   const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
   const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
   $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(pass?`Ne servivano almeno 10, ne hai fatte ${ok}.`:`Ne servivano almeno 10: te ne mancano ${10-ok}.`):`Hai risposto bene al ${Math.round(ok/n*100)}% delle domande.`}</p></div></div>
-  <div class="nav" style="margin:0 0 18px"><button class="btn" id="bAgain">${ex?"Nuova simulazione":"Rifai questo blocco"}</button><button class="btn ghost" id="bHome">Torna ai capitoli</button></div>
+  <div class="nav" style="margin:0 0 18px"><button class="btn" id="bAgain">${ex?"Nuova simulazione":"Rifai questo blocco"}</button><button class="btn ghost" id="bHome">Menu quiz</button></div>
   <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
   const again=S;S={again};window.scrollTo({top:$("quiz").offsetTop-20});
 }
@@ -224,7 +225,7 @@ document.addEventListener("click",e=>{
     case"bNext":next();break;
     case"bEnd":finish();break;
     case"bAgain":{const p=S.again;start(p.mode==="exam"?shuffle(Q).slice(0,15):shuffle(p.list),p.mode,p.title,p.chap);break}
-    case"bReset":if(t.dataset.sure){st={};save();t.textContent="Azzera i progressi salvati";delete t.dataset.sure;home()}else{t.dataset.sure=1;t.textContent="Sicuro? Clicca di nuovo per azzerare"}break;
+    case"bReset":if(t.dataset.sure){st={};save();$("bResetT").textContent="Azzera i progressi salvati";delete t.dataset.sure;home()}else{t.dataset.sure=1;$("bResetT").textContent="Sicuro? Tocca di nuovo per azzerare"}break;
   }
 });
 document.addEventListener("keydown",e=>{
