@@ -53,6 +53,12 @@ body{padding-top:57px}
 .rwrap{position:relative;display:table;margin:36px auto 0}
 .reset{display:block;min-height:44px;padding:0 18px;background:light-dark(#b8392b,#c9483a);color:#fff;border:0;border-radius:99px;font:700 14px Nunito,system-ui,sans-serif}
 .reset:hover{filter:brightness(1.07)}
+.rwrap .tears{opacity:0}
+.rwrap.cry .tears{animation:tear .9s ease-in infinite}
+.rwrap.cry .frog{animation:sob .5s ease-in-out infinite}
+@keyframes tear{0%{opacity:0;transform:translateY(-4px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
+@keyframes sob{0%,100%{transform:rotate(12deg)}50%{transform:rotate(8deg) translateY(1px)}}
+@media(prefers-reduced-motion:reduce){.rwrap.cry .tears{animation:none;opacity:1}.rwrap.cry .frog{animation:none}}
 .frog{position:absolute;top:-22px;right:-26px;width:44px;height:34px;transform:rotate(12deg);cursor:default;user-select:none}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
@@ -194,7 +200,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
     <h2 class="sec">Quiz per capitolo</h2>
     <div class="chaps" id="chaps"></div>
     <svg class="vine sep end" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
-    <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Cancella tutti i dati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/></svg></div>
+    <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Cancella tutti i dati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><g class="tears"><path d="M17 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/><path d="M57 27c0 4-3 7-3 9a3 3 0 006 0c0-2-3-5-3-9z" fill="#8fd0f0"/></g></svg></div>
   </section>
   <section id="quiz"></section>
 </div></main>
@@ -252,7 +258,9 @@ function enterQuiz(mode){
   clearInterval(timerId);if(mode==="exam")timerId=setInterval(tick,1000);
 }
 
+function resetReset(){const b=$("bReset");if(!b||!b.dataset.step)return;delete b.dataset.step;$("bResetT").textContent="Cancella tutti i dati";b.closest(".rwrap").classList.remove("cry")}
 function home(){
+  resetReset();
   clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;$("back").hidden=false;$("tmr").hidden=true;
   $("quiz").style.display="none";$("home").style.display="block";
   const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
@@ -330,7 +338,7 @@ function showRes(S){
   $("back").hidden=false;$("tmr").hidden=true;
 }
 document.addEventListener("click",e=>{
-  const t=e.target.closest("button");if(!t)return;
+  const t=e.target.closest("button");if(!t||t.id!=="bReset")resetReset();if(!t)return;
   if(t.classList.contains("chap")){const c=+t.dataset.c;start(pickChapter(c),"chap",`Capitolo ${c}: ${CH[c]}`,c);return}
   if(t.classList.contains("opt")){choose(+t.dataset.k);return}
   if(t.classList.contains("dot")){S.confirm=0;S.i=+t.dataset.j;render();return}
@@ -345,7 +353,7 @@ document.addEventListener("click",e=>{
     case"bYes":finish();break;
     case"bNo":S.confirm=0;render();break;
     case"bAgain":{const p=S.again;if(p.mode==="err"&&!errs().length){home();break}start(p.mode==="exam"?shuffle(Q).slice(0,15):p.mode==="chap"?pickChapter(p.chap):p.mode==="err"?shuffle(errs()).slice(0,QN):pickBombeiro(),p.mode,p.title,p.chap);break}
-    case"bReset":if(t.dataset.sure){st={};save();$("bResetT").textContent="Cancella tutti i dati";delete t.dataset.sure;home()}else{t.dataset.sure=1;$("bResetT").textContent="Sicura di voler uccidere questa ranetta?"}break;
+    case"bReset":{const w=t.closest(".rwrap"),k=+(t.dataset.step||0);if(k===0){t.dataset.step=1;$("bResetT").textContent="Sei sicura di voler uccidere questa ranetta?";w.classList.add("cry")}else if(k===1){t.dataset.step=2;$("bResetT").textContent="SICURISSIMA?"}else{st={};try{["qa3for_grimorio","qa3for_sess","qa3for_homey","grimorio_letti","grimorio_pos","gq_last"].forEach(k=>localStorage.removeItem(k))}catch(x){}$("bResetT").textContent="Cancella tutti i dati";delete t.dataset.step;w.classList.remove("cry");home()}break}
   }
 });
 document.addEventListener("keydown",e=>{

@@ -88,6 +88,9 @@ img{max-width:100%;height:auto}
 .letto svg{width:13px;height:14px;flex:none}
 button.letto{cursor:pointer;min-height:26px}
 .toc .menu a .letto{margin-left:auto;align-self:center}
+.index a>span:not(.n){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;align-items:start}
+.index a>span:not(.n) .letto{margin-top:-2px}
+.index a>span:not(.n) small{grid-column:1/-1}
 .ct{font-size:clamp(36px,7vw,52px);margin:4px 0 6px}
 .sub{color:var(--soft);font-style:italic;font-family:"IM Fell English",serif;font-size:19px;margin:0}
 .vine{display:block;width:100%;height:28px;margin:16px 0 6px;color:var(--moss)}
@@ -1215,7 +1218,7 @@ details .ans b{color:var(--moss)}
 <tr><td><b>Sprinkler a umido</b>: tubi pieni d'acqua</td><td><b>A secco</b>: dove l'acqua gelerebbe</td></tr>
 <tr><td><b>Cartello naspo</b> (nel quiz): tubo appeso a zig-zag</td><td><b>Cartello idrante</b> (nel quiz): tubo a spirale</td></tr></tbody></table></div>
 <div class="trick"><svg viewBox="0 0 34 34" aria-hidden="true"><use href="#star"/></svg><p>E l'ultimo incantesimo: quando una risposta dice "solo", "esclusivamente" o "mai", controlla due volte. Spesso è il goblin.</p></div>
-</section><section class="page" id="c22"><p class="kicker hand">Extra</p><h2 class="ct">La prova pratica</h2><p class="sub">si dice leviosa, non leviosà</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
+<div class="go"><span class="hand">Ora mettiti alla prova:</span><a href="quiz/">Simulazione d'esame<span class="ch" aria-hidden="true">&rsaquo;</span></a></div></section><section class="page" id="c22"><p class="kicker hand">Extra</p><h2 class="ct">La prova pratica</h2><p class="sub">si dice leviosa, non leviosà</p><svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><use href="#vine"/></svg><div class="scroll"><span class="hand">In una frase</span>
 <p>Alla prova pratica userai l'estintore e farai una manovra con l'idrante UNI 45 oppure con il naspo, rispondendo anche a domande su come si usano: qui c'è ogni gesto, in ordine.</p></div>
 <p>Durante l'addestramento e la prova si indossano <b>tutti i DPI previsti</b>. Respira: sono pochi gesti, sempre gli stessi.</p>
 
@@ -1309,9 +1312,9 @@ if(el){const ready=new Promise(ok=>document.readyState==='complete'?ok():addEven
 {const RK='grimorio_letti',read=()=>{try{return new Set(JSON.parse(localStorage.getItem(RK)||'[]'))}catch(e){return new Set()}};
 const BOOK='<svg viewBox="0 0 13 14" aria-hidden="true"><rect x="1.5" y="1.5" width="9.5" height="11" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3.6 1.5v11" stroke="currentColor" stroke-width="1.2"/><path d="M5.6 5h3.4M5.6 7.3h3.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>';
 const paint=()=>{const r=read();
- document.querySelectorAll('#indice a, .toc .menu ol a').forEach(a=>{const m=/^#c(\d+)$/.exec(a.getAttribute('href')||'');if(m&&+m[1]>21)a.classList.add('read');else if(m){a.classList.toggle('read',r.has(+m[1]));if(a.closest('.toc')){let b=a.querySelector('.letto');if(r.has(+m[1])&&!b){b=document.createElement('span');b.className='letto';b.innerHTML='Letto '+BOOK;a.appendChild(b)}else if(!r.has(+m[1])&&b)b.remove()}}else if(a.getAttribute('href')==='#top')a.classList.add('read')});
+ document.querySelectorAll('#indice a, .toc .menu ol a').forEach(a=>{const m=/^#c(\d+)$/.exec(a.getAttribute('href')||'');if(m&&+m[1]>21)a.classList.add('read');else if(m){a.classList.toggle('read',r.has(+m[1]));if(a.closest('.toc')||a.closest('#indice')){let b=a.querySelector('.letto');if(r.has(+m[1])&&!b){b=document.createElement('span');b.className='letto';b.innerHTML='Letto '+BOOK;const tx=a.closest('#indice')&&a.querySelector('.n').nextElementSibling,sm=tx&&tx.querySelector('small');if(sm)tx.insertBefore(b,sm);else a.appendChild(b)}else if(!r.has(+m[1])&&b)b.remove()}}else if(a.getAttribute('href')==='#top')a.classList.add('read')});
  document.querySelectorAll('main .page').forEach(sec=>{const m=/^c(\d+)$/.exec(sec.id),k=sec.querySelector('.kicker');if(!m||!k)return;let b=k.querySelector('.letto');
-  if(r.has(+m[1])&&!b){b=document.createElement('button');b.type='button';b.className='letto';b.dataset.cap=m[1];b.innerHTML='Letto '+BOOK;k.appendChild(b)}else if(!r.has(+m[1])&&b)b.remove()})};
+  const ok=+m[1]<=21&&r.has(+m[1]);if(ok&&!b){b=document.createElement('button');b.type='button';b.className='letto';b.dataset.cap=m[1];b.innerHTML='Letto '+BOOK;k.appendChild(b)}else if(!ok&&b)b.remove()})};
 // la pecetta in cima al capitolo: un tocco chiede "Rimuovi?", il secondo toglie il letto
 document.addEventListener('click',e=>{const b=e.target.closest('.kicker .letto');
  document.querySelectorAll('.kicker .letto[data-sure]').forEach(x=>{if(x!==b){delete x.dataset.sure;x.innerHTML='Letto '+BOOK}});
