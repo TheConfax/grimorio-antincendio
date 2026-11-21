@@ -67,6 +67,7 @@ function run(){
     if(get("gs_id",null)!==id)return;
     const {R,wiped}=merge(R0);
     dispatchEvent(new CustomEvent("gs:update"));
+    set("gs_n",Object.keys(R.dev).length);
     return rpc("sync_put",{p_id:id,p_data:R}).then(()=>{set("gs_at",Date.now());state="ok";emit();if(wiped)location.reload()});
   }).catch(()=>{state="err";emit()});
 }
@@ -102,9 +103,11 @@ function ago(t){
 }
 function paintBox(){
   const box=document.getElementById("gsBox");if(!box)return;
-  const st=linked()?`<button type="button" class="gsst" data-gs="unlink">${I.phone}<span>collegato · ${state==="busy"?"sync in corso…":state==="err"?"offline":esc(ago(get("gs_at",0))||"sync in corso…")}</span></button>`:"";
-  const btn=phone()?(linked()?"":`<button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra il QR</button>`):`<button class="btn ghost gsb" data-gs="show">${I.phone}Collega il telefono</button>`;
-  box.innerHTML=btn+st;
+  const on=linked()&&(phone()||get("gs_n",0)>=2);
+  const st=on?`<button type="button" class="gsst" data-gs="unlink">${I.phone}<span>collegato · ${state==="busy"?"sync in corso…":state==="err"?"offline":esc(ago(get("gs_at",0))||"sync in corso…")}</span></button>`:"";
+  const btn=on?"":phone()?`<button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra il QR</button>`:`<button class="btn ghost gsb" data-gs="show">${I.phone}Collega il telefono</button>`;
+  const plus=on&&!phone()?`<button type="button" class="gsplus" data-gs="show" aria-label="Collega un altro dispositivo"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`:"";
+  box.innerHTML=btn+(on?`<div class="gsrow">${plus}${st}</div>`:"");
 }
 addEventListener("gs:status",()=>{if(!document.querySelector('#gsBox [data-sure]'))paintBox()});
 setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))paintBox()},30e3);
@@ -122,7 +125,7 @@ function showQR(){
   o.addEventListener("click",e=>{const b=e.target.closest("[data-gs]");if(!b)return;if(b.dataset.gs==="close"){stop();o.close();paintBox()}else if(b.dataset.gs==="again"){stop();make()}});
   const make=()=>{
     const q=o.querySelector(".gsqr"),left=o.querySelector(".gsleft");q.innerHTML='<p class="gsmute">Preparo il codice…</p>';left.textContent="";
-    if(!linked()){set("gs_id",rid(24));set("gs_wipe",0)}
+    if(!linked()){const prev=get("gs_prev",null);if(prev){set("gs_id",prev);set("gs_wipe",-1)}else{set("gs_id",rid(24));set("gs_wipe",0)}}
     Promise.all([loadLib("qrcode"),sync()]).then(()=>{if(state==="err")throw new Error("rete");return rpc("sync_get",{p_id:get("gs_id")})}).then(R=>{
       devs=Object.keys((R&&R.dev)||{}).length;
       return rpc("pair_create",{p_id:get("gs_id")});
@@ -176,7 +179,7 @@ function scanQR(){
 
 /* Scollega: un tocco chiede "Scollega?", il secondo conferma. I progressi restano su questo dispositivo,
    e il registro di quello che ha fatto lui resta, così se si ricollega non conta due volte le risposte degli altri. */
-function unlink(){clearTimeout(timer);timer=0;["gs_id","gs_wipe","gs_at"].forEach(del);state="idle";paintBox()}
+function unlink(){clearTimeout(timer);timer=0;set("gs_prev",get("gs_id",null));["gs_id","gs_wipe","gs_at","gs_n"].forEach(del);state="idle";paintBox()}
 document.addEventListener("click",e=>{
   const b=e.target.closest("#gsBox [data-gs]"),u=document.querySelector('#gsBox [data-gs="unlink"][data-sure]');
   if(u&&u!==b)paintBox();
