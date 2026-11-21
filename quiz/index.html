@@ -108,9 +108,13 @@ h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
 .fb a{color:var(--fungo);font-weight:700}
 .nav{display:flex;flex-wrap:wrap;gap:10px;margin:18px auto 0;max-width:780px}
 .qnav{justify-content:space-between;flex-wrap:nowrap}
-.qnav:has(.sure){flex-wrap:wrap}
-.qnav .btn.sure{order:3;flex:1 0 100%;background:var(--red2);color:#fff}
-@media(max-width:600px){.qnav{gap:6px}.qnav .btn{padding:12px 14px;white-space:nowrap}}
+.conf{display:flex;align-items:center;gap:8px}
+.conf b{font-weight:800}
+.btn.yes{background:var(--fungo);color:var(--page)}
+@media(max-width:600px){.qnav,.rnav{gap:6px}.qnav .btn,.rnav .btn{padding:12px 14px;white-space:nowrap}.qnav:has(.conf){flex-wrap:wrap}.qnav .conf{order:3;flex:1 0 100%;flex-wrap:wrap;justify-content:center;gap:8px 10px;margin-top:6px}.conf b{flex-basis:100%;text-align:center}.conf .btn{min-width:96px;justify-content:center}}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
+.rnav{margin:0 0 18px;justify-content:space-between;flex-wrap:nowrap}
+.rnav #bAgain{margin-left:auto}
 .btn{border:0;border-radius:99px;padding:12px 24px;min-height:48px;font-weight:800;background:var(--fungo);color:var(--page)}
 .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .btn:disabled{opacity:.4;cursor:default}
@@ -142,9 +146,9 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
   <p>Le 345 domande ufficiali, divise negli stessi capitoli del grimorio.<br>Per passare ne servono 10 giuste su 15 in 30 minuti.</p>
   <svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
   <div class="modes">
-    <button class="mode exam" id="bExam"><b>Simulazione d'esame</b><span>15 domande a caso, 30 minuti, soglia 10</span></button>
+    <button class="mode exam" id="bExam"><b>Simulazione d'esame</b><span>In bocca al lupo!</span></button>
     <button class="mode" id="bErr" style="--pin:var(--lilac)"><b>Ripassa gli errori</b><span id="errLbl">Nessun errore da ripassare</span></button>
-    <button class="mode" id="bAll" style="--pin:var(--moss)"><b>Tutte le domande</b><span>345 domande in ordine casuale</span></button>
+    <button class="mode" id="bAll" style="--pin:var(--moss)"><b>Tutte le domande</b><span>345 domande a caso</span></button>
   </div>
 </div></header>
 
@@ -168,6 +172,7 @@ const GR="../",GT={"1": "Il sigillo del fuoco", "2": "Le cinque creature del fuo
 let Q=[],st={},S=null,timerId=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct=v=>(v===0?"allo ":v===1||v===8||v===11||(v>=80&&v<=89)?"all'":"al ")+v+"%";
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const load=()=>{try{st=JSON.parse(localStorage.getItem("qa3for_grimorio")||"{}")}catch(e){st={}}};
 const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}catch(e){}};
@@ -205,16 +210,17 @@ function render(){
   $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
   <article class="qcard"><div class="qn">#${q.n} · Capitolo ${q.c}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
-  <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`<button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}</div>
+  <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`${S.confirm?`<span class="conf"><b>Sicura?</b><button class="btn yes" id="bYes">Sì</button><button class="btn ghost" id="bNo">No</button></span>`:`<button class="btn" id="bEnd">Consegna</button>`}<button class="btn ghost" id="bNext" ${last?"disabled":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
   if(ex)tick();
 }
 function choose(k){
+  S.confirm=0;
   if(S.mode==="exam"){S.ans[S.i]=k;render();return}
   if(S.done[S.i])return;
   S.ans[S.i]=k;S.done[S.i]=1;mark(S.list[S.i].n,k===S.list[S.i].a);render();
 }
-function next(){if(S.mode!=="exam"&&!S.done[S.i])return;if(S.i<S.list.length-1){S.i++;render()}else finish()}
+function next(){S.confirm=0;if(S.mode!=="exam"&&!S.done[S.i])return;if(S.i<S.list.length-1){S.i++;render()}else finish()}
 function finish(){
   clearInterval(timerId);
   const ex=S.mode==="exam",n=S.list.length;
@@ -222,8 +228,8 @@ function finish(){
   const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3;
   const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
   const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
-  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(pass?`Ne servivano almeno 10, ne hai fatte ${ok}.`:`Ne servivano almeno 10: te ne mancano ${10-ok}.`):`Hai risposto bene al ${Math.round(ok/n*100)}% delle domande.`}</p></div></div>
-  <div class="nav" style="margin:0 0 18px"><button class="btn" id="bAgain">${ex?"Nuova simulazione":"Rifai questo blocco"}</button><button class="btn ghost" id="bHome">Tutti i quiz</button></div>
+  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(pass?`Ne servivano almeno 10, ne hai fatte ${ok}.`:`Ne servivano almeno 10: te ne mancano ${10-ok}.`):`Hai risposto bene ${pct(Math.round(ok/n*100))} delle domande.`}</p></div></div>
+  <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Riprova il quiz"}</button></div>
   <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
   delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";$("back").hidden=false;
   const again=S;S={again};window.scrollTo({top:$("quiz").offsetTop-20});
@@ -232,16 +238,18 @@ document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
   if(t.classList.contains("chap")){const c=+t.dataset.c;start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`,c);return}
   if(t.classList.contains("opt")){choose(+t.dataset.k);return}
-  if(t.classList.contains("dot")){S.i=+t.dataset.j;render();return}
+  if(t.classList.contains("dot")){S.confirm=0;S.i=+t.dataset.j;render();return}
   switch(t.id){
     case"bExam":start(shuffle(Q).slice(0,15),"exam","Simulazione d'esame");break;
     case"bErr":start(shuffle(errs()),"err","Ripasso degli errori");break;
     case"bAll":start(shuffle(Q),"all","Tutte le domande");break;
     case"bMenu":if(S&&S.mode==="exam"&&!t.dataset.sure){t.dataset.sure=1;$("bMenuT").textContent="Vuoi davvero gettare la spugna?";break}
     case"bExit":case"bHome":if(location.hash)try{history.replaceState(null,"",location.pathname)}catch(e){}home();break;
-    case"bPrev":if(S.i){S.i--;render()}break;
+    case"bPrev":if(S.i){S.confirm=0;S.i--;render()}break;
     case"bNext":next();break;
-    case"bEnd":if(!t.dataset.sure){t.dataset.sure=1;t.textContent="Sicura di voler consegnare?";t.classList.add("sure");break}finish();break;
+    case"bEnd":S.confirm=1;render();break;
+    case"bYes":finish();break;
+    case"bNo":S.confirm=0;render();break;
     case"bAgain":{const p=S.again;start(p.mode==="exam"?shuffle(Q).slice(0,15):shuffle(p.list),p.mode,p.title,p.chap);break}
     case"bReset":if(t.dataset.sure){st={};save();$("bResetT").textContent="Azzera i progressi salvati";delete t.dataset.sure;home()}else{t.dataset.sure=1;$("bResetT").textContent="Sicura di voler uccidere questa ranetta?"}break;
   }
