@@ -159,6 +159,9 @@ function paintBox(){
     +`<div class="gsbtns"><button class="btn${phone()?" ghost":""} gsb" data-gs="show">${I.qr}Mostra QR</button><button class="btn${phone()?"":" ghost"} gsb" data-gs="scan">${I.cam}Inquadra QR</button></div>`;
   /* se non ci sta su una riga (senza passare sotto lo gnomo) va su due righe, spezzata sul puntino */
   const st=box.querySelector(".gsst");if(st&&st.clientWidth&&st.scrollWidth>st.clientWidth+1)st.classList.add("two");
+  /* lo gnomo resta centrato tra il bordo alto del pannello e i pulsanti del QR, anche quando la pecetta va su più righe */
+  const card=box.closest(".setcard"),gn=card&&card.querySelector(".gnome"),bt=box.querySelector(".gsbtns");
+  if(gn&&bt&&card.clientWidth){requestAnimationFrame(()=>{const c=card.getBoundingClientRect(),y=bt.getBoundingClientRect().top-c.top;gn.style.top=Math.max(4,Math.round((y-gn.getBoundingClientRect().height)/2)-card.clientTop)+"px"})}
 }
 addEventListener("gs:status",()=>{if(!document.querySelector('#gsBox [data-sure]'))paintBox()});
 setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))paintBox()},30e3);
