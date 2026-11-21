@@ -36,9 +36,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .wrap{max-width:980px;margin:0 auto}
 .top{padding:clamp(26px,5vw,52px) max(5vw,16px) 8px;text-align:center}
-.back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 16px;border:1px solid var(--line);border-radius:99px;background:var(--card);color:var(--fungo);font-weight:700;text-decoration:none;margin-bottom:10px}
-.back:hover{border-color:var(--moss)}
-body.inquiz .back{margin-bottom:6px}
+.sw{display:inline-flex;gap:4px;padding:4px;margin:0 auto 16px;background:var(--card);border:1px solid var(--line);border-radius:99px}
+.sw a,.sw span{display:flex;align-items:center;min-height:40px;padding:0 20px;border-radius:99px;font:700 15px Nunito,system-ui,sans-serif;text-decoration:none;color:var(--ink)}
+.sw a:hover{background:var(--wash)}
+.sw [aria-current]{background:var(--moss);color:var(--page)}
+body.inquiz .sw{margin-bottom:8px}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
@@ -119,7 +121,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="back" id="back" href="../">&lsaquo; Torna al grimorio</a>
+  <nav class="sw" aria-label="Sezioni"><a id="back" href="../">Grimorio</a><span aria-current="page">Quiz</span></nav>
   <p class="hand">le prove del Grimorio del Fuoco</p>
   <h1>Quiz Antincendio Livello 3</h1>
   <p>Le 345 domande ufficiali della banca dati 3-FOR, divise negli stessi capitoli del grimorio. Allo scritto ne escono 15: per passare ne servono almeno 10 giuste in 30 minuti.</p>
