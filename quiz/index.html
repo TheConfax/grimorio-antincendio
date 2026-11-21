@@ -118,7 +118,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 <header class="top"><div class="wrap">
   <p class="hand">le prove del Grimorio del Fuoco</p>
   <h1>Quiz Antincendio Livello 3</h1>
-  <p>Le 345 domande ufficiali della banca dati 3-FOR. Allo scritto ne escono 15: per passare ne servono almeno 10 giuste in 30 minuti.</p>
+  <p>Le 345 domande ufficiali della banca dati 3-FOR, divise negli stessi capitoli del grimorio. Allo scritto ne escono 15: per passare ne servono almeno 10 giuste in 30 minuti.</p>
   <svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
   <div class="modes">
     <button class="mode exam" id="bExam"><b>Simulazione d'esame</b><span>15 domande a caso, 30 minuti, soglia 10</span></button>
@@ -139,7 +139,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 
 <script>
 {
-const CH={1:"La combustione",2:"Le sostanze estinguenti",3:"Rischio, dinamica ed effetti sull'uomo",4:"Prevenzione e protezione",5:"La segnaletica di sicurezza",6:"Controlli e manutenzione",7:"Aree a rischio ed esplosioni",8:"Reazione, resistenza al fuoco, compartimentazione",9:"L'esodo",10:"Rivelazione, allarme, fumo e calore",11:"Estintori, idranti, impianti automatici",12:"Gestione della sicurezza ed emergenza",13:"DPI per le vie respiratorie"};
+const CH={"1": "Il sigillo del fuoco", "2": "Le cinque creature del fuoco", "3": "I numeri segreti della fiamma", "4": "Solidi, liquidi e gas", "5": "Il calore e le scintille", "6": "Le pozioni che spengono", "7": "La vita di un incendio", "8": "Gli scudi del villaggio", "9": "Le rune", "10": "I guardiani dei presidi", "11": "Le terre maledette", "12": "Pelle e corazza", "13": "I muri incantati", "14": "Il sentiero fuori dal bosco", "15": "Le misure del sentiero", "16": "Campane e camini", "17": "Il primo strumento: l'estintore", "18": "Fontane e piogge magiche", "19": "Aprire la strada ai cavalieri", "20": "Il patto del villaggio", "21": "Le maschere"};
 const L="ABC";
 const GR="../",GT={"1": "Il sigillo del fuoco", "2": "Le cinque creature del fuoco", "3": "I numeri segreti della fiamma", "4": "Solidi, liquidi e gas", "5": "Il calore e le scintille", "6": "Le pozioni che spengono", "7": "La vita di un incendio", "8": "Gli scudi del villaggio", "9": "Le rune", "10": "I guardiani dei presidi", "11": "Le terre maledette", "12": "Pelle e corazza", "13": "I muri incantati", "14": "Il sentiero fuori dal bosco", "15": "Le misure del sentiero", "16": "Campane e camini", "17": "Il primo strumento: l'estintore", "18": "Fontane e piogge magiche", "19": "Aprire la strada ai cavalieri", "20": "Il patto del villaggio", "21": "Le maschere", "22": "Il rituale", "23": "Il ripasso della strega"};
 let Q=[],st={},S=null,timerId=null;
@@ -229,7 +229,7 @@ document.addEventListener("keydown",e=>{
 });
 load();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){const l=Q.filter(q=>q.g===g);if(l.length){start(shuffle(l),"chap",`Grimorio, capitolo ${g}: ${GT[g]}`);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`);return true}return false};
+const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){const l=Q.filter(q=>q.g===g);if(l.length){start(shuffle(l),"chap",`Capitolo ${g}: ${GT[g]}`);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`);return true}return false};
 window.addEventListener("hashchange",()=>{if(Q.length)fromHash()});
 fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();fromHash()}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
 }
