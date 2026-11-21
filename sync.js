@@ -134,7 +134,9 @@ addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"
 addEventListener("online",sync);
 addEventListener("pageshow",e=>{if(e.persisted)sync()});
 
-/* ---------- Pulsanti e pecetta (in fondo alla home del quiz, nel box #gsBox) ---------- */
+/* ---------- Pulsanti e pecetta (nel pannello dell'ingranaggio, box #gsBox) ---------- */
+/* sul telefono il pulsante principale è Inquadra, sul computer Mostra */
+const phone=()=>matchMedia("(pointer:coarse)").matches;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const loadLib=f=>new Promise((ok,ko)=>{if((f==="qrcode"&&window.qrcode)||(f==="jsQR"&&window.jsQR))return ok();const s=document.createElement("script");s.src=BASE+"lib/"+(f==="qrcode"?"qrcode.min.js":"jsQR.min.js");s.onload=ok;s.onerror=()=>ko(new Error("lib"));document.head.appendChild(s)});
 const I={
@@ -154,7 +156,7 @@ function paintBox(){
   const n=get("gs_n",0),what=state==="busy"||!get("gs_at",0)?"sync in corso…":state==="err"?"offline":esc(ago(get("gs_at",0)));
   const who=n?(n===1?"1 dispositivo":n+" dispositivi")+" · ":"";
   box.innerHTML=`<button type="button" class="gsst${n>1?"":" solo"}" data-gs="unlink">${I.phone}<span>${who}${what}</span></button>`
-    +`<div class="gsbtns"><button class="btn ghost gsb" data-gs="show">${I.qr}Mostra QR</button><button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra QR</button></div>`;
+    +`<div class="gsbtns"><button class="btn${phone()?" ghost":""} gsb" data-gs="show">${I.qr}Mostra QR</button><button class="btn${phone()?"":" ghost"} gsb" data-gs="scan">${I.cam}Inquadra QR</button></div>`;
 }
 addEventListener("gs:status",()=>{if(!document.querySelector('#gsBox [data-sure]'))paintBox()});
 setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))paintBox()},30e3);
