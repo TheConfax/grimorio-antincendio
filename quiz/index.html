@@ -336,7 +336,7 @@ function finish(){
   clearInterval(timerId);
   if(S.mode==="exam")S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a)});
   const Rr={list:S.list,mode:S.mode,title:S.title,chap:S.chap,ans:S.ans};S={again:Rr};persist();
-  showRes(Rr);window.scrollTo({top:$("quiz").offsetTop-20});
+  showRes(Rr);window.scrollTo({top:0});
   const ok=Rr.list.filter((q,k)=>Rr.ans[k]===q.a).length,n=Rr.list.length,pass=Rr.mode==="exam"?ok>=10:ok/n>=2/3;
   if(pass)party(ok===n);
 }
