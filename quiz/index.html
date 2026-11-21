@@ -228,7 +228,7 @@ document.addEventListener("click",e=>{
     case"bExam":start(shuffle(Q).slice(0,15),"exam","Simulazione d'esame");break;
     case"bErr":start(shuffle(errs()),"err","Ripasso degli errori");break;
     case"bAll":start(shuffle(Q),"all","Tutte le domande");break;
-    case"bMenu":if(S&&S.mode==="exam"&&!t.dataset.sure){t.dataset.sure=1;$("bMenuT").textContent="Sicuro? Abbandoni la simulazione";break}
+    case"bMenu":if(S&&S.mode==="exam"&&!t.dataset.sure){t.dataset.sure=1;$("bMenuT").textContent="Sicura di gettare la spugna?";break}
     case"bExit":case"bHome":if(location.hash)try{history.replaceState(null,"",location.pathname)}catch(e){}home();break;
     case"bPrev":if(S.i){S.i--;render()}break;
     case"bNext":next();break;
