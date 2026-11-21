@@ -153,8 +153,8 @@ function paintBox(){
   const box=document.getElementById("gsBox");if(!box)return;
   const n=get("gs_n",0),what=state==="busy"||!get("gs_at",0)?"sync in corso…":state==="err"?"offline":esc(ago(get("gs_at",0)));
   const who=n?(n===1?"1 dispositivo":n+" dispositivi")+" · ":"";
-  box.innerHTML=`<div class="gsbtns"><button class="btn ghost gsb" data-gs="show">${I.qr}Mostra il QR</button><button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra il QR</button></div>`
-    +`<button type="button" class="gsst${n>1?"":" solo"}" data-gs="unlink">${I.phone}<span>${who}${what}</span></button>`;
+  box.innerHTML=`<button type="button" class="gsst${n>1?"":" solo"}" data-gs="unlink">${I.phone}<span>${who}${what}</span></button>`
+    +`<div class="gsbtns"><button class="btn ghost gsb" data-gs="show">${I.qr}Mostra QR</button><button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra QR</button></div>`;
 }
 addEventListener("gs:status",()=>{if(!document.querySelector('#gsBox [data-sure]'))paintBox()});
 setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))paintBox()},30e3);
@@ -167,7 +167,7 @@ function overlay(html){
 const OK='<h3>Collegato!</h3><p class="gsok">✓</p><p class="gsmsg">Ora i progressi si salvano su tutti i dispositivi collegati.</p>';
 
 function showQR(){
-  const o=overlay(`<h3>Collega un dispositivo</h3><div class="gsqr"><p class="gsmute">Preparo il codice…</p></div><p class="gsmsg">Sull'altro dispositivo apri il Grimorio, vai su <b>Quiz</b>, scorri in fondo e tocca <b>Inquadra il QR</b>.</p><p class="gsmute gsleft"></p><button class="btn ghost gsx" data-gs="close">${I.x}Chiudi</button>`);
+  const o=overlay(`<h3>Collega un dispositivo</h3><div class="gsqr"><p class="gsmute">Preparo il codice…</p></div><p class="gsmsg">Sull'altro dispositivo apri il Grimorio, vai su <b>Quiz</b>, tocca l'ingranaggio e poi <b>Inquadra QR</b>.</p><p class="gsmute gsleft"></p><button class="btn ghost gsx" data-gs="close">${I.x}Chiudi</button>`);
   let tick=0,poll=0;
   const stop=()=>{clearInterval(tick);clearInterval(poll)};
   o.addEventListener("click",e=>{const b=e.target.closest("[data-gs]");if(!b)return;if(b.dataset.gs==="close"){stop();o.close();paintBox()}else if(b.dataset.gs==="again"){stop();make()}});
@@ -194,7 +194,7 @@ function showQR(){
 }
 
 function scanQR(){
-  const o=overlay(`<h3>Inquadra il QR</h3><div class="gscam"><video playsinline muted autoplay></video></div><p class="gsmsg">Inquadra il QR che compare sull'altro dispositivo dopo aver toccato <b>Mostra il QR</b>.</p><button class="btn ghost gsx" data-gs="close">${I.x}Annulla</button>`);
+  const o=overlay(`<h3>Inquadra il QR</h3><div class="gscam"><video playsinline muted autoplay></video></div><p class="gsmsg">Inquadra il QR che compare sull'altro dispositivo dopo aver toccato <b>Mostra QR</b>.</p><button class="btn ghost gsx" data-gs="close">${I.x}Annulla</button>`);
   const v=o.querySelector("video"),c=document.createElement("canvas"),x=c.getContext("2d",{willReadFrequently:true});
   let stream=null,raf=0,done=false;
   const stop=()=>{done=true;cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop())};
