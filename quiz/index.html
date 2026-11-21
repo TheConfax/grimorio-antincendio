@@ -66,7 +66,7 @@ body{padding-top:57px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
 .vine.sep{margin:6px auto 26px}
 .vine.sep.end{margin:36px auto 0}
-.vine{display:block;width:min(100%,330px);height:auto;aspect-ratio:330/26;overflow:visible;margin:14px auto 0;color:var(--moss)}
+.vine{display:block;width:min(100%,560px);height:26px;margin:14px auto 0;color:var(--moss);overflow:visible}
 .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px;text-align:left}
 .mode{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:20px 18px;min-height:0;text-align:left;box-shadow:0 6px 0 -2px light-dark(#d8c9a8,#0d110b),0 12px 22px -16px light-dark(#7b5c33,#000);transition:transform .08s,box-shadow .08s}
 .mode .go{flex:none;font:800 26px/1 Nunito,system-ui,sans-serif;color:var(--fungo);margin-top:-3px}
@@ -407,6 +407,20 @@ fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();
   if(fromHash()){try{history.replaceState(null,"",location.pathname)}catch(e){}return}
   if(!restore(rawSess)){const y=+(localStorage.getItem(HY)||0);if(y){const r=document.documentElement;r.style.scrollBehavior="auto";scrollTo(0,y);r.style.scrollBehavior=""}}}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
 }
+</script>
+<script>
+/* Separatori a tralcio: 4 foglie, ridisegnati sulla larghezza vera così le foglie non si deformano */
+(function(){
+  function draw(s){const W=Math.round(s.clientWidth),H=Math.round(s.clientHeight)||26;if(!W||s._w===W)return;s._w=W;
+    const m=H/2,N=4,sg=W/N;let d="M0 "+m,lv="";
+    for(let i=0;i<N;i++){const x=i*sg,u=i%2?-1:1;d+=" C"+(x+sg*.35).toFixed(1)+" "+(m-7*u)+" "+(x+sg*.65).toFixed(1)+" "+(m-7*u)+" "+(x+sg).toFixed(1)+" "+m;
+      const cx=(x+sg*.5).toFixed(1),cy=m-10.2*u;lv+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="7" ry="3.2" transform="rotate('+(u>0?-28:28)+" "+cx+" "+cy+')"/>'}
+    s.setAttribute("viewBox","0 0 "+W+" "+H);s.removeAttribute("preserveAspectRatio");
+    s.innerHTML='<path d="'+d+'" stroke="currentColor" stroke-width="2.6" fill="none"/><g fill="currentColor">'+lv+"</g>"}
+  const all=()=>document.querySelectorAll("svg.vine");
+  if(window.ResizeObserver){const ro=new ResizeObserver(es=>es.forEach(e=>draw(e.target)));all().forEach(s=>{draw(s);ro.observe(s)})}
+  else{all().forEach(draw);addEventListener("resize",()=>all().forEach(draw))}
+})();
 </script>
 <script src="../sync.js"></script>
 </body>

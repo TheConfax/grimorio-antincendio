@@ -94,7 +94,7 @@ button.letto{cursor:pointer;min-height:26px}
 .index a>span:not(.n) small{grid-column:1/-1}
 .ct{font-size:clamp(36px,7vw,52px);margin:4px 0 6px}
 .sub{color:var(--soft);font-style:italic;font-family:"IM Fell English",serif;font-size:19px;margin:0}
-.vine{display:block;width:min(100%,330px);height:auto;aspect-ratio:330/26;overflow:visible;margin:16px auto 6px;color:var(--moss)}
+.vine{display:block;width:100%;height:28px;margin:16px 0 6px;color:var(--moss);overflow:visible}
 h3.sh{font-size:clamp(26px,4.6vw,33px);margin:36px 0 6px}
 h3.sh small{display:block;font-family:Caveat,cursive;font-weight:700;color:var(--lilac);font-size:23px;margin-bottom:2px}
 p{margin:10px 0}
@@ -1326,6 +1326,20 @@ paint();
 document.querySelectorAll('.go a[href^="quiz/#g-"]').forEach(a=>a.addEventListener('click',()=>{const n=+a.getAttribute('href').split('-')[1],r=read();if(!r.has(n)){r.add(n);try{localStorage.setItem(RK,JSON.stringify([...r]))}catch(x){}paint();window.GS&&GS.soon()}}));
 addEventListener('gs:update',paint);
 }
+</script>
+<script>
+/* Separatori a tralcio: 4 foglie, ridisegnati sulla larghezza vera così le foglie non si deformano */
+(function(){
+  function draw(s){const W=Math.round(s.clientWidth),H=Math.round(s.clientHeight)||26;if(!W||s._w===W)return;s._w=W;
+    const m=H/2,N=4,sg=W/N;let d="M0 "+m,lv="";
+    for(let i=0;i<N;i++){const x=i*sg,u=i%2?-1:1;d+=" C"+(x+sg*.35).toFixed(1)+" "+(m-7*u)+" "+(x+sg*.65).toFixed(1)+" "+(m-7*u)+" "+(x+sg).toFixed(1)+" "+m;
+      const cx=(x+sg*.5).toFixed(1),cy=m-10.2*u;lv+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="7" ry="3.2" transform="rotate('+(u>0?-28:28)+" "+cx+" "+cy+')"/>'}
+    s.setAttribute("viewBox","0 0 "+W+" "+H);s.removeAttribute("preserveAspectRatio");
+    s.innerHTML='<path d="'+d+'" stroke="currentColor" stroke-width="2.6" fill="none"/><g fill="currentColor">'+lv+"</g>"}
+  const all=()=>document.querySelectorAll("svg.vine");
+  if(window.ResizeObserver){const ro=new ResizeObserver(es=>es.forEach(e=>draw(e.target)));all().forEach(s=>{draw(s);ro.observe(s)})}
+  else{all().forEach(draw);addEventListener("resize",()=>all().forEach(draw))}
+})();
 </script>
 <script src="sync.js"></script>
 </body></html>
