@@ -93,13 +93,13 @@ const I={
 };
 function ago(t){
   if(!t)return"";const s=(Date.now()-t)/1e3;
-  if(s<60)return"salvato adesso";if(s<3600){const m=Math.floor(s/60);return`salvato ${m} min fa`}
+  if(s<60)return"sync adesso";if(s<3600){const m=Math.floor(s/60);return`sync ${m} min fa`}
   const d=new Date(t),n=new Date(),hm=d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
-  return d.toDateString()===n.toDateString()?`salvato alle ${hm}`:`salvato il ${d.toLocaleDateString("it-IT",{day:"numeric",month:"numeric"})} alle ${hm}`;
+  return d.toDateString()===n.toDateString()?`sync alle ${hm}`:`sync il ${d.toLocaleDateString("it-IT",{day:"numeric",month:"numeric"})} alle ${hm}`;
 }
 function paintBox(){
   const box=document.getElementById("gsBox");if(!box)return;
-  const st=linked()?`<button type="button" class="gsst" data-gs="unlink">🔗 Collegato · ${state==="busy"?"sto salvando…":state==="err"?"senza rete, salvo appena torna":esc(ago(get("gs_at",0))||"sto salvando…")}</button>`:"";
+  const st=linked()?`<button type="button" class="gsst" data-gs="unlink">${I.phone}<span>collegato · ${state==="busy"?"sync in corso…":state==="err"?"offline":esc(ago(get("gs_at",0))||"sync in corso…")}</span></button>`:"";
   const btn=phone()?(linked()?"":`<button class="btn ghost gsb" data-gs="scan">${I.cam}Inquadra il QR</button>`):`<button class="btn ghost gsb" data-gs="show">${I.phone}Collega il telefono</button>`;
   box.innerHTML=btn+st;
 }
@@ -178,7 +178,7 @@ document.addEventListener("click",e=>{
   if(u&&u!==b)paintBox();
   if(!b)return;
   if(b.dataset.gs==="show")showQR();else if(b.dataset.gs==="scan")scanQR();
-  else if(b.dataset.gs==="unlink"){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.textContent="Scollega?"}}
+  else if(b.dataset.gs==="unlink"){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.lastElementChild.textContent="Scollega?"}}
 });
 
 window.GS={sync,soon,wipeAll,linked,paint:paintBox,_merge:merge};
