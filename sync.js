@@ -234,7 +234,7 @@ document.addEventListener("click",e=>{
   if(u&&u!==b)paintBox();
   if(!b)return;
   if(b.dataset.gs==="show")showQR();else if(b.dataset.gs==="scan")scanQR();
-  else if(b.dataset.gs==="unlink"&&get("gs_n",0)>1){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.lastElementChild.textContent="Scollega?"}}
+  else if(b.dataset.gs==="unlink"&&get("gs_n",0)>1){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.lastElementChild.textContent="Scollega dal gruppo?"}}
 });
 
 window.GS={sync,soon,wipeAll,join,paint:paintBox};
