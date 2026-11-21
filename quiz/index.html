@@ -95,7 +95,12 @@ h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
 .prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:0 auto 22px;max-width:780px}
 .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--amber));transition:width .3s}
 .qcard{background:var(--page);border:1px solid var(--line);border-radius:4px 4px 10px 10px;padding:clamp(20px,3.5vw,34px);max-width:780px;margin:0 auto;box-shadow:0 18px 40px -26px light-dark(#7b5c33,#000)}
-.qn{font:700 21px/1.1 Caveat,cursive;color:var(--lilac)}
+.qn{display:flex;align-items:center;justify-content:space-between;gap:10px;font:700 21px/1.1 Caveat,cursive;color:var(--lilac)}
+.lvl{flex:none;font:800 12px/1 Nunito,system-ui,sans-serif;padding:5px 9px;border-radius:5px;letter-spacing:.02em}
+.lvl.new{background:light-dark(#e7e6e3,#2e302e);color:light-dark(#62605c,#b9b8b4);border:1px solid light-dark(#a9a7a2,#5f615e)}
+.lvl.easy{background:var(--grnbg);color:var(--moss);border:1px solid var(--moss)}
+.lvl.mid{background:light-dark(#f8e7c4,#3a2f17);color:light-dark(#8a5410,#f2b54f);border:1px solid var(--amber)}
+.lvl.hard{background:var(--redbg);color:var(--red2);border:1px solid var(--red2)}
 .qt{font-size:clamp(19px,2.4vw,22px);font-weight:700;line-height:1.4;margin:6px 0 16px}
 .qimg{display:block;width:120px;height:120px;object-fit:contain;margin:0 0 16px;background:#fff;border-radius:6px;padding:6px;border:1px solid var(--line);transform:rotate(-2deg);box-shadow:0 6px 14px -8px #0007}
 .opts{display:grid;gap:10px}
@@ -129,10 +134,19 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none}
 .dot{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:14px}
 .dot.done{background:var(--moss);color:var(--page);border-color:var(--moss)}.dot.cur{outline:3px solid var(--amber)}
 .res{max-width:780px;margin:0 auto}
-.score{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:22px 24px;border-radius:10px;margin-bottom:22px;border:2px solid}
+.score{position:relative;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:22px 24px;border-radius:10px;margin-bottom:22px;border:2px solid}
 .score.pass{background:var(--grnbg);border-color:var(--moss)}.score.fail{background:var(--redbg);border-color:var(--red2)}
 .score .big{font:800 clamp(52px,10vw,76px)/1 Nunito;color:var(--fungo)}
 .score h2{font-size:clamp(28px,4vw,38px)}
+.party{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
+.party i{position:absolute;top:-34px;display:block;opacity:0;animation-name:fall;animation-timing-function:cubic-bezier(.3,.2,.6,1);animation-fill-mode:forwards}
+.party svg{display:block;width:100%;height:100%}
+@keyframes fall{0%{transform:translate(0,0) rotate(0);opacity:1}80%{opacity:1}100%{transform:translate(var(--dx),108vh) rotate(var(--r));opacity:0}}
+.pfrog{position:absolute;right:16px;top:-30px;width:62px;height:47px;pointer-events:none;animation:hop .6s ease-out both}
+.pfrog.big{animation:hop .6s ease-out both,jump .5s ease-in-out .6s 3}
+.pfrog.still{animation:none}
+@keyframes hop{0%{transform:translateY(18px) scale(.5);opacity:0}45%{transform:translateY(-14px) scale(1.06);opacity:1}100%{transform:none;opacity:1}}
+@keyframes jump{0%,100%{transform:none}50%{transform:translateY(-20px) rotate(-6deg)}}
 .rv{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:10px}
 .rv.bad{border-left:6px solid var(--red2)}.rv.good{border-left:6px solid var(--moss)}
 .rv .q{font-weight:700}
@@ -186,7 +200,8 @@ const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}c
 const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;save()};
 const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
 const SK="qa3for_sess",HY="qa3for_homey";
-const pack=o=>({list:o.list.map(q=>q.n),mode:o.mode,title:o.title,chap:o.chap,i:o.i||0,ans:o.ans,done:o.done||{},end:o.end||0});
+const level=n=>{const r=st[n];if(!r||!(r.r+r.w))return["new","Nuova"];const x=r.r/(r.r+r.w);return x>2/3?["easy","Facile"]:x>1/2?["mid","Media"]:["hard","Difficile"]};
+const pack=o=>({list:o.list.map(q=>q.n),mode:o.mode,title:o.title,chap:o.chap,i:o.i||0,ans:o.ans,done:o.done||{},end:o.end||0,lab:o.lab||{}});
 const unpack=o=>{const m={};Q.forEach(q=>m[q.n]=q);const list=o.list.map(n=>m[n]);if(list.some(q=>!q))return null;return {...o,list}};
 const persist=()=>{try{if(S&&S.list)localStorage.setItem(SK,JSON.stringify({ph:"q",s:pack(S)}));else if(S&&S.again)localStorage.setItem(SK,JSON.stringify({ph:"r",s:pack(S.again)}));else localStorage.removeItem(SK)}catch(e){}};
 function enterQuiz(mode){
@@ -217,13 +232,14 @@ function tick(){
 }
 function render(){
   const q=S.list[S.i],n=S.list.length,ex=S.mode==="exam",a=S.ans[S.i],shown=!ex&&S.done[S.i];
+  S.lab=S.lab||{};if(!S.lab[S.i])S.lab[S.i]=level(q.n);const lv=S.lab[S.i];
   let o=q.o.map((t,k)=>{let c="opt";if(shown){if(k===q.a)c+=" right";else if(k===a)c+=" wrong"}else if(k===a)c+=" sel";
     return `<button class="${c}" data-k="${k}" ${shown?"disabled":""}><span class="l">${L[k]}</span><span>${esc(t)}</span></button>`}).join("");
   let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}</div>`}
   const last=S.i===n-1;
   $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
-  <article class="qcard"><div class="qn">#${q.n} · Capitolo ${q.c}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
+  <article class="qcard"><div class="qn"><span>#${q.n} · Capitolo ${q.c}</span>${ex?"":`<span class="lvl ${lv[0]}">${lv[1]}</span>`}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
   <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`${S.confirm?`<span class="conf"><b>Sicura?</b><button class="btn yes" id="bYes">Sì</button><button class="btn ghost" id="bNo">No</button></span>`:`<button class="btn" id="bEnd">Consegna</button>`}<button class="btn ghost" id="bNext" ${last?"disabled":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
   persist();
@@ -241,6 +257,23 @@ function finish(){
   if(S.mode==="exam")S.list.forEach((q,k)=>{if(S.ans[k]!==undefined)mark(q.n,S.ans[k]===q.a);else mark(q.n,false)});
   const Rr={list:S.list,mode:S.mode,title:S.title,chap:S.chap,ans:S.ans};S={again:Rr};persist();
   showRes(Rr);window.scrollTo({top:$("quiz").offsetTop-20});
+  const ok=Rr.list.filter((q,k)=>Rr.ans[k]===q.a).length,n=Rr.list.length,pass=Rr.mode==="exam"?ok>=10:ok/n>=2/3;
+  if(pass)party(ok===n);
+}
+const FX={leaf:c=>`<svg viewBox="0 0 20 12"><path d="M1 6C5 0 15 0 19 6 15 12 5 12 1 6z" fill="${c}"/><path d="M3 6h14" stroke="#0003" stroke-width="1"/></svg>`,
+ flower:c=>`<svg viewBox="0 0 20 20"><g fill="${c}"><circle cx="10" cy="4.6" r="4"/><circle cx="15.1" cy="8.3" r="4"/><circle cx="13.2" cy="14.4" r="4"/><circle cx="6.8" cy="14.4" r="4"/><circle cx="4.9" cy="8.3" r="4"/></g><circle cx="10" cy="10" r="3" fill="#f2c94c"/></svg>`,
+ star:c=>`<svg viewBox="0 0 20 20"><path d="M10 0l2.6 7.4L20 10l-7.4 2.6L10 20l-2.6-7.4L0 10l7.4-2.6z" fill="${c}"/></svg>`};
+function party(big){
+  const rm=matchMedia("(prefers-reduced-motion: reduce)").matches,box=document.querySelector(".score"),src=document.querySelector(".frogh");
+  if(box&&src){const f=src.cloneNode(true);f.setAttribute("class","pfrog"+(big?" big":"")+(rm?" still":""));f.removeAttribute("style");box.appendChild(f)}
+  if(rm)return;
+  const lay=document.createElement("div");lay.className="party";lay.setAttribute("aria-hidden","true");document.body.appendChild(lay);
+  const cols=["#4d6a35","#93b56e","#b8741a","#f2b54f","#b0676e","#e4a4aa","#7e6fa8"],kinds=big?["leaf","flower","star","leaf"]:["leaf"],n=big?70:12;
+  for(let i=0;i<n;i++){const k=kinds[i%kinds.length],sz=(k==="leaf"?20:14)+Math.random()*12,el=document.createElement("i");
+    el.innerHTML=FX[k](cols[Math.random()*cols.length|0]);
+    el.style.cssText=`left:${(Math.random()*100).toFixed(1)}%;width:${sz|0}px;height:${sz|0}px;animation-duration:${((big?2.3:1.4)+Math.random()*1.3).toFixed(2)}s;animation-delay:${(Math.random()*(big?1.3:.4)).toFixed(2)}s;--dx:${(Math.random()*140-70)|0}px;--r:${(Math.random()*720-360)|0}deg`;
+    lay.appendChild(el)}
+  setTimeout(()=>lay.remove(),big?5500:3400);
 }
 function showRes(S){
   clearInterval(timerId);
@@ -248,8 +281,8 @@ function showRes(S){
   const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3;
   const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
   const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
-  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(pass?`Ne servivano almeno 10, ne hai fatte ${ok}.`:`Ne servivano almeno 10: ${10-ok===1?"te ne manca 1":`te ne mancano ${10-ok}`}.`):`Hai risposto bene ${pct(Math.round(ok/n*100))} delle domande.`}</p></div></div>
-  <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Riprova il quiz"}</button></div>
+  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):ok===n?"Perfetto!":(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(n-ok===0?"Perfetto! 0 errori!":n-ok===1?"Hai fatto solo 1 errore!":n-ok<=5?`Hai fatto solo ${n-ok} errori!`:`Hai fatto ${n-ok} errori.`):`Hai risposto giusto ${pct(Math.round(ok/n*100))} delle domande.`}</p></div></div>
+  <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">&lsaquo; Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Riprova il quiz"}</button></div>
   <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
   delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";$("back").hidden=false;
 }
