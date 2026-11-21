@@ -265,7 +265,7 @@ function home(){
   $("quiz").style.display="none";$("home").style.display="block";
   const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
   const ko=seen-ok;$("stats").innerHTML=`<span class="bar"><i class="ok" style="width:${ok/Q.length*100}%"></i><i class="ko" style="width:${ko/Q.length*100}%"></i></span><small>${Q.length} domande${seen?` · ${ok} ${ok===1?"giusta":"giuste"}, ${ko} da ripassare`:""}</small>`;
-  const e=errs().length;$("bErr").disabled=!e;
+  const e=errs().length;$("bErr").disabled=!e;$("bAll").disabled=Q.filter(q=>st[q.n]).length<20;
   persist();
   $("chaps").innerHTML=Object.keys(CH).map(c=>{const qs=Q.filter(q=>q.c==c),g=qs.filter(q=>st[q.n]&&st[q.n].l===1).length,b=qs.filter(q=>st[q.n]&&st[q.n].l===0).length;
     const rd=letti().has(+c);return `<button class="chap${rd?" read":""}" data-c="${c}"><span class="num">${c}</span><span class="nmrow"><span class="nm">${CH[c]}</span>${rd?`<span class="letto">Letto <svg viewBox="0 0 13 14" aria-hidden="true"><rect x="1.5" y="1.5" width="9.5" height="11" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3.6 1.5v11" stroke="currentColor" stroke-width="1.2"/><path d="M5.6 5h3.4M5.6 7.3h3.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>`:""}</span><span><span class="bar"><i class="ok" style="width:${g/qs.length*100}%"></i><i class="ko" style="width:${b/qs.length*100}%"></i></span><small>${qs.length} domande${g||b?` · ${g} ${g===1?"giusta":"giuste"}, ${b} da ripassare`:""}</small></span></button>`}).join("");
@@ -352,8 +352,8 @@ document.addEventListener("click",e=>{
     case"bEnd":S.confirm=1;render();break;
     case"bYes":finish();break;
     case"bNo":S.confirm=0;render();break;
-    case"bAgain":{const p=S.again;if(p.mode==="err"&&!errs().length){home();break}start(p.mode==="exam"?shuffle(Q).slice(0,15):p.mode==="chap"?pickChapter(p.chap):p.mode==="err"?shuffle(errs()).slice(0,QN):pickBombeiro(),p.mode,p.title,p.chap);break}
-    case"bReset":{const w=t.closest(".rwrap"),k=+(t.dataset.step||0);if(k===0){t.dataset.step=1;$("bResetT").textContent="Sei sicura di voler uccidere questa ranetta?";w.classList.add("cry")}else if(k===1){t.dataset.step=2;$("bResetT").textContent="SICURISSIMA?"}else{st={};try{["qa3for_grimorio","qa3for_sess","qa3for_homey","grimorio_letti","grimorio_pos","gq_last"].forEach(k=>localStorage.removeItem(k))}catch(x){}$("bResetT").textContent="Cancella tutti i dati";delete t.dataset.step;w.classList.remove("cry");home()}break}
+    case"bAgain":{const p=S.again;if((p.mode==="err"&&!errs().length)||(p.mode==="all"&&Q.filter(q=>st[q.n]).length<20)){home();break}start(p.mode==="exam"?shuffle(Q).slice(0,15):p.mode==="chap"?pickChapter(p.chap):p.mode==="err"?shuffle(errs()).slice(0,QN):pickBombeiro(),p.mode,p.title,p.chap);break}
+    case"bReset":{const w=t.closest(".rwrap"),k=+(t.dataset.step||0);if(k===0){t.dataset.step=1;$("bResetT").textContent="Sei sicura di voler uccidere questa ranetta?";w.classList.add("cry")}else if(k===1){t.dataset.step=2;$("bResetT").textContent="SICURISSIMA?"}else{st={};try{["qa3for_grimorio","qa3for_sess","qa3for_homey","grimorio_letti","grimorio_pos","gq_last"].forEach(k=>localStorage.removeItem(k))}catch(x){}location.replace(GR);break}break}
   }
 });
 document.addEventListener("keydown",e=>{
