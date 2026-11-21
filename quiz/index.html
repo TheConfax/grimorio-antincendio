@@ -52,7 +52,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offs
 .tog[hidden],.mq[hidden]{display:none}
 body{padding-top:57px}
 .rwrap{position:relative;display:table;margin:36px auto 0}
-.reset{display:block;min-height:44px;padding:0 18px;background:light-dark(#b8392b,#c9483a);color:#fff;border:0;border-radius:99px;font:700 14px Nunito,system-ui,sans-serif}
+.reset{display:block;padding:6px 10px;background:var(--redbg);color:var(--red2);border:1px solid var(--red2);border-radius:5px;font:800 13px/1 Nunito,system-ui,sans-serif;letter-spacing:.02em}
 .reset:hover{filter:brightness(1.07)}
 .rwrap .tears{opacity:0}
 .rwrap.cry .tears{animation:tear .9s ease-in infinite}
@@ -60,7 +60,7 @@ body{padding-top:57px}
 @keyframes tear{0%{opacity:0;transform:translateY(-4px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
 @keyframes sob{0%,100%{transform:rotate(12deg)}50%{transform:rotate(8deg) translateY(1px)}}
 @media(prefers-reduced-motion:reduce){.rwrap.cry .tears{animation:none;opacity:1}.rwrap.cry .frog{animation:none}}
-.frog{position:absolute;top:-22px;right:-26px;width:44px;height:34px;transform:rotate(12deg);cursor:default;user-select:none}
+.frog{position:absolute;top:-19px;right:-24px;width:36px;height:28px;transform:rotate(12deg);cursor:default;user-select:none}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
