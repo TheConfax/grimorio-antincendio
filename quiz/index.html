@@ -176,7 +176,7 @@ function render(){
   const q=S.list[S.i],n=S.list.length,ex=S.mode==="exam",a=S.ans[S.i],shown=!ex&&S.done[S.i];
   let o=q.o.map((t,k)=>{let c="opt";if(shown){if(k===q.a)c+=" right";else if(k===a)c+=" wrong"}else if(k===a)c+=" sel";
     return `<button class="${c}" data-k="${k}" ${shown?"disabled":""}><span class="l">${L[k]}</span><span>${esc(t)}</span></button>`}).join("");
-  let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}<p>Ripassa nel grimorio: <a href="${GR}#c${q.g}">capitolo ${q.g}, ${esc(GT[q.g])}</a></p></div>`}
+  let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}<p>Ripassa nel grimorio: <b>capitolo ${q.g}, ${esc(GT[q.g])}</b></p></div>`}
   const last=S.i===n-1;
   $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span><button class="exit" id="bExit">${ex?"Abbandona":"Torna ai capitoli"}</button></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
