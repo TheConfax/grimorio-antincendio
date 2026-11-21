@@ -12,7 +12,8 @@
 <link rel="icon" type="image/png" href="icons/grimorio-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 
-<script>try{if(!sessionStorage.getItem("gq_open")&&!location.hash&&localStorage.getItem("gq_last")==="quiz"){sessionStorage.setItem("gq_open","1");document.write('<style>body{display:none}html{background:'+(matchMedia("(prefers-color-scheme: dark)").matches?"#171c15":"#efe5cf")+'}html::before{content:"";position:fixed;inset:0;margin:auto;width:112px;height:112px;border-radius:26px;background:url(icons/grimorio-180.png) center/cover;box-shadow:0 12px 30px -12px #0008}</style>');location.replace("quiz/")}else{sessionStorage.setItem("gq_open","1");localStorage.setItem("gq_last","grimorio")}}catch(e){}</script>
+<script src="noapp.js"></script>
+<script>try{if(window.NOAPP);else if(!sessionStorage.getItem("gq_open")&&!location.hash&&localStorage.getItem("gq_last")==="quiz"){sessionStorage.setItem("gq_open","1");document.write('<style>body{display:none}html{background:'+(matchMedia("(prefers-color-scheme: dark)").matches?"#171c15":"#efe5cf")+'}html::before{content:"";position:fixed;inset:0;margin:auto;width:112px;height:112px;border-radius:26px;background:url(icons/grimorio-180.png) center/cover;box-shadow:0 12px 30px -12px #0008}</style>');location.replace("quiz/")}else{sessionStorage.setItem("gq_open","1");localStorage.setItem("gq_last","grimorio")}}catch(e){}</script>
 <title>Il Grimorio del Fuoco</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

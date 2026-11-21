@@ -2,6 +2,7 @@
    Finché non si collega un dispositivo non viene inviato niente. */
 (function(){
 "use strict";
+if(window.NOAPP)return;
 const API="https://rdoohwdwqkwllqspgnby.supabase.co/rest/v1/rpc/",KEY="sb_publishable_xbEaA0Fw18HxwigWEg76GQ_Kdytbh81";
 const BASE=new URL(".",document.currentScript.src).href;
 const DATA=["qa3for_grimorio","qa3for_sess","qa3for_homey","grimorio_letti","grimorio_pos","gq_last"];

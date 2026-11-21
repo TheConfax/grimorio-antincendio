@@ -13,7 +13,8 @@
 <link rel="manifest" href="../manifest.webmanifest">
 
 <title>Quiz del Grimorio</title>
-<script>try{localStorage.setItem("gq_last","quiz");sessionStorage.setItem("gq_open","1")}catch(e){}</script>
+<script src="../noapp.js"></script>
+<script>try{if(!window.NOAPP)localStorage.setItem("gq_last","quiz");sessionStorage.setItem("gq_open","1")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Caveat:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
