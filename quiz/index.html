@@ -7,10 +7,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Quiz Fuoco">
-<link rel="apple-touch-icon" href="../icons/quiz-180.png">
-<link rel="icon" type="image/png" href="../icons/quiz-180.png">
-<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Grimorio">
+<link rel="apple-touch-icon" href="../icons/grimorio-180.png">
+<link rel="icon" type="image/png" href="../icons/grimorio-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
 
 <title>Quiz del Grimorio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,6 +36,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .wrap{max-width:980px;margin:0 auto}
 .top{padding:clamp(26px,5vw,52px) max(5vw,16px) 8px;text-align:center}
+.back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 16px;border:1px solid var(--line);border-radius:99px;background:var(--card);color:var(--fungo);font-weight:700;text-decoration:none;margin-bottom:10px}
+.back:hover{border-color:var(--moss)}
+body.inquiz .back{margin-bottom:6px}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
@@ -116,6 +119,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 </head>
 <body>
 <header class="top"><div class="wrap">
+  <a class="back" id="back" href="../">&lsaquo; Torna al grimorio</a>
   <p class="hand">le prove del Grimorio del Fuoco</p>
   <h1>Quiz Antincendio Livello 3</h1>
   <p>Le 345 domande ufficiali della banca dati 3-FOR, divise negli stessi capitoli del grimorio. Allo scritto ne escono 15: per passare ne servono almeno 10 giuste in 30 minuti.</p>
@@ -152,17 +156,18 @@ const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;s
 const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
 
 function home(){
-  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");
+  clearInterval(timerId);S=null;document.body.classList.remove("inquiz");$("back").href=GR;
   $("quiz").style.display="none";$("home").style.display="block";
   const seen=Q.filter(q=>st[q.n]).length,ok=Q.filter(q=>st[q.n]&&st[q.n].l===1).length;
   $("stats").innerHTML=`<span><strong>${seen}</strong> di 345 provate</span><span><strong>${ok}</strong> giuste all'ultimo tentativo</span><span><strong>${seen?Math.round(ok/seen*100):0}%</strong> di risposte corrette</span>`;
-  const e=errs().length;$("errLbl").textContent=e?`${e} domande sbagliate l'ultima volta`:"Nessun errore da ripassare";$("bErr").disabled=!e;
+  const e=errs().length;$("errLbl").textContent=e?`${e} ${e===1?"domanda sbagliata":"domande sbagliate"} l'ultima volta`:"Nessun errore da ripassare";$("bErr").disabled=!e;
   $("chaps").innerHTML=Object.keys(CH).map(c=>{const qs=Q.filter(q=>q.c==c),g=qs.filter(q=>st[q.n]&&st[q.n].l===1).length,b=qs.filter(q=>st[q.n]&&st[q.n].l===0).length;
     return `<button class="chap" data-c="${c}"><span class="num">${c}</span><span class="nm">${CH[c]}</span><span><span class="bar"><i class="ok" style="width:${g/qs.length*100}%"></i><i class="ko" style="width:${b/qs.length*100}%"></i></span><small>${qs.length} domande${g||b?` · ${g} giuste, ${b} da ripassare`:""}</small></span></button>`}).join("");
 }
 
-function start(list,mode,title){
-  S={list,mode,title,i:0,ans:{},done:{},end:mode==="exam"?Date.now()+30*60e3:0};
+function start(list,mode,title,chap){
+  S={list,mode,title,chap,i:0,ans:{},done:{},end:mode==="exam"?Date.now()+30*60e3:0};
+  $("back").href=chap?`${GR}#c${chap}`:GR;
   $("home").style.display="none";$("quiz").style.display="block";document.body.classList.add("inquiz");
   if(mode==="exam"){clearInterval(timerId);timerId=setInterval(tick,1000)}
   render();window.scrollTo({top:0});
@@ -176,7 +181,7 @@ function render(){
   const q=S.list[S.i],n=S.list.length,ex=S.mode==="exam",a=S.ans[S.i],shown=!ex&&S.done[S.i];
   let o=q.o.map((t,k)=>{let c="opt";if(shown){if(k===q.a)c+=" right";else if(k===a)c+=" wrong"}else if(k===a)c+=" sel";
     return `<button class="${c}" data-k="${k}" ${shown?"disabled":""}><span class="l">${L[k]}</span><span>${esc(t)}</span></button>`}).join("");
-  let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}<p>Ripassa nel grimorio: <b>capitolo ${q.g}, ${esc(GT[q.g])}</b></p></div>`}
+  let fb="";if(shown){const ok=a===q.a;fb=`<div class="fb show ${ok?"good":"bad"}"><b>${ok?"Giusto!":"Sbagliato: la risposta corretta è la "+L[q.a]}</b>${q.t?`<p class="tip">${esc(q.t)}</p>`:""}<p>Ripassa nel grimorio: <a href="../#c${q.g}">capitolo ${q.g}, ${esc(GT[q.g])}</a></p></div>`}
   const last=S.i===n-1;
   $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span><button class="exit" id="bExit">${ex?"Abbandona":"Torna ai capitoli"}</button></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
@@ -205,19 +210,18 @@ function finish(){
 }
 document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
-  if(t.classList.contains("chap")){const c=+t.dataset.c;start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`);return}
+  if(t.classList.contains("chap")){const c=+t.dataset.c;start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`,c);return}
   if(t.classList.contains("opt")){choose(+t.dataset.k);return}
   if(t.classList.contains("dot")){S.i=+t.dataset.j;render();return}
   switch(t.id){
     case"bExam":start(shuffle(Q).slice(0,15),"exam","Simulazione d'esame");break;
     case"bErr":start(shuffle(errs()),"err","Ripasso degli errori");break;
     case"bAll":start(shuffle(Q),"all","Tutte le domande");break;
-    case"bExit":home();break;
-    case"bHome":home();break;
+    case"bExit":case"bHome":if(location.hash)try{history.replaceState(null,"",location.pathname)}catch(e){}home();break;
     case"bPrev":if(S.i){S.i--;render()}break;
     case"bNext":next();break;
     case"bEnd":finish();break;
-    case"bAgain":{const p=S.again;start(p.mode==="exam"?shuffle(Q).slice(0,15):shuffle(p.list),p.mode,p.title);break}
+    case"bAgain":{const p=S.again;start(p.mode==="exam"?shuffle(Q).slice(0,15):shuffle(p.list),p.mode,p.title,p.chap);break}
     case"bReset":if(t.dataset.sure){st={};save();t.textContent="Azzera i progressi salvati";delete t.dataset.sure;home()}else{t.dataset.sure=1;t.textContent="Sicuro? Clicca di nuovo per azzerare"}break;
   }
 });
@@ -229,7 +233,7 @@ document.addEventListener("keydown",e=>{
 });
 load();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){const l=Q.filter(q=>q.g===g);if(l.length){start(shuffle(l),"chap",`Capitolo ${g}: ${GT[g]}`);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`);return true}return false};
+const fromHash=()=>{let m=/^#g-(\d+)$/.exec(location.hash),g=m&&+m[1];if(g&&GT[g]){const l=Q.filter(q=>q.g===g);if(l.length){start(shuffle(l),"chap",`Capitolo ${g}: ${GT[g]}`,g);return true}}m=/^#cap-(\d+)$/.exec(location.hash);const c=m&&+m[1];if(c&&CH[c]){start(shuffle(Q.filter(q=>q.c===c)),"chap",`Capitolo ${c}: ${CH[c]}`,c);return true}return false};
 window.addEventListener("hashchange",()=>{if(Q.length)fromHash()});
 fetch("domande.json").then(r=>r.json()).then(d=>{Q=d;home();fromHash()}).catch(()=>{$("stats").textContent="Non sono riuscito a caricare le domande. Ricarica la pagina."});
 }
