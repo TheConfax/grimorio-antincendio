@@ -154,9 +154,11 @@ function ago(t){
 function paintBox(){
   const box=document.getElementById("gsBox");if(!box)return;
   const n=get("gs_n",0),what=state==="busy"||!get("gs_at",0)?"sync in corso…":state==="err"?"offline":esc(ago(get("gs_at",0)));
-  const who=n?(n===1?"1 dispositivo":n+" dispositivi")+" · ":"";
-  box.innerHTML=`<button type="button" class="gsst${n>1?"":" solo"}" data-gs="unlink">${I.phone}<span>${who}${what}</span></button>`
+  const who=n?(n===1?"1 dispositivo":n+" dispositivi"):"";
+  box.innerHTML=`<button type="button" class="gsst${n>1?"":" solo"}" data-gs="unlink">${I.phone}<span class="gsw">${who?`<span>${who}</span><span class="gsdot">&nbsp;·&nbsp;</span>`:""}<span>${what}</span></span></button>`
     +`<div class="gsbtns"><button class="btn${phone()?" ghost":""} gsb" data-gs="show">${I.qr}Mostra QR</button><button class="btn${phone()?"":" ghost"} gsb" data-gs="scan">${I.cam}Inquadra QR</button></div>`;
+  /* se non ci sta su una riga (senza passare sotto lo gnomo) va su due righe, spezzata sul puntino */
+  const st=box.querySelector(".gsst");if(st&&st.clientWidth&&st.scrollWidth>st.clientWidth+1)st.classList.add("two");
 }
 addEventListener("gs:status",()=>{if(!document.querySelector('#gsBox [data-sure]'))paintBox()});
 setInterval(()=>{if(state==="ok"&&!document.querySelector('#gsBox [data-sure]'))paintBox()},30e3);
@@ -236,7 +238,7 @@ document.addEventListener("click",e=>{
   if(u&&u!==b)paintBox();
   if(!b)return;
   if(b.dataset.gs==="show")showQR();else if(b.dataset.gs==="scan")scanQR();
-  else if(b.dataset.gs==="unlink"&&get("gs_n",0)>1){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.lastElementChild.textContent="Scollega dal gruppo?"}}
+  else if(b.dataset.gs==="unlink"&&get("gs_n",0)>1){if(b.dataset.sure)unlink();else{b.dataset.sure=1;b.classList.remove("two");b.lastElementChild.textContent="Scollega dal gruppo?"}}
 });
 
 window.GS={sync,soon,wipeAll,join,paint:paintBox};
