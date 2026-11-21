@@ -77,9 +77,13 @@ body{padding-top:57px}
 .stats{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:22px}
 .stats .bar{height:14px;border-radius:7px}
 .stats small{display:block;margin-top:6px;color:var(--mute);font-size:13px}
-.chaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}
+.chaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));grid-auto-rows:1fr;gap:10px}
 .chap{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-align:left;min-height:72px}
 .chap:hover{border-color:var(--moss)}
+.chap:not(.read) .num{background:transparent;border:2px solid var(--moss);color:var(--moss)}
+.chap .nmrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.letto{flex:none;display:inline-flex;align-items:center;gap:5px;font:800 12px/1 Nunito,system-ui,sans-serif;letter-spacing:.02em;padding:5px 9px;border-radius:5px;background:light-dark(#f3e4d2,#3a2a1f);color:light-dark(#7b3a1f,#e3b78b);border:1px solid light-dark(#9a5a35,#b07a4f)}
+.letto svg{width:13px;height:14px;flex:none}
 .chap .num{grid-row:span 2;width:40px;height:40px;border-radius:50%;background:var(--moss);color:var(--page);display:grid;place-items:center;font:800 18px Nunito}
 .chap .nm{font-weight:700;line-height:1.25}
 .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;display:flex}
@@ -187,7 +191,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
   <section id="home">
     <div class="stats" id="stats"></div>
     <svg class="vine sep" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
-    <h2 class="sec">Quiz Flash</h2>
+    <h2 class="sec">Quiz per capitolo</h2>
     <div class="chaps" id="chaps"></div>
     <svg class="vine sep end" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
     <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Cancella tutti i dati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/></svg></div>
@@ -209,6 +213,7 @@ const load=()=>{try{st=JSON.parse(localStorage.getItem("qa3for_grimorio")||"{}")
 const save=()=>{try{localStorage.setItem("qa3for_grimorio",JSON.stringify(st))}catch(e){}};
 const mark=(n,ok)=>{const r=st[n]||{r:0,w:0};ok?r.r++:r.w++;r.l=ok?1:0;st[n]=r;save()};
 const errs=()=>Q.filter(q=>st[q.n]&&st[q.n].l===0);
+const letti=()=>{try{return new Set(JSON.parse(localStorage.getItem("grimorio_letti")||"[]"))}catch(e){return new Set()}};
 const SK="qa3for_sess",HY="qa3for_homey",QN=8;
 function pickBombeiro(){
   // tutte Facili; se non bastano Medie, poi Difficili; ultimo ripiego le Nuove
@@ -255,7 +260,7 @@ function home(){
   const e=errs().length;$("bErr").disabled=!e;
   persist();
   $("chaps").innerHTML=Object.keys(CH).map(c=>{const qs=Q.filter(q=>q.c==c),g=qs.filter(q=>st[q.n]&&st[q.n].l===1).length,b=qs.filter(q=>st[q.n]&&st[q.n].l===0).length;
-    return `<button class="chap" data-c="${c}"><span class="num">${c}</span><span class="nm">${CH[c]}</span><span><span class="bar"><i class="ok" style="width:${g/qs.length*100}%"></i><i class="ko" style="width:${b/qs.length*100}%"></i></span><small>${qs.length} domande${g||b?` · ${g} ${g===1?"giusta":"giuste"}, ${b} da ripassare`:""}</small></span></button>`}).join("");
+    const rd=letti().has(+c);return `<button class="chap${rd?" read":""}" data-c="${c}"><span class="num">${c}</span><span class="nmrow"><span class="nm">${CH[c]}</span>${rd?`<span class="letto">Letto <svg viewBox="0 0 13 14" aria-hidden="true"><rect x="1.5" y="1.5" width="9.5" height="11" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3.6 1.5v11" stroke="currentColor" stroke-width="1.2"/><path d="M5.6 5h3.4M5.6 7.3h3.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>`:""}</span><span><span class="bar"><i class="ok" style="width:${g/qs.length*100}%"></i><i class="ko" style="width:${b/qs.length*100}%"></i></span><small>${qs.length} domande${g||b?` · ${g} ${g===1?"giusta":"giuste"}, ${b} da ripassare`:""}</small></span></button>`}).join("");
 }
 
 function start(list,mode,title,chap){
