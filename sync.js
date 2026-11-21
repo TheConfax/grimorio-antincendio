@@ -21,10 +21,11 @@ function rpc(fn,body,keep){
 
 /* Porta nel proprio registro le novità locali dall'ultimo salvataggio. */
 function absorb(now){
+  const first=get("gs_base",null)===null;/* prima unione: le risposte vecchie non hanno un'ora vera */
   const st=get("qa3for_grimorio",{}),base=get("gs_base",{}),mine=get("gs_mine",{}),last=get("gs_last",{});
   for(const n in st){
     const a=st[n]||{},b=base[n]||{},dr=(a.r||0)-(b.r||0),dw=(a.w||0)-(b.w||0);
-    if(dr>0||dw>0){const m=mine[n]||[0,0];m[0]+=Math.max(0,dr);m[1]+=Math.max(0,dw);mine[n]=m;last[n]=[a.l,now]}
+    if(dr>0||dw>0){const m=mine[n]||[0,0];m[0]+=Math.max(0,dr);m[1]+=Math.max(0,dw);mine[n]=m;last[n]=first?[a.l,now,1]:[a.l,now]}
   }
   const on=new Set(get("grimorio_letti",[]).map(String)),lt=get("gs_lt",{});
   on.forEach(c=>{if(!(lt[c]&&lt[c][0]===1))lt[c]=[1,now]});
@@ -40,12 +41,14 @@ function merge(R){
   R.dev=R.dev||{};R.last=R.last||{};R.lt=R.lt||{};R.wiped=R.wiped||0;
   let myW=get("gs_wipe",0),wiped=false;
   if(myW===-1){myW=R.wiped;set("gs_wipe",myW)}
-  if(R.wiped>myW){clearLocal();set("gs_wipe",R.wiped);wiped=true}
+  if(R.wiped>myW){clearLocal();set("gs_base",{});set("gs_wipe",R.wiped);wiped=true}
   else if(myW>R.wiped)R={v:1,wiped:myW,dev:{},last:{},lt:{}};
   absorb(Date.now());
   R.dev[dev()]={q:get("gs_mine",{}),t:Date.now()};
   const last=get("gs_last",{}),lt=get("gs_lt",{});
-  for(const n in last)if(!R.last[n]||R.last[n][1]<last[n][1])R.last[n]=last[n];
+  /* vince l'ultima risposta; al primo collegamento, se le due storie non sono d'accordo, vince la rossa */
+  for(const n in last){const a=last[n],x=R.last[n];
+    if(!x)R.last[n]=[a[0],a[1]];else if(a[2])R.last[n]=[Math.min(a[0],x[0]),Math.max(a[1],x[1])];else if(x[1]<a[1])R.last[n]=[a[0],a[1]]}
   for(const c in lt)if(!R.lt[c]||R.lt[c][1]<lt[c][1])R.lt[c]=lt[c];
   const st={};
   for(const d in R.dev){const q=(R.dev[d]&&R.dev[d].q)||{};for(const n in q){const s=st[n]||(st[n]={r:0,w:0});s.r+=q[n][0]||0;s.w+=q[n][1]||0}}
@@ -74,7 +77,7 @@ const soon=()=>{if(!linked())return;clearTimeout(timer);timer=setTimeout(sync,15
 function wipeAll(){
   clearLocal();del("qa3for_sess");
   if(!linked())return;
-  const t=Date.now();set("gs_wipe",t);
+  const t=Date.now();set("gs_wipe",t);set("gs_base",{});
   rpc("sync_put",{p_id:get("gs_id"),p_data:{v:1,wiped:t,dev:{},last:{},lt:{}}},true).catch(()=>{});
 }
 
@@ -119,7 +122,7 @@ function showQR(){
   o.addEventListener("click",e=>{const b=e.target.closest("[data-gs]");if(!b)return;if(b.dataset.gs==="close"){stop();o.close();paintBox()}else if(b.dataset.gs==="again"){stop();make()}});
   const make=()=>{
     const q=o.querySelector(".gsqr"),left=o.querySelector(".gsleft");q.innerHTML='<p class="gsmute">Preparo il codice…</p>';left.textContent="";
-    if(!linked()){set("gs_id",rid(24));set("gs_wipe",0);MERGE.forEach(del)}
+    if(!linked()){set("gs_id",rid(24));set("gs_wipe",0)}
     Promise.all([loadLib("qrcode"),sync()]).then(()=>{if(state==="err")throw new Error("rete");return rpc("sync_get",{p_id:get("gs_id")})}).then(R=>{
       devs=Object.keys((R&&R.dev)||{}).length;
       return rpc("pair_create",{p_id:get("gs_id")});
@@ -148,7 +151,7 @@ function scanQR(){
     stop();say("Collego…",'<p class="gsmute">Un attimo.</p>');
     rpc("pair_claim",{p_code:code}).then(id=>{
       if(!id){say("Codice scaduto",'<p class="gsmsg">Questo codice è scaduto o è già stato usato. Sul computer tocca <b>Nuovo codice</b> e riprova.</p>');return}
-      set("gs_id",id);set("gs_wipe",-1);MERGE.forEach(del);
+      set("gs_id",id);set("gs_wipe",-1);
       return sync().then(()=>{say("Collegato!",'<p class="gsok">✓</p><p class="gsmsg">Ora i progressi si salvano su tutti e due.</p>');setTimeout(()=>{o.close();paintBox()},1800)});
     }).catch(()=>say("Niente rete",'<p class="gsmsg">Non riesco a collegarmi a internet. Riprova quando c\'è rete.</p>'));
   };
@@ -171,8 +174,9 @@ function scanQR(){
   });
 }
 
-/* Scollega: un tocco chiede "Scollega?", il secondo conferma. I progressi restano su questo dispositivo. */
-function unlink(){clearTimeout(timer);timer=0;["gs_id","gs_wipe","gs_at"].concat(MERGE).forEach(del);state="idle";paintBox()}
+/* Scollega: un tocco chiede "Scollega?", il secondo conferma. I progressi restano su questo dispositivo,
+   e il registro di quello che ha fatto lui resta, così se si ricollega non conta due volte le risposte degli altri. */
+function unlink(){clearTimeout(timer);timer=0;["gs_id","gs_wipe","gs_at"].forEach(del);state="idle";paintBox()}
 document.addEventListener("click",e=>{
   const b=e.target.closest("#gsBox [data-gs]"),u=document.querySelector('#gsBox [data-gs="unlink"][data-sure]');
   if(u&&u!==b)paintBox();
