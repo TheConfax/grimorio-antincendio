@@ -27,6 +27,7 @@
 --moss:light-dark(#4d6a35,#93b56e);--fungo:light-dark(#7b4f30,#d39b6c);--amber:light-dark(#b8741a,#f2b54f);--rose:light-dark(#b0676e,#e4a4aa);--lilac:light-dark(#7e6fa8,#b8a9e0);
 --line:light-dark(#d8c9a8,#3b4532);--wash:light-dark(#efe2c2,#2a3323);
 --grn:var(--moss);--grnbg:light-dark(#e3ead2,#26331f);--red2:light-dark(#a24a3a,#e98a74);--redbg:light-dark(#f6e0d6,#3a2620)}
+html{scrollbar-gutter:stable}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip;
@@ -53,6 +54,8 @@ body{padding-top:57px}
 .top .hand{font:700 26px Caveat,cursive;color:var(--moss);margin:0}
 .top h1{font-size:clamp(40px,8vw,64px);margin:4px 0 8px}
 .top p{margin:0 auto;max-width:58ch;color:var(--mute)}
+.vine.sep{margin:6px auto 26px}
+.vine.sep.end{margin:36px auto 0}
 .vine{display:block;width:min(100%,560px);height:26px;margin:14px auto 0;color:var(--moss)}
 .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px;text-align:left}
 .mode{position:relative;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:24px 16px 16px;min-height:104px;box-shadow:0 10px 22px -18px light-dark(#7b5c33,#000)}
@@ -105,6 +108,8 @@ h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
 .fb a{color:var(--fungo);font-weight:700}
 .nav{display:flex;flex-wrap:wrap;gap:10px;margin:18px auto 0;max-width:780px}
 .qnav{justify-content:space-between;flex-wrap:nowrap}
+.qnav:has(.sure){flex-wrap:wrap}
+.qnav .btn.sure{order:3;flex:1 0 100%;background:var(--red2);color:#fff}
 @media(max-width:600px){.qnav{gap:6px}.qnav .btn{padding:12px 14px;white-space:nowrap}}
 .btn{border:0;border-radius:99px;padding:12px 24px;min-height:48px;font-weight:800;background:var(--fungo);color:var(--page)}
 .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
@@ -133,7 +138,7 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 <nav class="qbar" aria-label="Navigazione"><div class="in"><a class="tog" id="back" href="../"><span class="ch" aria-hidden="true">&lsaquo;</span>Grimorio</a><button class="mq" id="bMenu" type="button" hidden><svg viewBox="0 0 16 14" aria-hidden="true"><path d="M1 2h14M1 7h14M1 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span id="bMenuT">Tutti i quiz</span></button></div></nav>
 <header class="top"><div class="wrap">
     <p class="hand">le prove del Grimorio del Fuoco</p>
-  <h1>Quiz Antincendio Livello 3</h1>
+  <h1>Quiz Antincendio</h1>
   <p>Le 345 domande ufficiali, divise negli stessi capitoli del grimorio.<br>Per passare ne servono 10 giuste su 15 in 30 minuti.</p>
   <svg class="vine" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
   <div class="modes">
@@ -146,8 +151,10 @@ body.inquiz .top{padding-block:16px 4px}body.inquiz .top p,body.inquiz .modes,bo
 <main class="band"><div class="wrap">
   <section id="home">
     <div class="stats" id="stats"></div>
+    <svg class="vine sep" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
     <h2 class="sec">Allenati per capitolo</h2>
     <div class="chaps" id="chaps"></div>
+    <svg class="vine sep end" viewBox="0 0 700 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14c60-14 110 14 170 0s110-14 170 0 110 14 170 0 110-14 190 0" stroke="currentColor" stroke-width="2" fill="none"/><g fill="currentColor"><ellipse cx="90" cy="8" rx="9" ry="4" transform="rotate(-25 90 8)"/><ellipse cx="260" cy="20" rx="9" ry="4" transform="rotate(25 260 20)"/><ellipse cx="430" cy="8" rx="9" ry="4" transform="rotate(-25 430 8)"/><ellipse cx="600" cy="20" rx="9" ry="4" transform="rotate(25 600 20)"/></g></svg>
     <div class="rwrap"><button class="reset" id="bReset"><span id="bResetT">Azzera i progressi salvati</span></button><svg class="frog" viewBox="0 0 74 56" aria-hidden="true"><ellipse cx="37" cy="38" rx="30" ry="16" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="52" cy="20" r="11" fill="#7fae5a" stroke="#2f4a1f" stroke-width="2"/><circle cx="22" cy="21" r="6" fill="#fff"/><circle cx="52" cy="21" r="6" fill="#fff"/><circle cx="22" cy="23" r="3.2" fill="#2b2118"/><circle cx="52" cy="23" r="3.2" fill="#2b2118"/><path d="M13 15l12-6M61 15l-12-6" stroke="#2f4a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M26 44c6-6 16-6 22 0" stroke="#2f4a1f" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 30c0 4-3 6-3 8a3 3 0 006 0c0-2-3-4-3-8z" fill="#8fd0f0"/><ellipse cx="14" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/><ellipse cx="60" cy="41" rx="4" ry="2.5" fill="#e9a3a3" opacity=".7"/></svg></div>
   </section>
   <section id="quiz"></section>
@@ -198,7 +205,7 @@ function render(){
   $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
   <article class="qcard"><div class="qn">#${q.n} · Capitolo ${q.c}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
-  <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`<button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled":""}>Prossima &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Prossima"} &rsaquo;</button>`}</div>
+  <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`<button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
   if(ex)tick();
 }
@@ -234,7 +241,7 @@ document.addEventListener("click",e=>{
     case"bExit":case"bHome":if(location.hash)try{history.replaceState(null,"",location.pathname)}catch(e){}home();break;
     case"bPrev":if(S.i){S.i--;render()}break;
     case"bNext":next();break;
-    case"bEnd":finish();break;
+    case"bEnd":if(!t.dataset.sure){t.dataset.sure=1;t.textContent="Sicura di voler consegnare?";t.classList.add("sure");break}finish();break;
     case"bAgain":{const p=S.again;start(p.mode==="exam"?shuffle(Q).slice(0,15):shuffle(p.list),p.mode,p.title,p.chap);break}
     case"bReset":if(t.dataset.sure){st={};save();$("bResetT").textContent="Azzera i progressi salvati";delete t.dataset.sure;home()}else{t.dataset.sure=1;$("bResetT").textContent="Sicura di voler uccidere questa ranetta?"}break;
   }
