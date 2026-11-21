@@ -120,10 +120,12 @@ h2.sec{font-size:32px;margin-bottom:14px;text-align:center}
 .fb a{color:var(--fungo);font-weight:700}
 .nav{display:flex;flex-wrap:wrap;gap:10px;margin:18px auto 0;max-width:780px}
 .qnav{justify-content:space-between;flex-wrap:nowrap}
-.conf{display:flex;align-items:center;gap:8px}
-.conf b{font-weight:800}
+.qnav{align-items:center}
+.qnav [hidden-slot]{visibility:hidden}
+.qnav .ask{font-weight:800;font-size:17px}
+.qnav #bYes,.qnav #bNo{min-width:96px;justify-content:center}
 .btn.yes{background:var(--fungo);color:var(--page)}
-@media(max-width:600px){.qnav,.rnav{gap:6px}.qnav .btn,.rnav .btn{padding:12px 14px;white-space:nowrap}.qnav:has(.conf){flex-wrap:wrap}.qnav .conf{order:3;flex:1 0 100%;flex-wrap:wrap;justify-content:center;gap:8px 10px;margin-top:6px}.conf b{flex-basis:100%;text-align:center}.conf .btn{min-width:96px;justify-content:center}}
+@media(max-width:600px){.qnav,.rnav{gap:6px}.qnav .btn,.rnav .btn{padding:12px 12px;white-space:nowrap;font-size:15px}}
 a.btn{display:inline-flex;align-items:center;text-decoration:none}
 .rnav{margin:0 0 18px;justify-content:space-between;flex-wrap:nowrap}
 .rnav #bAgain{margin-left:auto}
@@ -135,7 +137,7 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none}
 .dot.done{background:var(--moss);color:var(--page);border-color:var(--moss)}.dot.cur{outline:3px solid var(--amber)}
 .res{max-width:780px;margin:0 auto}
 .score{position:relative;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:22px 24px;border-radius:10px;margin-bottom:22px;border:2px solid}
-.score.pass{background:var(--grnbg);border-color:var(--moss)}.score.fail{background:var(--redbg);border-color:var(--red2)}
+.score.pass{background:var(--grnbg);border-color:var(--moss)}.score.mid{background:light-dark(#f8e7c4,#3a2f17);border-color:var(--amber)}.score.fail{background:var(--redbg);border-color:var(--red2)}
 .score .big{font:800 clamp(52px,10vw,76px)/1 Nunito;color:var(--fungo)}
 .score h2{font-size:clamp(28px,4vw,38px)}
 .party{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
@@ -240,7 +242,7 @@ function render(){
   $("quiz").innerHTML=`<div class="qhead"><span class="ttl">${esc(S.title)}</span>${ex?`<span class="pill timer" id="tmr">30:00</span>`:""}<span class="pill">${S.i+1} di ${n}</span></div>
   <div class="prog"><i style="width:${(ex?Object.keys(S.ans).length:Object.keys(S.done).length)/n*100}%"></i></div>
   <article class="qcard"><div class="qn"><span>#${q.n} · Capitolo ${q.c}</span>${ex?"":`<span class="lvl ${lv[0]}">${lv[1]}</span>`}</div><p class="qt">${esc(q.q)}</p>${q.i?`<img class="qimg" src="${q.i}" alt="Cartello della domanda ${q.n}">`:""}<div class="opts">${o}</div>${fb}</article>
-  <div class="nav qnav"><button class="btn ghost" id="bPrev" ${S.i?"":"disabled"}>&lsaquo; Precedente</button>${ex?`${S.confirm?`<span class="conf"><b>Sicura?</b><button class="btn yes" id="bYes">Sì</button><button class="btn ghost" id="bNo">No</button></span>`:`<button class="btn" id="bEnd">Consegna</button>`}<button class="btn ghost" id="bNext" ${last?"disabled":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}</div>
+  <div class="nav qnav">${ex&&S.confirm?`<button class="btn yes" id="bYes">Sì</button><b class="ask">Sicura?</b><button class="btn ghost" id="bNo">No</button>`:`<button class="btn ghost" id="bPrev" ${S.i?"":"disabled hidden-slot"}>&lsaquo; Precedente</button>${ex?`<button class="btn" id="bEnd">Consegna</button><button class="btn ghost" id="bNext" ${last?"disabled hidden-slot":""}>Successiva &rsaquo;</button>`:`<button class="btn" id="bNext" ${shown?"":"disabled"}>${last?"Vedi il risultato":"Successiva"} &rsaquo;</button>`}`}</div>
   ${ex?`<div class="dots">${S.list.map((_,k)=>`<button class="dot ${S.ans[k]!==undefined?"done":""} ${k===S.i?"cur":""}" data-j="${k}">${k+1}</button>`).join("")}</div>`:""}`;
   persist();
   if(ex)tick();
@@ -278,11 +280,11 @@ function party(big){
 function showRes(S){
   clearInterval(timerId);
   const ex=S.mode==="exam",n=S.list.length;
-  const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3;
+  const ok=S.list.filter((q,k)=>S.ans[k]===q.a).length,pass=ex?ok>=10:ok/n>=2/3,e=n-ok,maxE=n-Math.ceil(n*2/3-1e-9),quasi=!ex&&!pass&&e===maxE+1,err=k=>`${k} ${k===1?"errore":"errori"}`;
   const rows=S.list.map((q,k)=>{const a=S.ans[k],g=a===q.a;return {g,h:`<div class="rv ${g?"good":"bad"}"><div class="q">${q.n}. ${esc(q.q)}</div><div class="a">${g?`<em>${L[q.a]}. ${esc(q.o[q.a])}</em>`:`${a===undefined?"Nessuna risposta":`<s>${L[a]}. ${esc(q.o[a])}</s>`}<br><em>Giusta: ${L[q.a]}. ${esc(q.o[q.a])}</em>${q.t?`<br>${esc(q.t)}`:""}`}</div></div>`}});
   const shownRows=(ex?rows:rows.filter(r=>!r.g)).map(r=>r.h).join("");
-  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):ok===n?"Perfetto!":(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${ex?(n-ok===0?"Perfetto! 0 errori!":n-ok===1?"Hai fatto solo 1 errore!":n-ok<=5?`Hai fatto solo ${n-ok} errori!`:`Hai fatto ${n-ok} errori.`):`Hai risposto giusto ${pct(Math.round(ok/n*100))} delle domande.`}</p></div></div>
-  <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">&lsaquo; Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Riprova il quiz"}</button></div>
+  $("quiz").innerHTML=`<div class="res"><div class="score ${pass?"pass":quasi?"mid":"fail"}"><span class="big">${ok}/${n}</span><div><h2>${ex?(pass?"Scritto superato!":"Scritto non superato"):e===0?"Perfetto!":(pass?"Ottimo lavoro!":"Ancora un po' di ripasso")}</h2><p style="margin:6px 0 0">${e===0?(ex?"Perfetto! 0 errori!":"0 errori!"):pass?`Hai fatto solo ${err(e)}!`:(ex&&e===6)||quasi?`Hai fatto ${err(e)}, ci sei quasi!`:`Hai fatto ${err(e)}.`}</p></div></div>
+  <div class="nav rnav">${S.chap?`<a class="btn" href="${GR}#c${S.chap}">&lsaquo; Ripassa il capitolo</a>`:""}<button class="btn ghost" id="bAgain">${ex?"Nuova simulazione":"Nuovo quiz"}</button></div>
   <h2 style="font-size:26px;margin-bottom:12px">${ex?"Le tue risposte":"Le domande sbagliate"}</h2>${shownRows||'<p class="empty">Nessun errore. Complimenti!</p>'}</div>`;
   delete $("bMenu").dataset.sure;$("bMenuT").textContent="Tutti i quiz";$("back").hidden=false;
 }
