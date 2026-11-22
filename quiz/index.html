@@ -270,7 +270,7 @@ function pickChapter(c){
   if(out.length<size)out.push(...G.new.slice(nN,nN+size-out.length));
   return shuffle(out);
 }
-const level=n=>{const r=st[n];if(!r||!(r.r+r.w))return["new","Nuova"];const x=r.r/(r.r+r.w);return x>2/3?["easy","Facile"]:x>1/2?["mid","Media"]:["hard","Difficile"]};
+const level=n=>{const r=st[n];if(!r||!(r.r+r.w))return["new","Nuova"];const x=r.r/(r.r+r.w);return x>=2/3-1e-9?["easy","Facile"]:x>=1/2?["mid","Media"]:["hard","Difficile"]};
 const pack=o=>({list:o.list.map(q=>q.n),mode:o.mode,title:o.title,chap:o.chap,i:o.i||0,ans:o.ans,done:o.done||{},end:o.end||0,lab:o.lab||{}});
 const unpack=o=>{const m={};Q.forEach(q=>m[q.n]=q);const list=o.list.map(n=>m[n]);if(list.some(q=>!q))return null;return {...o,list}};
 const persist=()=>{try{if(S&&S.list)localStorage.setItem(SK,JSON.stringify({ph:"q",s:pack(S)}));else if(S&&S.again)localStorage.setItem(SK,JSON.stringify({ph:"r",s:pack(S.again)}));else localStorage.removeItem(SK)}catch(e){}};
